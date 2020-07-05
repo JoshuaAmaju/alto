@@ -1,8 +1,10 @@
 import { Song } from "./../types";
 import React from "react";
+import { PlayStates } from "./types";
 
 interface Manager {
   song?: Song;
+  state: PlayStates;
   getDuration(): number | undefined;
 }
 

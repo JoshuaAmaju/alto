@@ -4,17 +4,21 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import { service } from "../MusicService/MusicService";
 import { Events } from "../MusicService/types";
 import useEvent from "../MusicService/use-event";
-import { useValue } from "../MusicService/use-value";
+import useValue from "../MusicService/use-value";
 import { AudioProvider } from "./AudioManagerContext";
+import { PlayStates } from "./types";
 
 export default function AudioManager({ children }: { children: ReactNode }) {
   const audioCtxRef = useRef(new AudioContext());
   const audioRef = createRef<HTMLAudioElement>();
   const gainRef = useRef(audioCtxRef.current.createGain());
+
+  const [state, setState] = useState(PlayStates.SUSPENDED);
 
   const song = useValue(service.getCurrentSong(), Events.SONG_CHANGED, () => {
     return service.getCurrentSong();
@@ -47,7 +51,7 @@ export default function AudioManager({ children }: { children: ReactNode }) {
   });
 
   useEvent<number>(Events.ACTION_SEEK, (value) => {
-    // audioRef.current?.
+    (audioRef.current as HTMLAudioElement).currentTime = value;
   });
 
   return (
@@ -56,14 +60,24 @@ export default function AudioManager({ children }: { children: ReactNode }) {
         src={uri}
         ref={audioRef}
         style={{ display: "none" }}
-        onEnded={() => service.sendEvent(Events.SONG_ENDED)}
+        onEnded={() => {
+          setState(PlayStates.SUSPENDED);
+          service.sendEvent(Events.SONG_ENDED);
+        }}
         onTimeUpdate={() => service.sendEvent(Events.TIME_UPDATE)}
-        onPlay={() => service.sendEvent(Events.PLAY_STATE_CHANGED)}
-        onPause={() => service.sendEvent(Events.PLAY_STATE_CHANGED)}
+        onPlay={() => {
+          setState(PlayStates.PLAYING);
+          service.sendEvent(Events.PLAY_STATE_CHANGED);
+        }}
+        onPause={() => {
+          setState(PlayStates.SUSPENDED);
+          service.sendEvent(Events.PLAY_STATE_CHANGED);
+        }}
       />
       <AudioProvider
         value={{
           song,
+          state,
           getDuration,
         }}
       >
