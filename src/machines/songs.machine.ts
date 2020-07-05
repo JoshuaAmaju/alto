@@ -38,7 +38,7 @@ const songsMachine = Machine<Context, Events>(
           src: "getSongs",
           onDone: {
             target: "idle",
-            actions: assign({ songs: (_ctx, { data }) => data }),
+            // actions: assign({ songs: (_ctx, { data }) => data }),
           },
           onError: "error",
         },

@@ -1,15 +1,16 @@
-import React, { createRef } from "react";
-import { extractSongData } from "../utils";
+import React, { createRef, ChangeEvent } from "react";
+import { extractSongsData } from "../utils";
 import useSongsManager from "../SongsManager/use-songs-manager";
 
 export default function SongsPicker() {
   const songsManager = useSongsManager();
   const ref = createRef<HTMLInputElement>();
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files === null) return;
-    const songs = await extractSongData(files);
+    if (!files) return;
+
+    const songs = await extractSongsData(files);
     songsManager.addSongs(songs);
   };
 
