@@ -1,3 +1,8 @@
+import { Song } from "./types";
+import parser from "id3-parser/lib/universal";
+
+const { v4: uuidv4 } = require("uuid");
+
 export function randomRange(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -26,4 +31,70 @@ export function insertAt<T>(array: T[], insertion: T[], position: number) {
   const bottom = arr.slice(position);
   arr.splice(0, arr.length, ...([] as T[]).concat(top, insertion, bottom));
   return arr;
+}
+
+export function createURL(object: any): string {
+  return URL.createObjectURL(object);
+}
+
+export function bufferToURL(buffer: ArrayBuffer, type?: string) {
+  const blob = new Blob([buffer], { type });
+  return createURL(blob);
+}
+
+export function createSong(song: Song): Song {
+  return {
+    ...song,
+    getURL() {
+      return bufferToURL(this.buffer, this.type);
+    },
+    getImage() {
+      const mime = this.image?.mime;
+      const data = this.image?.data as Uint8Array;
+      return bufferToURL(data, mime);
+    },
+  };
+}
+
+function formatFileName(fileName: string) {
+  const typeIndex = fileName.indexOf(".mp3");
+  return fileName.substr(0, typeIndex).split("_").join(" ").trim();
+}
+
+export async function extractSongData(files: FileList): Promise<Song[]> {
+  let songs: Song[] = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i] as any;
+    const buffer = await file.arrayBuffer();
+
+    let {
+      year,
+      title,
+      album,
+      image,
+      genre,
+      artist = "unknown artist",
+    } = await parser(file);
+
+    const { name, type } = file;
+
+    if (!title) title = formatFileName(name);
+
+    const song = {
+      type,
+      year,
+      title,
+      album,
+      genre,
+      image,
+      artist,
+      buffer,
+      id: uuidv4(),
+    } as Song;
+
+    songs.push(song);
+  }
+
+  return songs;
 }
