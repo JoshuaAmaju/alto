@@ -3,7 +3,7 @@ import MusicService, { service } from "./MusicService";
 import { Events } from "./types";
 import useEvent from "./use-event";
 
-export function useValue<T>(
+export default function useValue<T>(
   initial: T,
   event: Events,
   fn: (service: MusicService) => T
