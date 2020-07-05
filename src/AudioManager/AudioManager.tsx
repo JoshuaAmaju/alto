@@ -1,24 +1,26 @@
 import React, {
   createRef,
-  ReactChildren,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
 } from "react";
-import { AudioProvider } from "../context/audio-manager.context";
-import { useEventValue, useServiceCallback } from "../hooks/music-service";
-import { service } from "../services/MusicService/MusicService";
-import { Events } from "../services/MusicService/types";
+import { service } from "../MusicService/MusicService";
+import { Events } from "../MusicService/types";
+import useEvent from "../MusicService/use-event";
+import { useValue } from "../MusicService/use-value";
+import { AudioProvider } from "./AudioManagerContext";
 
-export default function AudioManager({
-  children,
-}: {
-  children: ReactChildren;
-}) {
+export default function AudioManager({ children }: { children: ReactNode }) {
   const audioCtxRef = useRef(new AudioContext());
   const audioRef = createRef<HTMLAudioElement>();
-  const uri = useEventValue<string>(Events.SET_SONG);
   const gainRef = useRef(audioCtxRef.current.createGain());
+
+  const song = useValue(service.getCurrentSong(), Events.SONG_CHANGED, () => {
+    return service.getCurrentSong();
+  });
+
+  const uri = song?.getURL();
 
   const getDuration = useCallback(() => {
     return audioRef.current?.duration;
@@ -36,20 +38,20 @@ export default function AudioManager({
     source.connect(gain);
   }, [audioRef]);
 
-  useServiceCallback(Events.ACTION_PLAY, () => {
+  useEvent(Events.ACTION_PLAY, () => {
     audioRef.current?.play();
   });
 
-  useServiceCallback(Events.ACTION_PAUSE, () => {
+  useEvent(Events.ACTION_PAUSE, () => {
     audioRef.current?.pause();
   });
 
+  useEvent<number>(Events.ACTION_SEEK, (value) => {
+    // audioRef.current?.
+  });
+
   return (
-    <AudioProvider
-      value={{
-        getDuration,
-      }}
-    >
+    <>
       <audio
         src={uri}
         ref={audioRef}
@@ -59,7 +61,14 @@ export default function AudioManager({
         onPlay={() => service.sendEvent(Events.PLAY_STATE_CHANGED)}
         onPause={() => service.sendEvent(Events.PLAY_STATE_CHANGED)}
       />
-      {children}
-    </AudioProvider>
+      <AudioProvider
+        value={{
+          song,
+          getDuration,
+        }}
+      >
+        {children}
+      </AudioProvider>
+    </>
   );
 }

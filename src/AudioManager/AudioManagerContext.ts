@@ -1,6 +1,8 @@
+import { Song } from "./../types";
 import React from "react";
 
 interface Manager {
+  song?: Song;
   getDuration(): number | undefined;
 }
 

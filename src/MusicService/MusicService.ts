@@ -1,23 +1,45 @@
 import EventEmitter from "eventemitter3";
-import { Song } from "../../types";
-import { RepeatMode, ShuffleMode, Events } from "./types";
-import { shuffle, randomRange, insertAt } from "../../utils";
+import { Song } from "../types";
+import { insertAt, randomRange } from "../utils";
+import { Events, RepeatMode, ShuffleMode } from "./types";
 
 export default class MusicService {
   queue: Song[] = [];
   isInitialised = false;
   position: number = -1;
-  shuffleMode = ShuffleMode.NONE;
   private repeatMode = RepeatMode.NONE;
+  private shuffleMode = ShuffleMode.NONE;
 
   private emitter = new EventEmitter();
 
-  getCurrentSong() {
-    return this.getSongAt(this.position);
+  sendEvent(event: Events, ...payload: any[]) {
+    this.emitter.emit(event, ...payload);
+  }
+
+  getQueueSize() {
+    return this.queue.length;
+  }
+
+  isLastTrack() {
+    return this.position === this.getQueueSize() - 1;
+  }
+
+  getRepeatMode() {
+    return this.repeatMode;
+  }
+
+  setRepeatMode(mode: RepeatMode) {
+    this.repeatMode = mode;
+    this.sendEvent(Events.REPEAT_MODE_CHANGED);
   }
 
   getShuffleMode() {
     return this.shuffleMode;
+  }
+
+  setShuffleMode(mode: ShuffleMode) {
+    this.shuffleMode = mode;
+    this.sendEvent(Events.SHUFFLE_MODE_CHANGED);
   }
 
   getPositionWithShuffle() {
@@ -78,32 +100,14 @@ export default class MusicService {
     return this.queue[position];
   }
 
-  getQueueSize() {
-    return this.queue.length;
+  getCurrentSong() {
+    return this.getSongAt(this.position);
   }
 
   getQueueDuration() {
     return this.queue.reduce((acc, song) => {
       return acc + song.duration;
     }, 0);
-  }
-
-  getRepeatMode() {
-    return this.repeatMode;
-  }
-
-  setRepeatMode(mode: RepeatMode) {
-    this.repeatMode = mode;
-    this.sendEvent(Events.REPEAT_MODE_CHANGED);
-  }
-
-  setShuffleMode(mode: ShuffleMode) {
-    this.shuffleMode = mode;
-    this.sendEvent(Events.SHUFFLE_MODE_CHANGED);
-  }
-
-  sendEvent(event: Events, ...payload: any[]) {
-    this.emitter.emit(event, ...payload);
   }
 
   maybeInitialise() {
@@ -113,12 +117,16 @@ export default class MusicService {
     }
   }
 
-  isLastTrack() {
-    return this.position === this.getQueueSize() - 1;
-  }
-
   private openSong(song: Song) {
     this.sendEvent(Events.SET_SONG, song.getURL());
+  }
+
+  play() {
+    this.sendEvent(Events.ACTION_PLAY);
+  }
+
+  pause() {
+    this.sendEvent(Events.ACTION_PAUSE);
   }
 
   playSongAt(position: number) {
@@ -130,21 +138,9 @@ export default class MusicService {
     this.play();
   }
 
-  play() {
-    this.sendEvent(Events.ACTION_PLAY);
-  }
-
-  pause() {
-    this.sendEvent(Events.ACTION_PAUSE);
-  }
-
-  openQueue(
-    playingQueue: Song[],
-    startPosition: number,
-    startPlaying: boolean
-  ) {
-    this.position = startPosition;
+  openQueue(playingQueue: Song[], startPosition: number, startPlaying = true) {
     this.queue = playingQueue;
+    this.position = startPosition;
 
     if (this.shuffleMode === ShuffleMode.SHUFFLE) {
       this.position = randomRange(0, this.getQueueSize());
@@ -161,15 +157,8 @@ export default class MusicService {
   }
 
   playSongs(songs: Song[], shuffleMode: ShuffleMode) {
-    if (shuffleMode === ShuffleMode.SHUFFLE) {
-      let startPosition = randomRange(0, this.getQueueSize());
-      this.openQueue(songs, startPosition, false);
-      this.setShuffleMode(shuffleMode);
-    } else {
-      this.openQueue(songs, 0, false);
-    }
-
-    this.play();
+    this.shuffleMode = shuffleMode;
+    this.openQueue(songs, 0);
   }
 
   playNextSong(force: boolean) {
@@ -184,17 +173,6 @@ export default class MusicService {
 
   playPreviousSong(force: boolean) {
     this.playSongAt(this.getPreviousPosition(force));
-  }
-
-  playFromPlaylist(playlist: Song[], shuffleMode: ShuffleMode) {
-    let position = 0;
-
-    if (shuffleMode === ShuffleMode.SHUFFLE) {
-      this.shuffleMode = shuffleMode;
-      position = randomRange(0, this.getQueueSize());
-    }
-
-    this.openQueue(playlist, position, true);
   }
 
   cycleRepeatMode() {
@@ -239,27 +217,27 @@ export default class MusicService {
     this.addSongAtPosition(position, song);
   }
 
-  removeSong(position: number) {
-    this.queue.splice(position, 1);
-    this.reposition(position);
-    this.sendEvent(Events.QUEUE_CHANGED);
-  }
+  // removeSong(position: number) {
+  //   this.queue.splice(position, 1);
+  //   this.reposition(position);
+  //   this.sendEvent(Events.QUEUE_CHANGED);
+  // }
 
-  reposition(deletedPosition: number) {
-    let position = this.position;
+  // reposition(deletedPosition: number) {
+  //   let position = this.position;
 
-    if (deletedPosition < position) {
-      position = position - 1;
-    }
+  //   if (deletedPosition < position) {
+  //     position = position - 1;
+  //   }
 
-    if (deletedPosition === position) {
-      if (this.queue.length < deletedPosition) {
-        this.position = position - 1;
-      }
-    }
+  //   if (deletedPosition === position) {
+  //     if (this.queue.length < deletedPosition) {
+  //       this.position = position - 1;
+  //     }
+  //   }
 
-    this.sendEvent(Events.POSITION_CHANGED);
-  }
+  //   this.sendEvent(Events.POSITION_CHANGED);
+  // }
 
   clearQueue() {
     this.queue = [];
