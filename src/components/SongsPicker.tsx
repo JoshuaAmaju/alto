@@ -16,6 +16,13 @@ export default function SongsPicker() {
 
   return (
     <div>
+      <button
+        onClick={() => {
+          ref.current?.click();
+        }}
+      >
+        add songs
+      </button>
       <input
         multiple
         ref={ref}
