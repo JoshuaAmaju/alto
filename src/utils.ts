@@ -1,7 +1,8 @@
 import { Song } from "./types";
 import parser from "id3-parser/lib/universal";
-
-const { v4: uuidv4 } = require("uuid");
+import { PlayStates } from "./AudioManager/types";
+import { service } from "./MusicService/MusicService";
+import { Events } from "./MusicService/types";
 
 export function randomRange(min: number, max: number) {
   min = Math.ceil(min);
@@ -61,7 +62,7 @@ function formatFileName(fileName: string) {
   return fileName.substr(0, typeIndex).split("_").join(" ").trim();
 }
 
-export async function extractSongData(files: FileList): Promise<Song[]> {
+export async function extractSongsData(files: FileList): Promise<Song[]> {
   let songs: Song[] = [];
 
   for (let i = 0; i < files.length; i++) {
@@ -74,7 +75,7 @@ export async function extractSongData(files: FileList): Promise<Song[]> {
       album,
       image,
       genre,
-      artist = "unknown artist",
+      artist = "unknown artiste",
     } = await parser(file);
 
     const { name, type } = file;
@@ -90,11 +91,20 @@ export async function extractSongData(files: FileList): Promise<Song[]> {
       image,
       artist,
       buffer,
-      id: uuidv4(),
     } as Song;
 
     songs.push(song);
   }
 
   return songs;
+}
+
+export function togglePlayState(state: PlayStates) {
+  if (state === PlayStates.PLAYING) {
+    service.sendEvent(Events.ACTION_PAUSE);
+  }
+
+  if (state === PlayStates.SUSPENDED) {
+    service.sendEvent(Events.ACTION_PLAY);
+  }
 }

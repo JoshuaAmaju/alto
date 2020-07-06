@@ -21,6 +21,7 @@
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2",
     "uuid": "^8.2.0",
+    "webase": "0.0.1",
     "xstate": "^4.11.0"
   },
   "scripts": {
