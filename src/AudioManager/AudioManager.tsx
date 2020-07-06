@@ -1,84 +1,59 @@
-import React, {
-  createRef,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { service } from "../MusicService/MusicService";
+import React, { ReactNode, useCallback, useEffect, useRef } from "react";
 import { Events } from "../MusicService/types";
 import useEvent from "../MusicService/use-event";
+import useEventValue from "../MusicService/use-event-value";
 import useValue from "../MusicService/use-value";
+import { Song } from "../types";
 import { AudioProvider } from "./AudioManagerContext";
-import { PlayStates } from "./types";
+import AudioPlayer from "./AudioPlayer";
 
 export default function AudioManager({ children }: { children: ReactNode }) {
-  const audioCtxRef = useRef(new AudioContext());
-  const audioRef = createRef<HTMLAudioElement>();
-  const gainRef = useRef(audioCtxRef.current.createGain());
+  const audioPlayer = useRef(new AudioPlayer());
 
-  const [state, setState] = useState(PlayStates.SUSPENDED);
+  const song = useEventValue<Song>(Events.SET_SONG);
 
-  const song = useValue(service.getCurrentSong(), Events.SONG_CHANGED, () => {
-    return service.getCurrentSong();
-  });
-
-  const uri = song?.getURL();
+  const state = useValue(
+    audioPlayer.current.playState,
+    Events.PLAY_STATE_CHANGED,
+    () => audioPlayer.current.playState
+  );
 
   const getDuration = useCallback(() => {
-    return audioRef.current?.duration;
-  }, [audioRef]);
-
-  useEffect(() => {
-    const gain = gainRef.current;
-    const audioCtx = audioCtxRef.current;
-    const audio = audioRef.current as HTMLAudioElement;
-    const source = audioCtx.createMediaElementSource(audio);
-
-    gain.gain.value = 0.1;
-    gain.connect(audioCtx.destination);
-
-    source.connect(gain);
-  }, [audioRef]);
+    return audioPlayer.current.getDuration();
+  }, []);
 
   useEvent(Events.ACTION_PLAY, () => {
-    audioRef.current?.play();
+    audioPlayer.current.play();
   });
 
   useEvent(Events.ACTION_PAUSE, () => {
-    audioRef.current?.pause();
+    audioPlayer.current.pause();
   });
 
   useEvent<number>(Events.ACTION_SEEK, (value) => {
-    (audioRef.current as HTMLAudioElement).currentTime = value;
+    audioPlayer.current.seekTo(value);
   });
+
+  useEffect(() => {
+    const player = audioPlayer.current;
+    player.init();
+
+    return () => player.dispose();
+  }, []);
+
+  useEffect(() => {
+    if (song) audioPlayer.current.setMediaSource(song.getURL());
+  }, [song]);
 
   return (
     <>
-      <audio
-        src={uri}
-        ref={audioRef}
-        style={{ display: "none" }}
-        onEnded={() => {
-          setState(PlayStates.SUSPENDED);
-          service.sendEvent(Events.SONG_ENDED);
-        }}
-        onTimeUpdate={() => service.sendEvent(Events.TIME_UPDATE)}
-        onPlay={() => {
-          setState(PlayStates.PLAYING);
-          service.sendEvent(Events.PLAY_STATE_CHANGED);
-        }}
-        onPause={() => {
-          setState(PlayStates.SUSPENDED);
-          service.sendEvent(Events.PLAY_STATE_CHANGED);
-        }}
-      />
       <AudioProvider
         value={{
           song,
           state,
           getDuration,
+          play: () => audioPlayer.current?.play(),
+          pause: () => audioPlayer.current?.pause(),
         }}
       >
         {children}

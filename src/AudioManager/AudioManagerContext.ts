@@ -4,6 +4,8 @@ import { PlayStates } from "./types";
 
 interface Manager {
   song?: Song;
+  play(): void;
+  pause(): void;
   state: PlayStates;
   getDuration(): number | undefined;
 }
