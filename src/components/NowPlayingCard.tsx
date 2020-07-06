@@ -2,36 +2,28 @@ import { Frame } from "framer";
 import React from "react";
 import { PlayStates } from "../AudioManager/types";
 import useAudioManager from "../AudioManager/use-audio-manager";
-import { service } from "../MusicService/MusicService";
-import { Events } from "../MusicService/types";
 import { Song } from "../types";
+import { togglePlayState } from "../utils";
 
 interface NowPlayingCard {
   song: Song;
-  type: "full" | "mini";
+  type?: "full" | "mini";
 }
 
-export default function NowPlayingCard({ type, song }: NowPlayingCard) {
-  const { title, artist, getImage } = song;
+export default function NowPlayingCard({
+  type = "full",
+  song,
+}: NowPlayingCard) {
+  const { title, artist } = song;
   const { state } = useAudioManager();
 
   return (
-    <Frame background={getImage()}>
+    <Frame>
       <div>
         <h2>{title}</h2>
         {type === "full" && <h3>{artist}</h3>}
       </div>
-      <button
-        onClick={() => {
-          if (state === PlayStates.PLAYING) {
-            service.sendEvent(Events.ACTION_PAUSE);
-          }
-
-          if (state === PlayStates.SUSPENDED) {
-            service.sendEvent(Events.ACTION_PLAY);
-          }
-        }}
-      >
+      <button onClick={() => togglePlayState(state)}>
         {state === PlayStates.PLAYING ? "Pause" : "Play"}
       </button>
     </Frame>
