@@ -118,7 +118,7 @@ export default class MusicService {
   }
 
   private openSong(song: Song) {
-    this.sendEvent(Events.SET_SONG, song.getURL());
+    this.sendEvent(Events.SET_SONG, song);
   }
 
   play() {
@@ -134,8 +134,9 @@ export default class MusicService {
     this.openSong(this.getCurrentSong());
 
     this.maybeInitialise();
-    this.sendEvent(Events.SONG_CHANGED);
+
     this.play();
+    this.sendEvent(Events.SONG_CHANGED);
   }
 
   openQueue(playingQueue: Song[], startPosition: number, startPlaying = true) {
