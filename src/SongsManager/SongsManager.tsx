@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, ReactNode } from "react";
 import { useMachine } from "@xstate/react";
-import { SongsProvider } from "./SongsManagerContext";
+import React, { ReactNode, useCallback } from "react";
 import songsMachine from "../machines/songs.machine";
+import { SongsProvider } from "./SongsManagerContext";
 
 export default function SongsManager({ children }: { children: ReactNode }) {
   const [state, send] = useMachine(songsMachine);

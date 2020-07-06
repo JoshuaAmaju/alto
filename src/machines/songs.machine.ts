@@ -1,5 +1,7 @@
 import { assign, Machine } from "xstate";
 import { Song } from "../types";
+import { getAll, addSongs } from "../services/songs.service";
+import { createSong } from "../utils";
 
 interface Context {
   songs: Song[];
@@ -38,7 +40,7 @@ const songsMachine = Machine<Context, Events>(
           src: "getSongs",
           onDone: {
             target: "idle",
-            // actions: assign({ songs: (_ctx, { data }) => data }),
+            actions: assign({ songs: (_ctx, { data }) => data }),
           },
           onError: "error",
         },
@@ -60,10 +62,10 @@ const songsMachine = Machine<Context, Events>(
   {
     services: {
       getSongs: async () => {
-        const songs = await Promise.resolve();
-        return songs;
+        const songs = await getAll();
+        return songs.map(createSong);
       },
-      addSongs: (ctx) => Promise.resolve(),
+      addSongs: (_ctx, { songs }) => addSongs(songs),
       removeSong(ctx, { song }) {
         return Promise.resolve();
       },
