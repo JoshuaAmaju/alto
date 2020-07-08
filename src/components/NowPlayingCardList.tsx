@@ -4,10 +4,10 @@ import useValue from "../QueueService/use-value";
 import { service } from "../QueueService/QueueService";
 import { Events } from "../QueueService/types";
 import NowPlayingCard from "./NowPlayingCard";
-import useAudioManager from "../PlaybackManager/use-playback-manager";
+import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 
 export default function NowPlayingCardList() {
-  const { getCurrentSong } = useAudioManager();
+  const { getCurrentSong } = usePlaybackManager();
   const song = getCurrentSong();
 
   const queue = useValue(

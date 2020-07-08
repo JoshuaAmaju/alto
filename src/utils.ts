@@ -1,8 +1,5 @@
-import { Song } from "./types";
 import parser from "id3-parser/lib/universal";
-import { PlayStates } from "./PlaybackManager/types";
-import { service } from "./QueueService/QueueService";
-import { Events } from "./QueueService/types";
+import { Song } from "./types";
 
 export function randomRange(min: number, max: number) {
   min = Math.ceil(min);
