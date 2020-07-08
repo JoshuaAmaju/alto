@@ -1,8 +1,8 @@
 import { Song } from "./types";
 import parser from "id3-parser/lib/universal";
-import { PlayStates } from "./AudioManager/types";
-import { service } from "./MusicService/MusicService";
-import { Events } from "./MusicService/types";
+import { PlayStates } from "./PlaybackManager/types";
+import { service } from "./QueueService/QueueService";
+import { Events } from "./QueueService/types";
 
 export function randomRange(min: number, max: number) {
   min = Math.ceil(min);
@@ -97,14 +97,4 @@ export async function extractSongsData(files: FileList): Promise<Song[]> {
   }
 
   return songs;
-}
-
-export function togglePlayState(state: PlayStates) {
-  if (state === PlayStates.PLAYING) {
-    service.sendEvent(Events.ACTION_PAUSE);
-  }
-
-  if (state === PlayStates.SUSPENDED) {
-    service.sendEvent(Events.ACTION_PLAY);
-  }
 }

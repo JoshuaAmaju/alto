@@ -1,14 +1,14 @@
 import React from "react";
 import { Frame, Page } from "framer";
-import useValue from "../MusicService/use-value";
-import { service } from "../MusicService/MusicService";
-import { Events } from "../MusicService/types";
+import useValue from "../QueueService/use-value";
+import { service } from "../QueueService/QueueService";
+import { Events } from "../QueueService/types";
 import NowPlayingCard from "./NowPlayingCard";
+import useAudioManager from "../PlaybackManager/use-playback-manager";
 
 export default function NowPlayingCardList() {
-  const song = useValue(service.getCurrentSong(), Events.SONG_CHANGED, () => {
-    return service.getCurrentSong();
-  });
+  const { getCurrentSong } = useAudioManager();
+  const song = getCurrentSong();
 
   const queue = useValue(
     service.queue,

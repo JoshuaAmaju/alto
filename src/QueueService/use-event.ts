@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { service } from "./MusicService";
+import { service } from "./QueueService";
 import { Events } from "./types";
 
 export default function useEvent<T>(

@@ -1,22 +1,21 @@
 import { AnimatePresence, motion } from "framer";
 import React, { useState } from "react";
-import SongsPicker from "../components/SongsPicker";
+import useAudioManager from "../PlaybackManager/use-playback-manager";
 import SongTile from "../components/SongTile";
 import useSongsManager from "../SongsManager/use-songs-manager";
-import NowPlayingCardList from "../components/NowPlayingCardList";
-import { service } from "../MusicService/MusicService";
 
 export default function AllSongs() {
   const { songs, loading } = useSongsManager();
   const [queueOpen, setQueueOpen] = useState(false);
+  const { openQueue, playSongAt } = useAudioManager();
 
-  const openQueue = (position: number) => {
+  const handleOpenQueue = (position: number) => {
     if (!queueOpen) {
-      service.openQueue(songs, position);
+      openQueue(songs);
       setQueueOpen(true);
-    } else {
-      service.playSongAt(position);
     }
+
+    playSongAt(position);
   };
 
   return (
@@ -29,7 +28,7 @@ export default function AllSongs() {
           return (
             <AnimatePresence key={song.id}>
               <motion.li animate={{ opacity: 1 }} initial={{ opacity: 0 }}>
-                <SongTile song={song} onClick={() => openQueue(i)} />
+                <SongTile song={song} onClick={() => handleOpenQueue(i)} />
               </motion.li>
             </AnimatePresence>
           );

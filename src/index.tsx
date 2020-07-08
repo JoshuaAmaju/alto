@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
+import { db } from "./database";
+import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import SongsManager from "./SongsManager/SongsManager";
-import AudioManager from "./AudioManager/AudioManager";
-import { db } from "./database";
+import PlaybackManager from "./PlaybackManager/PlaybackManager";
 
 (async () => {
   await db.connect();
@@ -13,9 +13,9 @@ import { db } from "./database";
   ReactDOM.render(
     <React.StrictMode>
       <SongsManager>
-        <AudioManager>
+        <PlaybackManager>
           <App />
-        </AudioManager>
+        </PlaybackManager>
       </SongsManager>
     </React.StrictMode>,
     document.getElementById("root")
