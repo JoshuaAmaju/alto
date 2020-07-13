@@ -1,25 +1,14 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
-import { AnimatePresence, Frame, Stack } from "framer";
-import React, { createRef, CSSProperties, useState } from "react";
+import { Frame, Stack } from "framer";
+import React, { createRef, useState } from "react";
 import { createUseStyles } from "react-jss";
 import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
-import FlatButton from "../components/FlatButton";
 import { Overflow } from "../icons";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
+import { Fab } from "../components/Fab";
 
-interface Fab extends FlatButton {
-  top?: CSSProperties["top"];
-  left?: CSSProperties["left"];
-  right?: CSSProperties["right"];
-  bottom?: CSSProperties["bottom"];
-  position?: CSSProperties["position"];
-}
-
-const useStyle = createUseStyles({
-  frame: {
-    padding: "1rem",
-  },
+export const useStyle = createUseStyles({
   form: {
     display: "flex",
     padding: "1.5rem",
@@ -29,56 +18,7 @@ const useStyle = createUseStyles({
     margin: { top: "1rem" },
     alignSelf: "flex-end",
   },
-  fab: {
-    color: "white",
-    padding: "1rem",
-    display: "flex",
-    width: "3.5rem",
-    height: "3.5rem",
-    alignItems: "center",
-    borderRadius: "100px",
-    backgroundColor: "blue",
-    justifyContent: "center",
-    boxShadow: "0px 4px 10px 0px #00000070",
-  },
 });
-
-function Fab({
-  children,
-  right = 0,
-  bottom = 0,
-  top = "auto",
-  left = "auto",
-  position = "absolute",
-  ...props
-}: Fab) {
-  const classes = useStyle();
-
-  return (
-    <AnimatePresence>
-      <Frame
-        top={top}
-        left={left}
-        width="auto"
-        height="auto"
-        right={right}
-        bottom={bottom}
-        background="none"
-        position={position}
-        className={classes.frame}
-        whileTap={{ scale: 0.8 }}
-        exit={{ scale: 0.4, rotate: 90 }}
-        animate={{ scale: 1, rotate: 0 }}
-        initial={{ scale: 0.4, rotate: 90 }}
-        {...(props as any)}
-      >
-        <FlatButton {...props} className={classes.fab}>
-          {children}
-        </FlatButton>
-      </Frame>
-    </AnimatePresence>
-  );
-}
 
 export default function Playlists() {
   const classes = useStyle();

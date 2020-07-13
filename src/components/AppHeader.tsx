@@ -27,7 +27,10 @@ export default function AppHeader({ title, leading, children }: AppHeader) {
           </IonButtons>
         )}
         <IonTitle>{title}</IonTitle>
-        <IonContent>{children}</IonContent>
+        <IonButtons slot="end">
+          <IonBackButton defaultHref="/" />
+          {children}
+        </IonButtons>
       </IonToolbar>
     </IonHeader>
   );

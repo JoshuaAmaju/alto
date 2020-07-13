@@ -2,34 +2,50 @@ import {
   IonActionSheet,
   IonLoading,
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
+  IonRippleEffect,
 } from "@ionic/react";
 import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
+import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
 import FlatButton from "../components/FlatButton";
 import NowPlayingCarousel from "../components/NowPlayingCarousel";
-import SongSlider from "../components/SongSlider";
 import SongTile from "../components/SongTile";
 import { Overflow } from "../icons";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
-import AppHeader from "../components/AppHeader";
+import { Scroll } from "framer";
+import classNames from "classnames";
 
 const useStyle = createUseStyles({
-  menu: {
-    padding: "1.5rem",
+  playlists: {
+    "& li": {
+      padding: "1.5rem",
+      listStyle: "none",
+      fontWeight: "bold",
+      position: "relative",
+      textTransform: "capitalize",
+    },
+    "& *:not(:first-child)": {
+      borderTop: "1px solid #ccc",
+    },
+  },
+  menuButton: {
+    padding: "0.5rem",
+    position: "relative",
+  },
+  ripple: {
+    borderRadius: 100,
   },
 });
 
 export default function AllSongs() {
-  const { playlists } = usePlaylists();
+  const classes = useStyle();
   const [showMenu, setShow] = useState(false);
   const { songs, loading } = useSongsManager();
+  const { playlists, addSong } = usePlaylists();
   const [queueOpen, setQueueOpen] = useState(false);
   const [menuTarget, setTarget] = useState<Song | null>();
   const [showPlaylistMenu, setShowPlaylist] = useState(false);
@@ -46,11 +62,9 @@ export default function AllSongs() {
 
   return (
     <IonPage id="main">
-      {/* <AppHeader title="Song" /> */}
+      <AppHeader title="Song" />
       {/* <SongsPicker /> */}
-      {/* <NowPlayingCardList /> */}
       <IonLoading isOpen={loading} />
-      <SongSlider />
       <ul>
         {songs.map((song, i) => {
           return (
@@ -60,12 +74,14 @@ export default function AllSongs() {
               onClick={() => handleOpenQueue(i)}
               trailing={
                 <FlatButton
+                  className={classNames(classes.menuButton, "ion-activatable")}
                   onClick={() => {
-                    setShow(true);
-                    setTarget(song);
+                    // setShow(true);
+                    // setTarget(song);
                   }}
                 >
-                  <Overflow width={25} />
+                  <Overflow width={25} height={25} />
+                  <IonRippleEffect className={classes.ripple} />
                 </FlatButton>
               }
             />
@@ -120,11 +136,27 @@ export default function AllSongs() {
         open={showPlaylistMenu}
         onClose={() => setShowPlaylist(false)}
       >
-        <ul>
+        {menuTarget && <SongTile song={menuTarget} />}
+        <Scroll
+          width="100%"
+          height="40vh"
+          position="relative"
+          className={classes.playlists}
+        >
           {playlists.map(({ name }) => (
-            <li>{name}</li>
+            <li
+              key={name}
+              className="ion-activatable"
+              onClick={() => {
+                addSong(name, (menuTarget as Song).id);
+                setShowPlaylist(false);
+              }}
+            >
+              <span>{name}</span>
+              <IonRippleEffect />
+            </li>
           ))}
-        </ul>
+        </Scroll>
       </BottomSheet>
     </IonPage>
   );

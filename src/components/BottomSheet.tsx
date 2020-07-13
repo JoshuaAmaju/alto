@@ -21,6 +21,7 @@ const useStyle = createUseStyles({
     // margin: { top: 10 },
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+    backdropFilter: "blur(20px)",
   },
 });
 
@@ -80,9 +81,15 @@ export default function BottomSheet({
             initial="hidden"
             position="fixed"
             animate="visible"
+            overflow="hidden"
             variants={variants}
-            backgroundColor="white"
+            transition={{
+              type: "tween",
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
             className={classes.sheet}
+            backgroundColor="rgba(255, 255, 255, 0.7)"
           >
             {children}
           </Frame>

@@ -6,6 +6,7 @@ interface FlatButton extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const useStyle = createUseStyles({
   button: {
+    padding: 0,
     border: "none",
     background: "none",
   },

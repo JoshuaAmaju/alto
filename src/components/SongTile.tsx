@@ -22,15 +22,15 @@ const useStyle = createUseStyles({
   row: {
     display: "flex",
     alignItems: "center",
-  },
-  container: {
-    padding: "1rem",
-    justifyContent: "space-between",
-    "& * + *": {
+    "& > * + *": {
       margin: {
         left: "1rem",
       },
     },
+  },
+  container: {
+    padding: "1rem",
+    justifyContent: "space-between",
     "& h4": {
       color: "#6d6d6d",
       margin: { top: "0.5rem" },

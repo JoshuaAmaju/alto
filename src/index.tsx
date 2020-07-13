@@ -1,5 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
+
+// import {} from 'react-router'
+
 import App from "./App";
 import { db } from "./database";
 import "./index.css";
@@ -7,6 +10,8 @@ import * as serviceWorker from "./serviceWorker";
 import SongsManager from "./SongsManager/SongsManager";
 import PlaybackManager from "./PlaybackManager/PlaybackManager";
 import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
+
+// const { Router } = require("react-router");
 
 (async () => {
   await db.connect();
@@ -17,6 +22,8 @@ import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
         <PlaybackManager>
           <PlaylistsManager>
             <App />
+            {/* <Router>
+            </Router> */}
           </PlaylistsManager>
         </PlaybackManager>
       </SongsManager>

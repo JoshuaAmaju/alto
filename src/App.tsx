@@ -1,33 +1,16 @@
-import React from "react";
-
+import { IonApp } from "@ionic/react";
 import "@ionic/react/css/core.css";
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
-
-import {
-  IonApp,
-  IonPage,
-  IonSplitPane,
-  IonMenu,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonBackButton,
-  IonTitle,
-  IonNav,
-  IonContent,
-} from "@ionic/react";
-
+import React from "react";
 import AllSongs from "./screens/AllSongs";
-import Drawer from "./components/Drawer";
-import Playlists from "./screens/Playlists";
 
 function App() {
   return (
     <div className="App">
       {/* <Drawer open={true}>hello</Drawer> */}
       <IonApp>
-        <IonSplitPane contentId="main">
+        {/* <IonSplitPane contentId="main">
           <IonMenu>
             <IonNav>
               <ul>
@@ -36,8 +19,9 @@ function App() {
             </IonNav>
           </IonMenu>
           <AllSongs />
-        </IonSplitPane>
+        </IonSplitPane> */}
         {/* <Playlists /> */}
+        <AllSongs />
       </IonApp>
     </div>
   );
