@@ -7,3 +7,5 @@ export type Song = Partial<IID3Tag> & {
   getImage(): string;
   buffer: ArrayBuffer;
 };
+
+export type Playlist = { name: string };

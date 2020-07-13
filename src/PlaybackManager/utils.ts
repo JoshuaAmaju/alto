@@ -6,7 +6,7 @@ function isLastTrack(position: number, queueSize: number) {
 }
 
 export function shufflePosition(shuffleMode: ShuffleMode, queueSize: number) {
-  return shuffleMode === ShuffleMode.SHUFFLE && randomRange(0, queueSize);
+  if (shuffleMode === ShuffleMode.SHUFFLE) return randomRange(0, queueSize);
 }
 
 export function getNextPosition(

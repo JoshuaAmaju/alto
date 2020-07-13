@@ -15,10 +15,11 @@ import { getNextPosition, getPreviousPosition } from "./utils";
 import { PlaybackManagerProvider } from "./PlaybackManagerContext";
 
 export default function PlaybackManager({ children }: { children: ReactNode }) {
+  const position = useRef(-1);
   const player = useRef(new AudioPlayer());
   const state = useAudioState(player.current);
-  const [position, setPosition] = useState(-1);
   const currentTime = useTimeUpdate(player.current);
+  const [currentSong, setCurrentSong] = useState<Song>();
   const [repeatMode, setRepeatMode] = useState(RepeatMode.NONE);
   const [shuffleMode, setShuffleMode] = useState(ShuffleMode.NONE);
 
@@ -40,12 +41,9 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     return player.current.setMediaSource(song.getURL());
   };
 
-  const getCurrentSong = () => {
-    return getQueue()[position];
-  };
-
   const getDuration = () => {
-    return player.current.getDuration();
+    const duration = player.current.getDuration();
+    return isNaN(duration) ? 0 : duration;
   };
 
   const openQueue = useCallback((songs: Song[], shuffleMode?: ShuffleMode) => {
@@ -82,25 +80,36 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     });
   };
 
-  const playSongAt = async (position: number) => {
-    const song = getQueue()[position];
+  const playSongAt = async (pos: number) => {
+    const song = getQueue()[pos];
     await setSong(song);
     play();
 
-    setPosition(position);
+    position.current = pos;
+    setCurrentSong(song);
+  };
+
+  const playSong = async (song: Song) => {
+    const position = getQueue().findIndex((s) => {
+      return s.id === song.id;
+    });
+
+    playSongAt(position);
   };
 
   const playNextSong = (force = true) => {
     const size = service.getQueueSize();
+
     const newPos = getNextPosition(
       repeatMode,
       shuffleMode,
       size,
-      position,
+      position.current,
       force
     );
 
-    if (newPos < size) playSongAt(newPos);
+    // if (newPos < size)
+    playSongAt(newPos);
   };
 
   const playPreviousSong = (force = true) => {
@@ -109,7 +118,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
       repeatMode,
       shuffleMode,
       size,
-      position,
+      position.current,
       force
     );
 
@@ -119,10 +128,6 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   useEffect(() => {
     player.current.init();
   }, []);
-
-  useEffect(() => {
-    console.log(position);
-  }, [position]);
 
   useEffect(() => {
     const _player = player.current;
@@ -145,10 +150,12 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         enqueue,
         setSong,
         getQueue,
+        playSong,
         enqueueAt,
         openQueue,
         repeatMode,
         playSongAt,
+        currentSong,
         shuffleMode,
         getDuration,
         currentTime,
@@ -156,7 +163,6 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         setRepeatMode,
         toggleShuffle,
         setShuffleMode,
-        getCurrentSong,
         cycleRepeatMode,
         playPreviousSong,
       }}

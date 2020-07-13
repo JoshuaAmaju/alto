@@ -11,14 +11,15 @@ interface Manager {
   currentTime: number;
   playNextSong(): void;
   toggleShuffle(): void;
-  getCurrentSong(): Song;
+  getDuration(): number;
   repeatMode: RepeatMode;
   cycleRepeatMode(): void;
   shuffleMode: ShuffleMode;
   playPreviousSong(): void;
   seekTo(time: number): void;
+  playSong(song: Song): void;
+  currentSong: Song | undefined;
   enqueue(...songs: Song[]): void;
-  getDuration(): number | undefined;
   playSongAt(position: number): void;
   setSong(song: Song): Promise<void>;
   setRepeatMode(repeat: RepeatMode): void;

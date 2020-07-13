@@ -95,3 +95,32 @@ export async function extractSongsData(files: FileList): Promise<Song[]> {
 
   return songs;
 }
+
+export function pad(value: any) {
+  return value.toString().padStart(2, "0");
+}
+
+export function formatTime(value: number) {
+  const hour = Math.floor(value / 3600);
+  value %= 3600;
+
+  const second = Math.floor(value % 60);
+  const minute = Math.floor(value / 60);
+
+  const time = [hour > 0 ? hour : null, minute, second];
+  return time
+    .filter((t) => t !== null)
+    .map(pad)
+    .join(":");
+}
+
+export function loadImage(song: Song): Promise<string> {
+  const img = new Image();
+  const url = song.getImage();
+
+  return new Promise((resolve, reject) => {
+    img.onload = () => resolve(img.src);
+    img.onerror = (e) => reject(e);
+    img.src = url ?? "";
+  });
+}

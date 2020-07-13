@@ -1,22 +1,59 @@
-import React from "react";
+import React, { ReactNode, ReactEventHandler } from "react";
 import { Song } from "../types";
 import AlbumArt from "./AlbumArt";
+import Text from "./Text";
+import { createUseStyles } from "react-jss";
+import classNames from "classnames";
 
 interface SongTile {
   song: Song;
-  onClick?: React.ReactEventHandler;
+  trailing?: ReactNode;
+  onClick?: ReactEventHandler;
 }
 
-export default function SongTile({ song, onClick }: SongTile) {
+const useStyle = createUseStyles({
+  cover: {
+    // borderRadius: 7,
+    width: "3.5rem",
+    height: "3.5rem",
+    flex: "0 0 3.5rem",
+    overflow: "hidden",
+  },
+  row: {
+    display: "flex",
+    alignItems: "center",
+  },
+  container: {
+    padding: "1rem",
+    justifyContent: "space-between",
+    "& * + *": {
+      margin: {
+        left: "1rem",
+      },
+    },
+    "& h4": {
+      color: "#6d6d6d",
+      margin: { top: "0.5rem" },
+    },
+  },
+});
+
+export default function SongTile({ song, onClick, trailing }: SongTile) {
+  const classes = useStyle();
   const { title, artist } = song;
 
   return (
-    <div onClick={onClick}>
-      <AlbumArt song={song} />
-      <div>
-        <h2>{title}</h2>
-        <h3>{artist}</h3>
+    <div className={classNames(classes.row, classes.container)}>
+      <div className={classes.row} onClick={onClick}>
+        <div className={classes.cover}>
+          <AlbumArt song={song} />
+        </div>
+        <div>
+          <Text variant="h3">{title}</Text>
+          <Text variant="h4">{artist}</Text>
+        </div>
       </div>
+      {trailing}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import SongsManager from "./SongsManager/SongsManager";
 import PlaybackManager from "./PlaybackManager/PlaybackManager";
+import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
 
 (async () => {
   await db.connect();
@@ -14,7 +15,9 @@ import PlaybackManager from "./PlaybackManager/PlaybackManager";
     <React.StrictMode>
       <SongsManager>
         <PlaybackManager>
-          <App />
+          <PlaylistsManager>
+            <App />
+          </PlaylistsManager>
         </PlaybackManager>
       </SongsManager>
     </React.StrictMode>,
