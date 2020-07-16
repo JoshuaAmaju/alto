@@ -63,13 +63,18 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
             bottom={0}
             width="100%"
             height="auto"
-            exit="hidden"
             tabIndex={-1}
             initial="hidden"
             position="fixed"
             animate="visible"
             overflow="hidden"
             dragElastic={0.6}
+            exit={{
+              y: "100%",
+              transition: {
+                type: "tween",
+              },
+            }}
             variants={variants}
             transition={{
               damping: 15,
