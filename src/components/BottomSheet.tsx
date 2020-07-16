@@ -45,7 +45,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            backgroundColor="rgba(0, 0, 0, 0.4)"
+            backgroundColor="#ffffffc2"
           />
         )}
       </AnimatePresence>

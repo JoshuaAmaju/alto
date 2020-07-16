@@ -15,7 +15,12 @@ interface AppHeader {
 
 const useStyle = createUseStyles({
   header: {
+    top: 0,
+    zIndex: 2,
     padding: "1rem",
+    position: "sticky",
+    background: "#ffffffc2",
+    backdropFilter: "blur(20px)",
     borderBottom: "1px solid #ccc",
     justifyContent: "space-between",
   },
