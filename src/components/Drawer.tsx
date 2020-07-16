@@ -53,6 +53,10 @@ function Drawer({ open, onClose, children }: Drawer) {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             initial={{ x: "-100%" }}
+            transition={{
+              damping: 15,
+              type: "spring",
+            }}
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={(_e, { offset }) => {
               const { width } = ref.current?.getBoundingClientRect() as DOMRect;

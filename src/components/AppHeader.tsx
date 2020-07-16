@@ -20,8 +20,9 @@ const useStyle = createUseStyles({
     position: "sticky",
     background: "#ffffffc2",
     backdropFilter: "blur(20px)",
-    borderBottom: "1px solid #ccc",
+    // borderBottom: "1px solid #ccc",
     justifyContent: "space-between",
+    // boxShadow: "0px 0px 9px 0px #0000001c",
   },
   gap: {
     display: "flex",
