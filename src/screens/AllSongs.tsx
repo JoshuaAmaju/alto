@@ -3,9 +3,8 @@ import { Scroll } from "framer";
 import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
 import BottomSheet from "../components/BottomSheet";
-import FlatButton from "../components/FlatButton";
+import PlaylistTile from "../components/PlaylistTile";
 import SongTile from "../components/SongTile";
-import { Overflow } from "../icons";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
@@ -47,32 +46,19 @@ export default function AllSongs() {
 
   return (
     <div>
-      {/* <Drawer>
-        <ul>
-          <li>
-            <Link to="/">Songs</Link>
-          </li>
-        </ul>
-      </Drawer> */}
       {/* <SongsPicker /> */}
       {/* <IonLoading isOpen={loading} /> */}
       <ul>
         {songs.map((song, i) => {
           return (
-            <SongTile
-              song={song}
+            <PlaylistTile
               key={song.id}
+              song={song}
               onClick={() => handleOpenQueue(i)}
-              trailing={
-                <FlatButton
-                  onClick={() => {
-                    setShowActionSheet(true);
-                    setTarget(song);
-                  }}
-                >
-                  <Overflow width={25} height={25} />
-                </FlatButton>
-              }
+              onMenuClick={() => {
+                setShowActionSheet(true);
+                setTarget(song);
+              }}
             />
           );
         })}
