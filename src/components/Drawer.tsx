@@ -10,8 +10,6 @@ interface Drawer {
 function Drawer({ open, onClose, children }: Drawer) {
   const ref = createRef<HTMLDivElement>();
 
-  console.log(open);
-
   return (
     <Frame
       top={0}
@@ -21,20 +19,25 @@ function Drawer({ open, onClose, children }: Drawer) {
       background="none"
       style={{ zIndex: 10000 }}
     >
-      {open && (
-        <motion.div
-          onClick={onClose}
-          style={{
-            top: 0,
-            left: 0,
-            zIndex: 1,
-            width: "100%",
-            height: "100%",
-            position: "fixed",
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            onClick={onClose}
+            exit={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            style={{
+              top: 0,
+              left: 0,
+              zIndex: 1,
+              width: "100%",
+              height: "100%",
+              position: "fixed",
+              backgroundColor: "rgba(0, 0, 0, 0.4)",
+            }}
+          />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {open && (
           <motion.nav
@@ -59,8 +62,8 @@ function Drawer({ open, onClose, children }: Drawer) {
             }}
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={(_e, { offset }) => {
-              const { width } = ref.current?.getBoundingClientRect() as DOMRect;
-              const distance = offset.x / width;
+              const rect = ref.current?.getBoundingClientRect() as DOMRect;
+              const distance = offset.x / rect.width;
               if (distance < -0.6) onClose?.();
             }}
           >
