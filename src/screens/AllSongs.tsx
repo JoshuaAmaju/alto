@@ -1,5 +1,5 @@
 import { IonRippleEffect } from "@ionic/react";
-import { Scroll, Stack } from "framer";
+import { Scroll } from "framer";
 import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
 import BottomSheet from "../components/BottomSheet";
