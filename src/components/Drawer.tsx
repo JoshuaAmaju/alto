@@ -27,6 +27,7 @@ function Drawer({ open, onClose, children }: Drawer) {
           style={{
             top: 0,
             left: 0,
+            zIndex: 1,
             width: "100%",
             height: "100%",
             position: "fixed",
@@ -36,17 +37,21 @@ function Drawer({ open, onClose, children }: Drawer) {
       )}
       <AnimatePresence>
         {open && (
-          <Frame
-            top={0}
-            left={0}
+          <motion.nav
             drag="x"
             ref={ref}
-            width="40%"
-            height="100%"
+            style={{
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              width: "60%",
+              height: "100%",
+              position: "relative",
+              backgroundColor: "white",
+            }}
             dragElastic={0.5}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            backgroundColor="white"
             initial={{ x: "-100%" }}
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={(_e, { offset }) => {
@@ -56,7 +61,7 @@ function Drawer({ open, onClose, children }: Drawer) {
             }}
           >
             {children}
-          </Frame>
+          </motion.nav>
         )}
       </AnimatePresence>
     </Frame>
