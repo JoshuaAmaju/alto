@@ -45,7 +45,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            backgroundColor="#ffffffc2"
+            backgroundColor="rgba(0, 0, 0, 0.4)"
           />
         )}
       </AnimatePresence>
@@ -72,6 +72,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
             }}
             dragMomentum={false}
             className={classes.sheet}
+            backgroundColor="#ffffffc2"
             onDragEnd={(_e, { offset }) => {
               const {
                 height,
@@ -80,7 +81,6 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
               if (distance > 0.6) onClose?.();
             }}
             dragConstraints={{ top: 0, bottom: 0 }}
-            backgroundColor="rgba(255, 255, 255, 0.7)"
           >
             {children}
           </Frame>
