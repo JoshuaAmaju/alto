@@ -4,6 +4,7 @@ import usePlaybackManager from "./PlaybackManager/use-playback-manager";
 import AllSongs from "./screens/AllSongs";
 import Playlists from "./screens/Playlists";
 import AppHeader from "./components/AppHeader";
+import Playlist from "./screens/Playlist";
 
 const { Link, Route, BrowserRouter } = require("react-router-dom");
 
@@ -19,6 +20,9 @@ function App() {
         </Route>
         <Route path="/playlists">
           <Playlists />
+        </Route>
+        <Route path="playlist/:name">
+          <Playlist />
         </Route>
       </BrowserRouter>
       {currentSong && <NowPlayingCarousel />}
