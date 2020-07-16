@@ -19,3 +19,12 @@ ul {
   padding: 0;
   list-style: none;
 }
+
+#root {
+  height: 100%;
+}
+
+.bottomBar {
+  bottom: 0;
+  position: sticky;
+}

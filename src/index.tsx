@@ -19,13 +19,11 @@ import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
   ReactDOM.render(
     <React.StrictMode>
       <SongsManager>
-        <PlaybackManager>
-          <PlaylistsManager>
+        <PlaylistsManager>
+          <PlaybackManager>
             <App />
-            {/* <Router>
-            </Router> */}
-          </PlaylistsManager>
-        </PlaybackManager>
+          </PlaybackManager>
+        </PlaylistsManager>
       </SongsManager>
     </React.StrictMode>,
     document.getElementById("root")

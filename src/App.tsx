@@ -1,29 +1,28 @@
-import { IonApp } from "@ionic/react";
-import "@ionic/react/css/core.css";
-import "@ionic/react/css/normalize.css";
-import "@ionic/react/css/structure.css";
 import React from "react";
+import NowPlayingCarousel from "./components/NowPlayingCarousel";
+import usePlaybackManager from "./PlaybackManager/use-playback-manager";
 import AllSongs from "./screens/AllSongs";
+import Playlists from "./screens/Playlists";
+import AppHeader from "./components/AppHeader";
+
+const { Link, Route, BrowserRouter } = require("react-router-dom");
 
 function App() {
+  const { currentSong } = usePlaybackManager();
+
   return (
-    <div className="App">
-      {/* <Drawer open={true}>hello</Drawer> */}
-      <IonApp>
-        {/* <IonSplitPane contentId="main">
-          <IonMenu>
-            <IonNav>
-              <ul>
-                <li>Playlist</li>
-              </ul>
-            </IonNav>
-          </IonMenu>
+    <>
+      <BrowserRouter>
+        <AppHeader title="Song" />
+        <Route exact path="/">
           <AllSongs />
-        </IonSplitPane> */}
-        {/* <Playlists /> */}
-        <AllSongs />
-      </IonApp>
-    </div>
+        </Route>
+        <Route path="/playlists">
+          <Playlists />
+        </Route>
+      </BrowserRouter>
+      {currentSong && <NowPlayingCarousel />}
+    </>
   );
 }
 

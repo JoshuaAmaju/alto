@@ -35,7 +35,7 @@ export function Fab({
   bottom = 0,
   top = "auto",
   left = "auto",
-  position = "absolute",
+  position = "fixed",
   ...props
 }: Fab) {
   const classes = useStyle();

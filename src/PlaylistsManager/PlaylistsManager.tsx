@@ -5,10 +5,15 @@ import {
   createPlaylist,
   deletePlaylist,
   getAllPlaylist,
+  getSongs,
   removeFromPlaylist,
 } from "../services/playlist.service";
 import { Playlist } from "../types";
-import { PlaylistsManagerProvider } from "./PlaylistsManagerContext";
+import {
+  ExtraPlaylistDetails,
+  PlaylistsManagerProvider,
+} from "./PlaylistsManagerContext";
+import { createSong } from "../utils";
 
 export default function PlaylistsManager({
   children,
@@ -16,6 +21,7 @@ export default function PlaylistsManager({
   children: ReactNode;
 }) {
   const [playlists, setList] = useState<Playlist[]>([]);
+  const [details, setDetails] = useState<ExtraPlaylistDetails[]>([]);
 
   const create = useCallback(createPlaylist, []);
   const _delete = useCallback(deletePlaylist, []);
@@ -25,7 +31,16 @@ export default function PlaylistsManager({
 
   const getList = useCallback(async () => {
     const list = await getAllPlaylist();
+
+    const details = await Promise.all(
+      list.map(async ({ name }) => {
+        const songs = await getSongs(name);
+        return { name, song: createSong(songs[0]), count: songs.length };
+      })
+    );
+
     setList(list);
+    setDetails(details);
   }, []);
 
   useEffect(() => {
@@ -40,6 +55,7 @@ export default function PlaylistsManager({
       value={{
         create,
         addSong,
+        details,
         playlists,
         removeSong,
         delete: _delete,

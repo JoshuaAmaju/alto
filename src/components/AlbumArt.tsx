@@ -17,7 +17,7 @@ const useStyle = createUseStyles({
   },
 });
 
-export default function AlbumArt({ song }: { song: Song }) {
+export default function AlbumArt({ song = {} as Song }: { song: Song }) {
   const classes = useStyle();
   let { artist, title } = song;
   const description = `${artist} - ${title}`;

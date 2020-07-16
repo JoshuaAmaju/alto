@@ -10,7 +10,7 @@ export function getAllPlaylist() {
 export async function getSongs(name: PlaylistName): Promise<Song[]> {
   const query = q`MATCH``(:Playlist ${{ name }})``[:HAS]``(song:Song)`;
   const res = await db.exec(query, { return: "song" });
-  return res as Song[];
+  return (res as any[]).map((r) => r.song) as Song[];
 }
 
 export async function getSongCount(name: PlaylistName) {
@@ -18,8 +18,8 @@ export async function getSongCount(name: PlaylistName) {
   return res.length;
 }
 
-export function addToPlaylist(id: Song["id"]) {
-  const query = q`RELATE``(:Playlist)``[:HAS]``(:Song ${{ id }})`;
+export function addToPlaylist(playlist: Playlist, song: Song) {
+  const query = q`RELATE``(:Playlist ${playlist})``[:HAS]``(:Song ${song})`;
   return db.exec(query);
 }
 

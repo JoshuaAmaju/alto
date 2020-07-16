@@ -1,31 +1,50 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
-import { Frame, Stack } from "framer";
+import classNames from "classnames";
+import { Frame } from "framer";
 import React, { createRef, useState } from "react";
 import { createUseStyles } from "react-jss";
+import AlbumArt from "../components/AlbumArt";
 import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
+import { Fab } from "../components/Fab";
+import Text from "../components/Text";
 import { Overflow } from "../icons";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
-import { Fab } from "../components/Fab";
 
 export const useStyle = createUseStyles({
   form: {
-    display: "flex",
     padding: "1.5rem",
-    flexDirection: "column",
   },
   button: {
-    margin: { top: "1rem" },
     alignSelf: "flex-end",
+    margin: { top: "1rem" },
+  },
+  column: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  list: {
+    gap: "1rem",
+    padding: "1rem",
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+  },
+  texts: {
+    alignItems: "center",
+    margin: { top: "1rem" },
+  },
+  frame: {
+    padding: "1rem",
   },
 });
 
 export default function Playlists() {
   const classes = useStyle();
   const [open, setOpen] = useState(false);
+  const { create, details } = usePlaylists();
   const ref = createRef<HTMLIonInputElement>();
-  const { create, playlists } = usePlaylists();
-  const names = playlists.map(({ name }) => name);
+
+  const names = details.map(({ name }) => name);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,20 +55,48 @@ export default function Playlists() {
 
   return (
     <div>
-      <Stack width="100%" height="100%">
-        {playlists.map(({ name }) => {
+      <ul className={classes.list}>
+        {details.map(({ name, song, count }) => {
+          const label = `song${count > 1 || count === 0 ? "s" : ""}`;
+
           return (
-            <Frame key={name} width="auto" height="auto">
-              {name}
+            <Frame
+              key={name}
+              radius={12}
+              width="auto"
+              height="auto"
+              position="relative"
+              backgroundColor="white"
+              className={classes.frame}
+            >
+              <Frame
+                radius={12}
+                width="100%"
+                height={100}
+                overflow="hidden"
+                position="relative"
+                shadow="rgba(0, 0, 0, 0.2) 0px 10px 20px -5px"
+              >
+                <AlbumArt song={song} />
+              </Frame>
+              <div className={classNames(classes.texts, classes.column)}>
+                <Text variant="h3">{name}</Text>
+                <Text variant="h4">
+                  {count} {label}
+                </Text>
+              </div>
             </Frame>
           );
         })}
-      </Stack>
+      </ul>
       <Fab onClick={() => setOpen(true)}>
         <Overflow width={35} stroke="white" />
       </Fab>
       <BottomSheet open={open} onClose={() => setOpen(false)}>
-        <form className={classes.form} onSubmit={submit}>
+        <form
+          className={classNames(classes.form, classes.column)}
+          onSubmit={submit}
+        >
           <IonItem>
             <IonLabel position="stacked">Playlist name</IonLabel>
             <IonInput
