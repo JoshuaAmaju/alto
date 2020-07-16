@@ -12,7 +12,7 @@ import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
 
 const useStyle = createUseStyles({
-  playlists: {
+  lists: {
     "& li": {
       padding: "1.5rem",
       listStyle: "none",
@@ -82,7 +82,7 @@ export default function AllSongs() {
         open={showActionSheet}
         onClose={() => setShowActionSheet(false)}
       >
-        <Stack width="100%" height="auto" position="relative">
+        <ul className={classes.lists}>
           <li
             key="add-to-playlist"
             className="ion-activatable"
@@ -94,7 +94,7 @@ export default function AllSongs() {
             <span>Add to playlist</span>
             <IonRippleEffect />
           </li>
-        </Stack>
+        </ul>
       </BottomSheet>
 
       {/* <IonActionSheet
@@ -148,7 +148,7 @@ export default function AllSongs() {
           width="100%"
           height="40vh"
           position="relative"
-          className={classes.playlists}
+          className={classes.lists}
         >
           {playlists.map((playlist) => {
             const { name } = playlist;

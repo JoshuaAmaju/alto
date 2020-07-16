@@ -16,10 +16,14 @@ const variants = {
 
 const useStyle = createUseStyles({
   sheet: {
-    margin: { top: 10 },
+    zIndex: 10000,
+    // margin: { top: 10 },
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     backdropFilter: "blur(20px)",
+  },
+  overlay: {
+    zIndex: 999,
   },
 });
 
@@ -45,6 +49,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            className={classes.overlay}
             backgroundColor="rgba(0, 0, 0, 0.4)"
           />
         )}
