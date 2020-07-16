@@ -1,11 +1,10 @@
 import classNames from "classnames";
 import React, { ReactElement, ReactNode, memo, useState } from "react";
 import { createUseStyles } from "react-jss";
+import { NavLink } from "react-router-dom";
 import { Menu, Overflow } from "../icons";
 import Drawer from "./Drawer";
 import Text from "./Text";
-
-const { NavLink } = require("react-router-dom");
 
 interface AppHeader {
   title: string;
@@ -30,6 +29,27 @@ const useStyle = createUseStyles({
     "& > * + *": {
       margin: { left: "1rem" },
     },
+  },
+  nav: {
+    padding: "1rem",
+    "& > * + *": {
+      margin: { top: "1rem" },
+    },
+  },
+  navLink: {
+    padding: "1rem",
+    color: "inherit",
+    display: "block",
+    borderRadius: 12,
+    fontWeight: "bold",
+    textDecoration: "none",
+    "&:hover": {
+      backgroundColor: "#ccc",
+    },
+  },
+  navLinkActive: {
+    fontWeight: "bolder",
+    backgroundColor: "#ccc",
   },
 });
 
@@ -65,11 +85,16 @@ function AppHeader({ title, leading, children }: AppHeader) {
         </div>
       </header>
       <Drawer open={open} onClose={() => setOpen(false)}>
-        <ul>
+        <ul className={classes.nav}>
           {routeConfig.map(({ name, path }) => {
             return (
               <li key={name} onClick={() => setOpen(false)}>
-                <NavLink exact to={path} activeClassName="link--active">
+                <NavLink
+                  exact
+                  to={path}
+                  className={classes.navLink}
+                  activeClassName={classes.navLinkActive}
+                >
                   {name}
                 </NavLink>
               </li>
