@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, HTMLAttributes } from "react";
 import { Song } from "../types";
 import { createUseStyles } from "react-jss";
 import classNames from "classnames";
@@ -18,7 +18,15 @@ const useStyle = createUseStyles({
   },
 });
 
-export default function AlbumArt({ song = {} as Song }: { song?: Song }) {
+interface AlbumArt extends HTMLAttributes<HTMLElement> {
+  song?: Song;
+}
+
+export default function AlbumArt({
+  song = {} as Song,
+  className,
+  ...props
+}: AlbumArt) {
   const classes = useStyle();
   let { artist, title } = song;
   const description = `${artist} - ${title}`;
@@ -33,9 +41,17 @@ export default function AlbumArt({ song = {} as Song }: { song?: Song }) {
   }, [song]);
 
   return image ? (
-    <img src={image} alt={description} className={classes.cover} />
+    <img
+      {...props}
+      src={image}
+      alt={description}
+      className={classNames(classes.cover, className)}
+    />
   ) : (
-    <div className={classNames(classes.cover, classes.placeholder)}>
+    <div
+      {...props}
+      className={classNames(classes.cover, classes.placeholder, className)}
+    >
       <h3>alto</h3>
     </div>
   );
