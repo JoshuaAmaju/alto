@@ -1,10 +1,14 @@
 import EventEmitter from "eventemitter3";
 import { Song } from "../types";
-import { insertAt } from "../utils";
+import { insertAt, randomRange } from "../utils";
+import { RepeatMode, ShuffleMode } from "./../PlaybackManager/types";
 import { Events } from "./types";
 
 export default class QueueService {
+  position = -1;
   queue: Song[] = [];
+  repeatMode = RepeatMode.NONE;
+  shuffleMode = ShuffleMode.NONE;
   private emitter = new EventEmitter();
 
   sendEvent(event: Events, ...payload: any[]) {
@@ -25,19 +29,29 @@ export default class QueueService {
     }, 0);
   }
 
+  setRepeatMode(mode: RepeatMode) {
+    this.repeatMode = mode;
+    this.sendEvent(Events.REPEAT_MODE_CHANGED, this.repeatMode);
+  }
+
+  setShuffleMode(mode: ShuffleMode) {
+    this.shuffleMode = mode;
+    this.sendEvent(Events.SHUFFLE_MODE_CHANGED, this.shuffleMode);
+  }
+
   openQueue(playingQueue: Song[]) {
     this.queue = playingQueue;
-    this.sendEvent(Events.QUEUE_CHANGED);
+    this.sendEvent(Events.QUEUE_CHANGED, this.queue);
   }
 
   enqueue(songs: Song[]) {
     this.queue.concat(songs);
-    this.sendEvent(Events.QUEUE_CHANGED);
+    this.sendEvent(Events.QUEUE_CHANGED, this.queue);
   }
 
   enqueueAt(position: number, songs: Song[]) {
     this.queue = insertAt(this.queue, songs, position);
-    this.sendEvent(Events.QUEUE_CHANGED);
+    this.sendEvent(Events.QUEUE_CHANGED, this.queue);
   }
 
   // removeSong(position: number) {
@@ -64,7 +78,7 @@ export default class QueueService {
 
   clearQueue() {
     this.queue = [];
-    this.sendEvent(Events.QUEUE_CHANGED);
+    this.sendEvent(Events.QUEUE_CHANGED, this.queue);
   }
 
   addEventListener<P>(event: Events, fn: (...val: P[]) => any) {
@@ -77,6 +91,82 @@ export default class QueueService {
 
   removeEventListener<P>(event: Events, fn: (...val: P[]) => any) {
     this.emitter.removeListener(event, fn);
+  }
+
+  // utilility methods
+
+  isLastTrack() {
+    return this.position === this.getQueueSize() - 1;
+  }
+
+  shufflePosition() {
+    const get = () => randomRange(0, this.getQueueSize() - 1);
+
+    if (this.shuffleMode === ShuffleMode.SHUFFLE) {
+      let position = get();
+
+      while (position === this.position) position = get();
+
+      return position;
+    }
+  }
+
+  getNextPosition(force: boolean) {
+    let currentPos = this.position;
+    const shuffledPos = this.shufflePosition();
+
+    if (shuffledPos) currentPos = shuffledPos;
+
+    let position = currentPos + 1;
+    const lastTrack = this.isLastTrack();
+
+    switch (this.repeatMode) {
+      case RepeatMode.ALL:
+        if (lastTrack) position = 0;
+        break;
+      case RepeatMode.CURRENT:
+        if (force) {
+          if (lastTrack) position = -1;
+        } else {
+          position -= 1;
+        }
+        break;
+      case RepeatMode.NONE:
+        if (lastTrack) position = -1;
+        break;
+    }
+
+    return position;
+  }
+
+  getPreviousPosition(force: boolean) {
+    let currentPos = this.position;
+    const shuffledPos = this.shufflePosition();
+
+    if (shuffledPos) currentPos = shuffledPos;
+
+    let position = currentPos - 1;
+    const queueSize = this.getQueueSize();
+
+    switch (this.repeatMode) {
+      case RepeatMode.ALL:
+        if (position < 0) position = queueSize - 1;
+        break;
+      case RepeatMode.NONE:
+        if (position < 0) position = 0;
+        break;
+      case RepeatMode.CURRENT:
+        if (force) {
+          if (position < 0) {
+            position = queueSize - 1;
+          }
+        } else {
+          position = this.position;
+        }
+        break;
+    }
+
+    return position;
   }
 }
 

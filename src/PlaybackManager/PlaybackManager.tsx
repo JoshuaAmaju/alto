@@ -6,22 +6,18 @@ import React, {
   useState,
 } from "react";
 import AudioPlayer from "../AudioPlayer";
-import { useAudioState } from "./use-audio-state";
-import { useTimeUpdate } from "./use-time-update";
 import { service } from "../QueueService/QueueService";
 import { Song } from "../types";
-import { RepeatMode, ShuffleMode } from "./types";
-import { getNextPosition, getPreviousPosition } from "./utils";
 import { PlaybackManagerProvider } from "./PlaybackManagerContext";
+import { RepeatMode, ShuffleMode } from "./types";
+import { useAudioState } from "./use-audio-state";
+import { useTimeUpdate } from "./use-time-update";
 
 export default function PlaybackManager({ children }: { children: ReactNode }) {
-  const position = useRef(-1);
   const player = useRef(new AudioPlayer());
   const state = useAudioState(player.current);
   const currentTime = useTimeUpdate(player.current);
   const [currentSong, setCurrentSong] = useState<Song>();
-  const [repeatMode, setRepeatMode] = useState(RepeatMode.NONE);
-  const [shuffleMode, setShuffleMode] = useState(ShuffleMode.NONE);
 
   const play = () => {
     player.current.play();
@@ -33,12 +29,24 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
 
   const getQueue = () => service.queue;
 
+  const getRepeatMode = () => service.repeatMode;
+
+  const getShuffleMode = () => service.shuffleMode;
+
   const seekTo = (time: number) => {
     player.current.seekTo(time);
   };
 
   const setSong = (song: Song) => {
     return player.current.setMediaSource(song.getURL());
+  };
+
+  const setRepeatMode = (mode: RepeatMode) => {
+    service.setRepeatMode(mode);
+  };
+
+  const setShuffleMode = (mode: ShuffleMode) => {
+    service.setShuffleMode(mode);
   };
 
   const getDuration = () => {
@@ -60,16 +68,16 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleShuffle = () => {
-    setShuffleMode((shuffleMode) => {
-      return shuffleMode === ShuffleMode.NONE
+    setShuffleMode(
+      getShuffleMode() === ShuffleMode.NONE
         ? ShuffleMode.SHUFFLE
-        : ShuffleMode.NONE;
-    });
+        : ShuffleMode.NONE
+    );
   };
 
   const cycleRepeatMode = () => {
-    setRepeatMode((repeatMode) => {
-      switch (repeatMode) {
+    const get = () => {
+      switch (getRepeatMode()) {
         case RepeatMode.ALL:
           return RepeatMode.CURRENT;
         case RepeatMode.CURRENT:
@@ -77,7 +85,9 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         case RepeatMode.NONE:
           return RepeatMode.ALL;
       }
-    });
+    };
+
+    setRepeatMode(get());
   };
 
   const playSongAt = async (pos: number) => {
@@ -85,7 +95,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     await setSong(song);
     play();
 
-    position.current = pos;
+    service.position = pos;
     setCurrentSong(song);
   };
 
@@ -98,29 +108,17 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   };
 
   const playNextSong = (force = true) => {
-    const size = service.getQueueSize();
+    // const size = service.getQueueSize();
 
-    const newPos = getNextPosition(
-      repeatMode,
-      shuffleMode,
-      size,
-      position.current,
-      force
-    );
+    const newPos = service.getNextPosition(force);
+    service.position = newPos;
 
     // if (newPos < size)
     playSongAt(newPos);
   };
 
   const playPreviousSong = (force = true) => {
-    const size = service.getQueueSize();
-    const newPos = getPreviousPosition(
-      repeatMode,
-      shuffleMode,
-      size,
-      position.current,
-      force
-    );
+    const newPos = service.getPreviousPosition(force);
 
     if (newPos > 0) playSongAt(newPos);
   };
@@ -153,10 +151,8 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         playSong,
         enqueueAt,
         openQueue,
-        repeatMode,
         playSongAt,
         currentSong,
-        shuffleMode,
         getDuration,
         currentTime,
         playNextSong,

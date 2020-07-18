@@ -12,9 +12,7 @@ interface Manager {
   playNextSong(): void;
   toggleShuffle(): void;
   getDuration(): number;
-  repeatMode: RepeatMode;
   cycleRepeatMode(): void;
-  shuffleMode: ShuffleMode;
   playPreviousSong(): void;
   seekTo(time: number): void;
   playSong(song: Song): void;
