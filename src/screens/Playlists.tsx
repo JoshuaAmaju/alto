@@ -1,6 +1,7 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
 import classNames from "classnames";
-import { Frame } from "framer";
+import { Frame, motion } from "framer";
+import { Link } from "react-router-dom";
 import React, { createRef, useState } from "react";
 import { createUseStyles } from "react-jss";
 import AlbumArt from "../components/AlbumArt";
@@ -35,6 +36,11 @@ export const useStyle = createUseStyles({
   },
   frame: {
     padding: "1rem",
+    borderRadius: 12,
+    backgroundColor: "white",
+    "& a": {
+      textDecoration: "none",
+    },
   },
 });
 
@@ -60,32 +66,26 @@ export default function Playlists() {
           const label = `song${count > 1 || count === 0 ? "s" : ""}`;
 
           return (
-            <Frame
-              key={name}
-              radius={12}
-              width="auto"
-              height="auto"
-              position="relative"
-              backgroundColor="white"
-              className={classes.frame}
-            >
-              <Frame
-                radius={12}
-                width="100%"
-                height={100}
-                overflow="hidden"
-                position="relative"
-                shadow="rgba(0, 0, 0, 0.2) 0px 10px 20px -5px"
-              >
-                <AlbumArt song={song} />
-              </Frame>
-              <div className={classNames(classes.texts, classes.column)}>
-                <Text variant="h3">{name}</Text>
-                <Text variant="h4">
-                  {count} {label}
-                </Text>
-              </div>
-            </Frame>
+            <motion.li key={name} className={classes.frame}>
+              <Link to={`/playlist/${name}`}>
+                <Frame
+                  radius={12}
+                  width="100%"
+                  height={100}
+                  overflow="hidden"
+                  position="relative"
+                  shadow="rgba(0, 0, 0, 0.2) 0px 10px 20px -5px"
+                >
+                  <AlbumArt song={song} />
+                </Frame>
+                <div className={classNames(classes.texts, classes.column)}>
+                  <Text variant="h3">{name}</Text>
+                  <Text variant="h4">
+                    {count} {label}
+                  </Text>
+                </div>
+              </Link>
+            </motion.li>
           );
         })}
       </ul>

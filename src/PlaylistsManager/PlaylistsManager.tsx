@@ -35,7 +35,12 @@ export default function PlaylistsManager({
     const details = await Promise.all(
       list.map(async ({ name }) => {
         const songs = await getSongs(name);
-        return { name, song: createSong(songs[0]), count: songs.length };
+
+        const songWithImage = songs
+          .map(createSong)
+          .find(({ image }) => !!image);
+
+        return { name, song: songWithImage ?? songs[0], count: songs.length };
       })
     );
 

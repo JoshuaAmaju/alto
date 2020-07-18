@@ -1,6 +1,17 @@
 import parser from "id3-parser/lib/universal";
 import { Song } from "./types";
 
+export const routeConfig = [
+  {
+    path: "/",
+    name: "Songs",
+  },
+  {
+    path: "/playlists",
+    name: "Playlists",
+  },
+];
+
 export function randomRange(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);

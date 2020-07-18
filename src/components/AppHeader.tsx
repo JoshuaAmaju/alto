@@ -1,9 +1,8 @@
 import classNames from "classnames";
-import React, { ReactElement, ReactNode, memo, useState } from "react";
+import React, { memo, ReactElement, ReactNode } from "react";
 import { createUseStyles } from "react-jss";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Menu, Overflow } from "../icons";
-import Drawer from "./Drawer";
 import Text from "./Text";
 
 interface AppHeader {
@@ -31,43 +30,10 @@ const useStyle = createUseStyles({
       margin: { left: "1rem" },
     },
   },
-  nav: {
-    padding: "1rem",
-    "& > * + *": {
-      margin: { top: "1rem" },
-    },
-  },
-  navLink: {
-    padding: "1rem",
-    color: "inherit",
-    display: "block",
-    borderRadius: 12,
-    fontWeight: "bold",
-    textDecoration: "none",
-    "&:hover": {
-      backgroundColor: "#ccc",
-    },
-  },
-  navLinkActive: {
-    fontWeight: "bolder",
-    backgroundColor: "#ccc",
-  },
 });
-
-const routeConfig = [
-  {
-    path: "/",
-    name: "Song",
-  },
-  {
-    path: "/playlists",
-    name: "Playlists",
-  },
-];
 
 function AppHeader({ title, leading, children }: AppHeader) {
   const classes = useStyle();
-  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -76,7 +42,9 @@ function AppHeader({ title, leading, children }: AppHeader) {
           {leading ? (
             leading
           ) : (
-            <Menu width={20} height={20} onClick={() => setOpen(true)} />
+            <Link to={{ pathname: "/drawer", state: { modal: true } }}>
+              <Menu width={20} height={20} />
+            </Link>
           )}
           <Text variant="h2">{title}</Text>
         </div>
@@ -85,24 +53,6 @@ function AppHeader({ title, leading, children }: AppHeader) {
           <Overflow width={20} height={20} />
         </div>
       </header>
-      <Drawer open={open} onClose={() => setOpen(false)}>
-        <ul className={classes.nav}>
-          {routeConfig.map(({ name, path }) => {
-            return (
-              <li key={name} onClick={() => setOpen(false)}>
-                <NavLink
-                  exact
-                  to={path}
-                  className={classes.navLink}
-                  activeClassName={classes.navLinkActive}
-                >
-                  {name}
-                </NavLink>
-              </li>
-            );
-          })}
-        </ul>
-      </Drawer>
     </>
   );
 }

@@ -18,7 +18,7 @@ const useStyle = createUseStyles({
   },
 });
 
-export default function AlbumArt({ song = {} as Song }: { song: Song }) {
+export default function AlbumArt({ song = {} as Song }: { song?: Song }) {
   const classes = useStyle();
   let { artist, title } = song;
   const description = `${artist} - ${title}`;
@@ -26,7 +26,7 @@ export default function AlbumArt({ song = {} as Song }: { song: Song }) {
 
   useEffect(() => {
     const img = new Image();
-    const url = song.getImage();
+    const url = song.getImage?.();
     img.onload = () => setImage(img.src);
     img.onerror = () => setImage(undefined);
     img.src = url ?? "";
