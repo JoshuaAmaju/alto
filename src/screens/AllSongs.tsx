@@ -37,13 +37,13 @@ export default function AllSongs() {
   const [showPlaylistMenu, setShowPlaylist] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
 
-  const handleOpenQueue = (position: number) => {
+  const handleOpenQueue = (song: Song) => {
     if (!queueOpen) {
       openQueue(songs);
       setQueueOpen(true);
     }
 
-    playSong(songs[position]);
+    playSong(song);
   };
 
   return (
@@ -52,12 +52,12 @@ export default function AllSongs() {
       {/* <SongsPicker /> */}
       {/* <IonLoading isOpen={loading} /> */}
       <ul>
-        {songs.map((song, i) => {
+        {songs.map((song) => {
           return (
             <PlaylistTile
               key={song.id}
               song={song}
-              onClick={() => handleOpenQueue(i)}
+              onClick={() => handleOpenQueue(song)}
               onMenuClick={() => {
                 setShowActionSheet(true);
                 setTarget(song);
