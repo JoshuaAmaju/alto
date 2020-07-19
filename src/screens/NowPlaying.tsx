@@ -1,30 +1,28 @@
 import classNames from "classnames";
-import { Frame, Color } from "framer";
+import { Color, Frame } from "framer";
 import React from "react";
 import {
+  ChevronDown,
   Heart,
-  Pause,
-  Play,
   Repeat,
-  Volume2,
   Shuffle,
   SkipBack,
   SkipForward,
-  ChevronDown,
+  Volume2,
 } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { useHistory } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import FlatButton from "../components/FlatButton";
-import Text from "../components/Text";
-import { PlayStates, ShuffleMode, RepeatMode } from "../PlaybackManager/types";
-import usePlaybackManager from "../PlaybackManager/use-playback-manager";
-import { Song } from "../types";
-import useEventValue from "../QueueService/use-event-value";
-import { Events } from "../QueueService/types";
-import { service } from "../QueueService/QueueService";
-import SongSlider from "../components/SongSlider";
 import PlayPauseButton from "../components/PlayPauseButton";
+import SongSlider from "../components/SongSlider";
+import Text from "../components/Text";
+import { RepeatMode, ShuffleMode } from "../PlaybackManager/types";
+import usePlaybackManager from "../PlaybackManager/use-playback-manager";
+import { service } from "../QueueService/QueueService";
+import { Events } from "../QueueService/types";
+import useEventValue from "../QueueService/use-event-value";
+import { Song } from "../types";
 
 const useStyle = createUseStyles({
   wrapper: {
