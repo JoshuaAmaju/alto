@@ -20,19 +20,15 @@ const songsMachine = Machine<Context, Events>(
     states: {
       idle: {
         on: {
+          ADD_SONGS: "inserting",
           REMOVE_SONG: "removing",
-          ADD_SONGS: {
-            target: "inserting",
-            actions: assign({
-              songs: (ctx, { songs }) => [...ctx.songs, ...songs],
-            }),
-          },
         },
       },
       inserting: {
         invoke: {
           src: "addSongs",
-          onDone: "idle",
+          onError: "error",
+          onDone: "loading",
         },
       },
       loading: {

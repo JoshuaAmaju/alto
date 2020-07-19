@@ -3,7 +3,7 @@ import { WeBase, q } from "webase";
 
 const { v4: uuidv4 } = require("uuid");
 
-const db = new WeBase("alto", 2);
+const db = new WeBase("alto", 1);
 
 const Playlists = db.model<Playlist>("Playlist", {
   name: {

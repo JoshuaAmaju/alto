@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
 import BottomSheet from "../components/BottomSheet";
 import PlaylistTile from "../components/PlaylistTile";
+import SongsPicker from "../components/SongsPicker";
 import SongTile from "../components/SongTile";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
-import AppHeader from "../components/AppHeader";
-import NavDrawer from "../components/NavDrawer";
 
 const useStyle = createUseStyles({
   lists: {
@@ -49,14 +48,14 @@ export default function AllSongs() {
   return (
     <div>
       {/* <AppHeader title="Songs" /> */}
-      {/* <SongsPicker /> */}
+      <SongsPicker />
       {/* <IonLoading isOpen={loading} /> */}
       <ul>
         {songs.map((song) => {
           return (
             <PlaylistTile
-              key={song.id}
               song={song}
+              key={song.id}
               onClick={() => handleOpenQueue(song)}
               onMenuClick={() => {
                 setShowActionSheet(true);
