@@ -5,8 +5,8 @@ import { RepeatMode, ShuffleMode } from "./../PlaybackManager/types";
 import { Events } from "./types";
 
 export default class QueueService {
-  position = -1;
   queue: Song[] = [];
+  position?: number | null;
   repeatMode = RepeatMode.NONE;
   shuffleMode = ShuffleMode.NONE;
   private emitter = new EventEmitter();
@@ -112,13 +112,13 @@ export default class QueueService {
   }
 
   getNextPosition(force: boolean) {
-    let currentPos = this.position;
+    let currentPos = this.position as number;
     const shuffledPos = this.shufflePosition();
 
     if (shuffledPos) currentPos = shuffledPos;
 
-    let position = currentPos + 1;
     const lastTrack = this.isLastTrack();
+    let position: number | null = currentPos + 1;
 
     switch (this.repeatMode) {
       case RepeatMode.ALL:
@@ -126,13 +126,13 @@ export default class QueueService {
         break;
       case RepeatMode.CURRENT:
         if (force) {
-          if (lastTrack) position = -1;
+          if (lastTrack) position = null;
         } else {
           position -= 1;
         }
         break;
       case RepeatMode.NONE:
-        if (lastTrack) position = -1;
+        if (lastTrack) position = null;
         break;
     }
 
@@ -140,7 +140,7 @@ export default class QueueService {
   }
 
   getPreviousPosition(force: boolean) {
-    let currentPos = this.position;
+    let currentPos = this.position as number;
     const shuffledPos = this.shufflePosition();
 
     if (shuffledPos) currentPos = shuffledPos;
@@ -161,7 +161,7 @@ export default class QueueService {
             position = queueSize - 1;
           }
         } else {
-          position = this.position;
+          position = currentPos;
         }
         break;
     }

@@ -108,13 +108,14 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   };
 
   const playNextSong = (force = true) => {
-    // const size = service.getQueueSize();
+    const size = service.getQueueSize();
 
     const newPos = service.getNextPosition(force);
-    service.position = newPos;
 
-    // if (newPos < size)
-    playSongAt(newPos);
+    if (newPos && newPos < size) {
+      service.position = newPos;
+      playSongAt(newPos);
+    }
   };
 
   const playPreviousSong = (force = true) => {
