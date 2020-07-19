@@ -24,6 +24,7 @@ import useEventValue from "../QueueService/use-event-value";
 import { Events } from "../QueueService/types";
 import { service } from "../QueueService/QueueService";
 import SongSlider from "../components/SongSlider";
+import PlayPauseButton from "../components/PlayPauseButton";
 
 const useStyle = createUseStyles({
   wrapper: {
@@ -113,18 +114,7 @@ export default function NowPlaying() {
               {artist}
             </Text>
           </div>
-          <FlatButton
-            onClick={() => {
-              if (state === PlayStates.PLAYING) pause();
-              if (state === PlayStates.SUSPENDED) play();
-            }}
-          >
-            {state === PlayStates.PLAYING ? (
-              <Pause color="white" size={35} />
-            ) : (
-              <Play color="white" size={35} />
-            )}
-          </FlatButton>
+          <PlayPauseButton size={35} color="white" />
         </div>
         <SongSlider />
         <div className={classes.buttons}>

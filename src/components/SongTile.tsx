@@ -36,6 +36,9 @@ const useStyle = createUseStyles({
       margin: { top: "0.5rem" },
     },
   },
+  wrapper: {
+    flex: 1,
+  },
 });
 
 export default function SongTile({
@@ -49,7 +52,10 @@ export default function SongTile({
 
   return (
     <div className={classNames(classes.row, classes.container)}>
-      <div className={classes.row} onClick={onClick}>
+      <div
+        className={classNames(classes.row, classes.wrapper)}
+        onClick={onClick}
+      >
         <AlbumArt song={song} layoutId={layoutId} className={classes.cover} />
         <div>
           <Text variant="h3">{title}</Text>

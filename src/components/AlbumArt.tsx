@@ -34,6 +34,8 @@ export default function AlbumArt({
   const description = `${artist} - ${title}`;
   const [image, setImage] = useState<string>();
 
+  console.log(song);
+
   useEffect(() => {
     const img = new Image();
     const url = song.getImage?.();
