@@ -1,4 +1,10 @@
-import React, { useMemo } from "react";
+import React, {
+  useMemo,
+  useRef,
+  createRef,
+  useEffect,
+  useCallback,
+} from "react";
 import Slick from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
@@ -9,6 +15,7 @@ import useValue from "../QueueService/use-value";
 import NowPlayingCard from "./NowPlayingCard";
 
 export default function NowPlayingCardList() {
+  const ref = createRef<Slick>();
   const { currentSong, playSongAt } = usePlaybackManager();
 
   const queue = useValue(
@@ -17,7 +24,7 @@ export default function NowPlayingCardList() {
     () => service.queue
   );
 
-  const position = useMemo(() => {
+  const getPosition = useCallback(() => {
     if (!currentSong) return 0;
 
     const newPosition = queue.findIndex((s) => {
@@ -27,8 +34,15 @@ export default function NowPlayingCardList() {
     return newPosition;
   }, [queue, currentSong]);
 
+  const position = useMemo(() => getPosition(), [getPosition]);
+
+  useEffect(() => {
+    ref.current?.slickGoTo(position);
+  }, [position]);
+
   return (
     <Slick
+      ref={ref}
       dots={false}
       arrows={false}
       slidesToShow={1}
