@@ -38,7 +38,7 @@ export default function AlbumArt({
 
   useEffect(() => {
     const img = new Image();
-    const url = song.getImage?.();
+    const url = song.imageUrl;
     img.onload = () => setImage(img.src);
     img.onerror = () => setImage(undefined);
     img.src = url ?? "";

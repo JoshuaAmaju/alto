@@ -59,7 +59,15 @@ const songsMachine = Machine<Context, Events>(
     services: {
       getSongs: async () => {
         const songs = await getAll();
-        return songs.map(createSong);
+        return songs.map((s) => {
+          const song = createSong(s);
+
+          return {
+            ...song,
+            songUrl: song.getURL(),
+            imageUrl: song.getImage(),
+          };
+        });
       },
       addSongs: (_ctx, { songs }) => addSongs(songs),
       removeSong(ctx, { song }) {

@@ -42,7 +42,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   };
 
   const setSong = (song: Song) => {
-    return player.current.setMediaSource(song.getURL());
+    return player.current.setMediaSource(song.songUrl);
   };
 
   const setRepeatMode = (mode: RepeatMode) => {
