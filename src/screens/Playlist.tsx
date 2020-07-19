@@ -1,5 +1,5 @@
-import { Frame, motion, useMotionValue, useTransform } from "framer";
-import React, { memo, createRef, useLayoutEffect, useState } from "react";
+import { Frame, useMotionValue, useTransform } from "framer";
+import React, { createRef, memo, useLayoutEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { useParams } from "react-router-dom";
 import { useAsync } from "react-use";
@@ -25,10 +25,8 @@ const useStyle = createUseStyles({
   },
   cover: {
     height: 200,
-    width: "100%",
-    borderRadius: 20,
-    overflow: "hidden",
     alignSelf: "center",
+    borderRadius: 20,
     boxShadow: "rgba(0, 0, 0, 0.2) 0px 50px 20px -40px",
   },
   main: {
@@ -79,15 +77,16 @@ function Playlist() {
   }, []);
 
   return (
-    <div>
+    <div style={{ height: "100vh" }}>
       <div className={classes.frame}>
         <Text variant="h2">{name}</Text>
 
-        <motion.div className={classes.cover}>
-          <motion.div style={{ scale, height: "100%" }}>
-            <AlbumArt song={songWithImage} />
-          </motion.div>
-        </motion.div>
+        <AlbumArt
+          layoutId={name}
+          style={{ scale }}
+          song={songWithImage}
+          className={classes.cover}
+        />
 
         <Button
           className={classes.button}

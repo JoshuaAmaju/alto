@@ -1,9 +1,8 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
 import classNames from "classnames";
-import { Frame, motion } from "framer";
-import { Link } from "react-router-dom";
 import React, { createRef, useState } from "react";
 import { createUseStyles } from "react-jss";
+import { Link } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
@@ -42,6 +41,11 @@ export const useStyle = createUseStyles({
       textDecoration: "none",
     },
   },
+  cover: {
+    height: 150,
+    borderRadius: 12,
+    boxShadow: "rgba(0, 0, 0, 0.2) 0px 10px 20px -5px",
+  },
 });
 
 export default function Playlists() {
@@ -66,18 +70,13 @@ export default function Playlists() {
           const label = `song${count > 1 || count === 0 ? "s" : ""}`;
 
           return (
-            <motion.li key={name} className={classes.frame}>
+            <li key={name} className={classes.frame}>
               <Link to={`/playlist/${name}`}>
-                <Frame
-                  radius={12}
-                  width="100%"
-                  height={100}
-                  overflow="hidden"
-                  position="relative"
-                  shadow="rgba(0, 0, 0, 0.2) 0px 10px 20px -5px"
-                >
-                  <AlbumArt song={song} />
-                </Frame>
+                <AlbumArt
+                  song={song}
+                  layoutId={name}
+                  className={classes.cover}
+                />
                 <div className={classNames(classes.texts, classes.column)}>
                   <Text variant="h3">{name}</Text>
                   <Text variant="h4">
@@ -85,7 +84,7 @@ export default function Playlists() {
                   </Text>
                 </div>
               </Link>
-            </motion.li>
+            </li>
           );
         })}
       </ul>
