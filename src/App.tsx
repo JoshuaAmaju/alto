@@ -28,6 +28,7 @@ function App() {
             path="/nowplaying"
             children={
               <motion.div
+                layoutId="nowplaying"
                 style={{
                   top: 0,
                   left: 0,
@@ -36,7 +37,6 @@ function App() {
                   position: "fixed",
                   backgroundColor: "white",
                 }}
-                layoutId="nowplaying"
               >
                 <NowPlaying />
               </motion.div>

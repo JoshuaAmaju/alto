@@ -114,57 +114,79 @@ export default class QueueService {
   getNextPosition(force: boolean) {
     let currentPos = this.position as number;
     const shuffledPos = this.shufflePosition();
-
-    if (shuffledPos) currentPos = shuffledPos;
+    let position: number | null = currentPos + 1;
 
     const lastTrack = this.isLastTrack();
-    let position: number | null = currentPos + 1;
 
     switch (this.repeatMode) {
       case RepeatMode.ALL:
-        if (lastTrack) position = 0;
+        if (lastTrack) {
+          position = 0;
+        } else {
+          if (shuffledPos) {
+            position = shuffledPos;
+          }
+        }
         break;
       case RepeatMode.CURRENT:
         if (force) {
           if (lastTrack) position = null;
         } else {
-          position -= 1;
+          position = currentPos;
         }
         break;
       case RepeatMode.NONE:
-        if (lastTrack) position = null;
+        if (lastTrack) {
+          position = null;
+        } else {
+          if (shuffledPos) {
+            position = shuffledPos;
+          }
+        }
         break;
     }
+
+    // prevent shuffling if we're currently on the
+    // last track.
+    // if (shuffledPos && position && RepeatMode.NONE) position = shuffledPos;
 
     return position;
   }
 
   getPreviousPosition(force: boolean) {
-    let currentPos = this.position as number;
+    let position = this.position as number;
     const shuffledPos = this.shufflePosition();
 
-    if (shuffledPos) currentPos = shuffledPos;
-
-    let position = currentPos - 1;
     const queueSize = this.getQueueSize();
+    const isNull = position === null || position === undefined;
 
     switch (this.repeatMode) {
       case RepeatMode.ALL:
-        if (position < 0) position = queueSize - 1;
-        break;
       case RepeatMode.NONE:
-        if (position < 0) position = 0;
+        if (isNull) {
+          position = queueSize - 1;
+        } else {
+          if (shuffledPos && position > 0) {
+            position = shuffledPos;
+          } else {
+            position -= 1;
+          }
+        }
         break;
       case RepeatMode.CURRENT:
         if (force) {
-          if (position < 0) {
+          if (isNull) {
             position = queueSize - 1;
+          } else {
+            position -= 1;
           }
-        } else {
-          position = currentPos;
         }
         break;
     }
+
+    // prevent shuffling if we're currently on the
+    // first track.
+    if (shuffledPos && position > 0) position = shuffledPos;
 
     return position;
   }

@@ -13,11 +13,15 @@ import { RepeatMode, ShuffleMode } from "./types";
 import { useAudioState } from "./use-audio-state";
 import { useTimeUpdate } from "./use-time-update";
 
+const { Helmet } = require("react-helmet");
+
 export default function PlaybackManager({ children }: { children: ReactNode }) {
   const player = useRef(new AudioPlayer());
   const state = useAudioState(player.current);
   const currentTime = useTimeUpdate(player.current);
   const [currentSong, setCurrentSong] = useState<Song>();
+
+  const { title, album } = (currentSong ?? {}) as Song;
 
   const play = () => {
     player.current.play();
@@ -90,12 +94,16 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     setRepeatMode(get());
   };
 
-  const playSongAt = async (pos: number) => {
-    const song = getQueue()[pos];
+  const playSongAt = async (pos: number | undefined | null) => {
+    const song = getQueue()[pos as number];
+
+    if (!song) return;
+
+    service.position = pos;
+
     await setSong(song);
     play();
 
-    service.position = pos;
     setCurrentSong(song);
   };
 
@@ -107,21 +115,14 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     playSongAt(position);
   };
 
-  const playNextSong = (force = true) => {
-    const size = service.getQueueSize();
-
+  const playNextSong = (force = false) => {
     const newPos = service.getNextPosition(force);
-
-    if (newPos && newPos < size) {
-      service.position = newPos;
-      playSongAt(newPos);
-    }
+    playSongAt(newPos);
   };
 
-  const playPreviousSong = (force = true) => {
+  const playPreviousSong = (force = false) => {
     const newPos = service.getPreviousPosition(force);
-
-    if (newPos > 0) playSongAt(newPos);
+    playSongAt(newPos);
   };
 
   useEffect(() => {
@@ -138,6 +139,8 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const helmetTitle = [title, album].filter((title) => !!title);
 
   return (
     <PlaybackManagerProvider
@@ -164,6 +167,9 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         playPreviousSong,
       }}
     >
+      <Helmet>
+        <title>{helmetTitle.join(" - ")}</title>
+      </Helmet>
       {children}
     </PlaybackManagerProvider>
   );

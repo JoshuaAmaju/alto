@@ -2,7 +2,7 @@ import React, { ReactEventHandler } from "react";
 import { Song } from "../types";
 import SongTile from "./SongTile";
 import FlatButton from "./FlatButton";
-import { Overflow } from "../icons";
+import { MoreVertical } from "react-feather";
 
 interface PlaylistTile {
   song: Song;
@@ -22,7 +22,7 @@ export default function PlaylistTile({
       onClick={onClick}
       trailing={
         <FlatButton onClick={onMenuClick}>
-          <Overflow width={25} height={25} />
+          <MoreVertical size={25} />
         </FlatButton>
       }
     />

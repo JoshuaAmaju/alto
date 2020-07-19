@@ -1,6 +1,7 @@
 import { Frame, useMotionValue, useTransform } from "framer";
 import React, { createRef, memo, useLayoutEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
+import { Shuffle, Play } from "react-feather";
 import { useParams } from "react-router-dom";
 import { useAsync } from "react-use";
 import AlbumArt from "../components/AlbumArt";
@@ -12,6 +13,7 @@ import { ShuffleMode } from "../QueueService/types";
 import { getSongs } from "../services/playlist.service";
 import { Song } from "../types";
 import { createSong } from "../utils";
+import FlatButton from "../components/FlatButton";
 
 const useStyle = createUseStyles({
   frame: {
@@ -25,8 +27,9 @@ const useStyle = createUseStyles({
   },
   cover: {
     height: 200,
-    alignSelf: "center",
     borderRadius: 20,
+    alignSelf: "center",
+    filter: "contrast(0.9)",
     boxShadow: "rgba(0, 0, 0, 0.2) 0px 50px 20px -40px",
   },
   main: {
@@ -34,7 +37,12 @@ const useStyle = createUseStyles({
     borderTopRightRadius: 20,
   },
   button: {
-    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& > * + *": {
+      margin: { left: "1rem" },
+    },
   },
 });
 
@@ -81,12 +89,34 @@ function Playlist() {
       <div className={classes.frame}>
         <Text variant="h2">{name}</Text>
 
-        <AlbumArt
-          layoutId={name}
-          style={{ scale }}
-          song={songWithImage}
-          className={classes.cover}
-        />
+        <div style={{ position: "relative" }}>
+          <AlbumArt
+            layoutId={name}
+            style={{ scale }}
+            song={songWithImage}
+            className={classes.cover}
+          />
+          <FlatButton
+            style={{
+              top: 20,
+              left: 20,
+              width: "2.5rem",
+              height: "2.5rem",
+              padding: "0.7rem",
+              borderRadius: 100,
+              position: "absolute",
+              backdropFilter: "blur(20px)",
+              backgroundColor: "#ffffffc2",
+            }}
+            onClick={() => {
+              open();
+              playSongAt(0);
+              setQueueOpen(true);
+            }}
+          >
+            <Play size="100%" stroke="none" fill="#fff" />
+          </FlatButton>
+        </div>
 
         <Button
           className={classes.button}
@@ -97,7 +127,8 @@ function Playlist() {
             setShuffleMode(ShuffleMode.SHUFFLE);
           }}
         >
-          Shuffle Play
+          <span>Shuffle Play</span>
+          <Shuffle size={20} />
         </Button>
       </div>
       <Frame

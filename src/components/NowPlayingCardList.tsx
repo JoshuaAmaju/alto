@@ -1,10 +1,4 @@
-import React, {
-  useMemo,
-  useRef,
-  createRef,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createRef, useCallback, useEffect, useMemo } from "react";
 import Slick from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
@@ -38,6 +32,7 @@ export default function NowPlayingCardList() {
 
   useEffect(() => {
     ref.current?.slickGoTo(position);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position]);
 
   return (
@@ -51,8 +46,9 @@ export default function NowPlayingCardList() {
       initialSlide={position}
       afterChange={(index) => playSongAt(index)}
     >
-      {queue.map((song) => {
-        return <NowPlayingCard key={song.id} song={song} />;
+      {queue.map((song, i) => {
+        const { id } = song;
+        return <NowPlayingCard key={id} song={song} />;
       })}
     </Slick>
   );

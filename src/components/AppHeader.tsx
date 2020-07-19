@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import React, { memo, ReactElement, ReactNode } from "react";
+import { Menu, MoreVertical } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { Link } from "react-router-dom";
-import { Menu, Overflow } from "../icons";
 import Text from "./Text";
 
 interface AppHeader {
@@ -43,14 +43,14 @@ function AppHeader({ title, leading, children }: AppHeader) {
             leading
           ) : (
             <Link to={{ pathname: "/drawer", state: { modal: true } }}>
-              <Menu width={20} height={20} />
+              <Menu size={20} />
             </Link>
           )}
           <Text variant="h2">{title}</Text>
         </div>
         <div className={classes.gap}>
           {children}
-          <Overflow width={20} height={20} />
+          <MoreVertical size={25} />
         </div>
       </header>
     </>

@@ -14,6 +14,7 @@ const useStyle = createUseStyles({
     justifyContent: "space-between",
   },
   time: {
+    color: "white",
     fontWeight: "bold",
   },
   container: {
@@ -43,12 +44,13 @@ export default function SongSlider() {
 
   return (
     <div className={classes.container}>
-      <IonRange
+      <input
+        type="range"
         min={0}
-        mode="ios"
         max={duration}
         value={currentTime}
-        onIonChange={(e) => seekTo(parseFloat(e.detail.value as any))}
+        style={{ width: "100%" }}
+        onChange={(e) => seekTo(parseFloat(e.target.value as any))}
       />
       <div className={classes.timeWrapper}>
         <Time time={currentTime} />

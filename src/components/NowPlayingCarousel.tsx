@@ -1,7 +1,6 @@
 import { AnimatePresence, Frame } from "framer";
 import React from "react";
 import { createUseStyles } from "react-jss";
-import { Link, useLocation } from "react-router-dom";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import NowPlayingCardList from "./NowPlayingCardList";
 
@@ -14,7 +13,6 @@ const useStyle = createUseStyles({
 
 export default function NowPlayingCarousel() {
   const classes = useStyle();
-  const location = useLocation();
   const { currentSong } = usePlaybackManager();
 
   return (
@@ -29,17 +27,11 @@ export default function NowPlayingCarousel() {
           exit={{ y: 100 }}
           animate={{ y: 0 }}
           initial={{ y: 100 }}
+          layoutId="nowplaying"
           backgroundColor="#ffffffa1"
           className={classes.nowPlayingBottom}
         >
-          <Link
-            to={{
-              pathname: "/nowplaying",
-              state: { nowPlaying: location },
-            }}
-          >
-            <NowPlayingCardList />
-          </Link>
+          <NowPlayingCardList />
         </Frame>
       )}
     </AnimatePresence>

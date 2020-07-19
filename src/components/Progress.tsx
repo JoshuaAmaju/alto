@@ -1,7 +1,6 @@
-import React, { useMemo } from "react";
-import { Frame } from "framer";
-import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import { IonProgressBar } from "@ionic/react";
+import React, { useMemo } from "react";
+import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 
 export default function SongProgress() {
   const { getDuration, currentSong, currentTime } = usePlaybackManager();

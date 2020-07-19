@@ -1,13 +1,12 @@
-import { Frame } from "framer";
-import React from "react";
-import FlatButton from "./FlatButton";
-import { createUseStyles } from "react-jss";
 import classNames from "classnames";
+import React from "react";
+import { createUseStyles } from "react-jss";
+import FlatButton from "./FlatButton";
 
 interface Button extends FlatButton {
   color?: string;
-  textColor?: string;
-  innerClassName?: string;
+  radius?: number;
+  backgroundColor?: string;
 }
 
 const useStyle = createUseStyles({
@@ -17,36 +16,29 @@ const useStyle = createUseStyles({
     letterSpacing: "0.1rem",
     textTransform: "uppercase",
     color: ({ color }) => color,
+    borderRadius: ({ radius }) => radius,
+    backgroundColor: ({ backgroundColor }) => backgroundColor,
   },
 });
 
 function Button({
   children,
   className,
-  color = "blue",
-  innerClassName,
-  textColor = "white",
+  radius = 12,
+  color = "white",
+  backgroundColor = "blue",
   ...props
 }: Button) {
-  const classes = useStyle({ color: textColor });
+  const classes = useStyle({ color, radius, backgroundColor });
 
   return (
-    <Frame
-      radius={12}
-      width="auto"
-      height="auto"
-      position="relative"
-      backgroundColor={color}
-      whileTap={{ scale: 0.8 }}
-      className={classNames(className)}
+    <FlatButton
+      {...props}
+      whileTap={{ scale: 0.9 }}
+      className={classNames(classes.button, className)}
     >
-      <FlatButton
-        {...props}
-        className={classNames(classes.button, innerClassName)}
-      >
-        {children}
-      </FlatButton>
-    </Frame>
+      {children}
+    </FlatButton>
   );
 }
 

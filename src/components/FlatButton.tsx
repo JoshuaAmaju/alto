@@ -1,8 +1,9 @@
 import classNames from "classnames";
-import React, { ButtonHTMLAttributes } from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
+import React from "react";
 import { createUseStyles } from "react-jss";
 
-interface FlatButton extends ButtonHTMLAttributes<HTMLButtonElement> {}
+interface FlatButton extends HTMLMotionProps<"button"> {}
 
 const useStyle = createUseStyles({
   button: {
@@ -21,13 +22,13 @@ function FlatButton({
   const classes = useStyle();
 
   return (
-    <button
+    <motion.button
       type={type}
-      className={classNames(classes.button, className)}
       {...props}
+      className={classNames(classes.button, className)}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
 
