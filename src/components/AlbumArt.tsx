@@ -1,12 +1,14 @@
-import React, { useState, useEffect, HTMLAttributes } from "react";
-import { Song } from "../types";
-import { createUseStyles } from "react-jss";
 import classNames from "classnames";
+import { HTMLMotionProps, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { createUseStyles } from "react-jss";
+import { Song } from "../types";
 
 const useStyle = createUseStyles({
   cover: {
     width: "100%",
     height: "100%",
+    display: "block",
     objectFit: "cover",
   },
   placeholder: {
@@ -18,7 +20,7 @@ const useStyle = createUseStyles({
   },
 });
 
-interface AlbumArt extends HTMLAttributes<HTMLElement> {
+interface AlbumArt extends HTMLMotionProps<"div"> {
   song?: Song;
 }
 
@@ -41,18 +43,18 @@ export default function AlbumArt({
   }, [song]);
 
   return image ? (
-    <img
+    <motion.img
       {...props}
       src={image}
       alt={description}
       className={classNames(classes.cover, className)}
     />
   ) : (
-    <div
+    <motion.div
       {...props}
       className={classNames(classes.cover, classes.placeholder, className)}
     >
       <h3>alto</h3>
-    </div>
+    </motion.div>
   );
 }

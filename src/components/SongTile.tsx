@@ -40,14 +40,16 @@ const useStyle = createUseStyles({
 
 export default function SongTile({ song, onClick, trailing }: SongTile) {
   const classes = useStyle();
-  const { title, artist } = song;
+  const { id, title, artist } = song;
 
   return (
     <div className={classNames(classes.row, classes.container)}>
       <div className={classes.row} onClick={onClick}>
-        <div className={classes.cover}>
-          <AlbumArt song={song} />
-        </div>
+        <AlbumArt
+          song={song}
+          className={classes.cover}
+          layoutId={`${title}-${id}`}
+        />
         <div>
           <Text variant="h3">{title}</Text>
           <Text variant="h4">{artist}</Text>
