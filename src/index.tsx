@@ -10,6 +10,7 @@ import * as serviceWorker from "./serviceWorker";
 import SongsManager from "./SongsManager/SongsManager";
 import PlaybackManager from "./PlaybackManager/PlaybackManager";
 import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
+import { BrowserRouter } from "react-router-dom";
 
 // const { Router } = require("react-router");
 
@@ -21,7 +22,9 @@ import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
       <SongsManager>
         <PlaylistsManager>
           <PlaybackManager>
-            <App />
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
           </PlaybackManager>
         </PlaylistsManager>
       </SongsManager>
