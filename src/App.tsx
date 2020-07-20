@@ -1,7 +1,7 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
 import React from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
-import NowPlayingCarousel from "./components/NowPlayingCarousel";
+import BottomBar from "./components/BottomBar";
 import AllSongs from "./screens/AllSongs";
 import NowPlaying from "./screens/NowPlaying";
 import Playlist from "./screens/Playlist";
@@ -22,7 +22,7 @@ function App() {
           <Route path="/playlist/:name" render={() => <Playlist />} />
           {/* <Route path="/nowplaying" render={() => <NowPlaying />} /> */}
         </Switch>
-        <NowPlayingCarousel />
+        <BottomBar />
         {nowPlaying && (
           <Route
             path="/nowplaying"

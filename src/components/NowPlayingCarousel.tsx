@@ -19,13 +19,14 @@ export default function NowPlayingCarousel() {
     <AnimatePresence>
       {currentSong && (
         <Frame
-          bottom={0}
+          // bottom={0}
           width="100%"
           height="auto"
-          position="sticky"
+          // position="sticky"
           overflow="hidden"
           exit={{ y: 100 }}
           animate={{ y: 0 }}
+          position="relative"
           initial={{ y: 100 }}
           layoutId="nowplaying"
           backgroundColor="#ffffffa1"
