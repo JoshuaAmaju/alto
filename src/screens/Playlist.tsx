@@ -76,9 +76,11 @@ function Playlist() {
 
   const songs = useMemo(() => {
     return getSongs(name);
-  }, [name, getSongs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name]);
 
   const songWithImage = useMemo(() => {
+    if (!songs) return;
     return findSongWithImage(songs as Song[]);
   }, [songs]);
 

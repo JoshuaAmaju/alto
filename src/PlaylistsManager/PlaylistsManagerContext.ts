@@ -9,12 +9,13 @@ export interface ExtraPlaylistDetails {
 
 interface Manager {
   playlists: Playlist[];
+  playlistsMap: Map<string, Song[]>;
   getSongs(name: string): Song[] | undefined;
-  playlistsMap: Map<string, Song[]> | undefined;
-  create(name: Playlist["name"]): Promise<unknown>;
-  delete(name: Playlist["name"]): Promise<unknown>;
-  addSong(playlist: Playlist, song: Song): Promise<unknown>;
-  removeSong(name: Playlist["name"], songId: Song["id"]): Promise<unknown>;
+
+  create(name: Playlist["name"]): void;
+  delete(name: Playlist["name"]): void;
+  addSong(playlist: Playlist, song: Song): void;
+  removeSong(name: Playlist["name"], songId: Song["id"]): void;
 }
 
 const PlaylistsManagerContext = React.createContext<Manager>({} as Manager);

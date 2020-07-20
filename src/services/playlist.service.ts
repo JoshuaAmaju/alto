@@ -1,6 +1,5 @@
-import { q, db, Playlists } from "../database";
-import { Song, Playlist } from "../types";
-import { createSong } from "../utils";
+import { db, Playlists, q } from "../database";
+import { Playlist, Song } from "../types";
 
 type PlaylistName = Playlist["name"];
 
@@ -10,28 +9,8 @@ export function getAllPlaylist() {
 
 export async function getPlaylistsAndSongs() {
   const query = q`MATCH``(p:Playlist)``[:HAS]``(s:Song)`;
-  const res = (await db.exec(query, { return: ["p", "s"] })) as any[];
-
-  const group = new Map<PlaylistName, Song[]>();
-
-  for (const item of res) {
-    const { p, s } = item;
-
-    const song = createSong(s);
-
-    const g = group.get(p.name) ?? [];
-
-    group.set(
-      p.name,
-      g.concat({
-        ...song,
-        songUrl: song.getURL(),
-        imageUrl: song.getImage(),
-      })
-    );
-  }
-
-  return group;
+  const res = await db.exec(query, { return: ["p", "s"] });
+  return res as Record<string, Record<string, unknown>>[];
 }
 
 export async function getSongs(name: PlaylistName): Promise<Song[]> {
@@ -56,11 +35,11 @@ export function createPlaylist(name: PlaylistName) {
 }
 
 export function deletePlaylist(name: PlaylistName) {
-  const query = q`MATCH``(playlist:Playlist ${{ name }})``[]``()`;
-  return db.exec(query, { delete: ["playlist"] });
+  const query = q`MATCH``(p:Playlist ${{ name }})``[]``()`;
+  return db.exec(query, { delete: ["p"] });
 }
 
-export function removeFromPlaylist(id: Song["id"]) {
-  const query = q`MATCH``(:Playlist)``[has:HAS]``(:Song ${{ id }})`;
-  return db.exec(query, { delete: ["has"] });
+export function removeFromPlaylist(name: PlaylistName, id: Song["id"]) {
+  const query = q`MATCH``(:Playlist ${{ name }})``[h:HAS]``(:Song ${{ id }})`;
+  return db.exec(query, { delete: ["h"] });
 }

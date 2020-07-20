@@ -1,14 +1,8 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useMachine } from "@xstate/react";
+import React, { ReactNode, useCallback, useEffect } from "react";
 import { Playlists } from "../database";
-import {
-  addToPlaylist,
-  createPlaylist,
-  deletePlaylist,
-  getAllPlaylist,
-  getPlaylistsAndSongs,
-  removeFromPlaylist,
-} from "../services/playlist.service";
-import { Playlist, Song } from "../types";
+import playlistsMachine from "../machines/playlists.machine";
 import { PlaylistsManagerProvider } from "./PlaylistsManagerContext";
 
 export default function PlaylistsManager({
@@ -16,14 +10,25 @@ export default function PlaylistsManager({
 }: {
   children: ReactNode;
 }) {
-  const [playlists, setPlaylist] = useState<Playlist[]>([]);
-  const [playlistsMap, setMap] = useState<Map<string, Song[]>>();
+  const [state, send] = useMachine(playlistsMachine);
 
-  const create = useCallback(createPlaylist, []);
-  const _delete = useCallback(deletePlaylist, []);
+  const { playlists, nameAndSongsMap: playlistsMap } = state.context;
 
-  const addSong = useCallback(addToPlaylist, []);
-  const removeSong = useCallback(removeFromPlaylist, []);
+  const createPlaylist = useCallback((name) => {
+    send({ type: "CREATE_PLAYLIST", name });
+  }, []);
+
+  const deletePlaylist = useCallback((name) => {
+    send({ type: "DELETE_PLAYLIST", name });
+  }, []);
+
+  const addSong = useCallback((playlist, song) => {
+    send({ type: "ADD_SONG", playlist, song });
+  }, []);
+
+  const removeSong = useCallback((name, songId) => {
+    send({ type: "REMOVE_SONG", name, songId });
+  }, []);
 
   const getSongs = useCallback(
     (name: string) => {
@@ -32,33 +37,11 @@ export default function PlaylistsManager({
     [playlistsMap]
   );
 
-  const getList = useCallback(async () => {
-    const [playlist, playlistMap] = await Promise.all([
-      getAllPlaylist(),
-      getPlaylistsAndSongs(),
-    ]);
-
-    // const details = await Promise.all(
-    //   list.map(async ({ name }) => {
-    //     const songs = await getSongs(name);
-
-    //     const songWithImage = songs
-    //       .map(createSong)
-    //       .find(({ image }) => !!image);
-
-    //     return { name, song: songWithImage ?? songs[0], count: songs.length };
-    //   })
-    // );
-
-    setMap(playlistMap);
-    setPlaylist(playlist);
-
-    // setDetails(details);
-  }, []);
-
   useEffect(() => {
-    getList();
-    const unsubscribe = Playlists.subscribe("WRITE", getList);
+    const unsubscribe = Playlists.subscribe("WRITE", () => {
+      send("LOAD");
+    });
+
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -66,13 +49,13 @@ export default function PlaylistsManager({
   return (
     <PlaylistsManagerProvider
       value={{
-        create,
+        create: createPlaylist,
         addSong,
         getSongs,
         playlists,
         removeSong,
         playlistsMap,
-        delete: _delete,
+        delete: deletePlaylist,
       }}
     >
       {children}
