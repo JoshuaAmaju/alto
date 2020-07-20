@@ -1,5 +1,6 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
 import classNames from "classnames";
+import { motion } from "framer-motion";
 import React, { createRef, useState } from "react";
 import { Plus } from "react-feather";
 import { createUseStyles } from "react-jss";
@@ -9,7 +10,6 @@ import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
-import Page from "../components/Page";
 import Text from "../components/Text";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import { Song } from "../types";
@@ -68,8 +68,8 @@ export default function Playlists() {
   };
 
   return (
-    <Page>
-      <AppHeader title="Playlists">
+    <div className="Page">
+      <AppHeader title={<motion.h1 layoutId="playlists">Playlists</motion.h1>}>
         <FlatButton onClick={() => setOpen(true)}>
           <Plus />
         </FlatButton>
@@ -122,6 +122,6 @@ export default function Playlists() {
           </Button>
         </form>
       </BottomSheet>
-    </Page>
+    </div>
   );
 }

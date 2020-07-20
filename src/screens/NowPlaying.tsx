@@ -27,7 +27,6 @@ import { Song } from "../types";
 const useStyle = createUseStyles({
   wrapper: {
     color: "white",
-    height: "100vh",
     flexDirection: "column",
   },
   container: {
@@ -64,9 +63,6 @@ export default function NowPlaying() {
   const classes = useStyle();
   const { goBack } = useHistory();
   const {
-    play,
-    pause,
-    state,
     currentSong,
     playNextSong,
     toggleShuffle,
@@ -92,7 +88,7 @@ export default function NowPlaying() {
   const color70 = Color.alpha(color, 0.95);
 
   return (
-    <div className={classNames(classes.wrapper, classes.rowSpaced)}>
+    <div className={classNames(classes.wrapper, classes.rowSpaced, "Page")}>
       <header className={classNames(classes.header, classes.rowSpaced)}>
         <FlatButton onClick={goBack}>
           <ChevronDown size={30} color="white" />

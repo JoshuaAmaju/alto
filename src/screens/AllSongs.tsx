@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
 import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
-import Page from "../components/Page";
 import PlaylistTile from "../components/PlaylistTile";
 import SongTile from "../components/SongTile";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
@@ -47,7 +46,7 @@ export default function AllSongs() {
   };
 
   return (
-    <Page>
+    <div className="Page">
       <AppHeader title="Songs" />
       {/* <SongsPicker /> */}
       {/* <IonLoading isOpen={loading} /> */}
@@ -158,6 +157,6 @@ export default function AllSongs() {
           })}
         </Scroll>
       </BottomSheet>
-    </Page>
+    </div>
   );
 }

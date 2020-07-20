@@ -6,9 +6,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Play, Shuffle } from "react-feather";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Shuffle, ArrowLeft, ChevronLeft } from "react-feather";
 import { createUseStyles } from "react-jss";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
@@ -49,11 +50,23 @@ const useStyle = createUseStyles({
       margin: { left: "1rem" },
     },
   },
+  header: {
+    padding: "1rem",
+    "& button": {
+      display: "flex",
+      alignItems: "center",
+    },
+    "& *": {
+      margin: 0,
+      padding: 0,
+    },
+  },
 });
 
 function Playlist() {
   const classes = useStyle();
   const { name } = useParams();
+  const { goBack } = useHistory();
   const ref = createRef<HTMLDivElement>();
   const [{ top }, setRect] = useState({} as DOMRect);
 
@@ -79,6 +92,9 @@ function Playlist() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
+  const count = songs?.length ?? 0;
+  const label = `song${count > 1 || count === 0 ? "s" : ""}`;
+
   const songWithImage = useMemo(() => {
     if (!songs) return;
     return findSongWithImage(songs as Song[]);
@@ -95,10 +111,32 @@ function Playlist() {
   }, []);
 
   return (
-    <div style={{ height: "100vh" }}>
+    <div className="Page">
+      <div className={classes.header}>
+        <FlatButton onClick={goBack}>
+          <AnimatePresence>
+            <motion.svg
+              width={35}
+              height={35}
+              fill="none"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              exit={{ x: -30, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              initial={{ x: -30, opacity: 0 }}
+              xmlns="http://www.w3.org/2000/svg"
+              transition={{ damping: 15, type: "spring" }}
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </motion.svg>
+          </AnimatePresence>
+          <motion.h2 layoutId="playlists">Playlists</motion.h2>
+        </FlatButton>
+      </div>
       <div className={classes.frame}>
-        <Text variant="h2">{name}</Text>
-
         <div style={{ position: "relative" }}>
           <AlbumArt
             layoutId={name}
@@ -126,6 +164,11 @@ function Playlist() {
           >
             <Play size="100%" stroke="none" fill="#fff" />
           </FlatButton>
+        </div>
+
+        <div>
+          <Text variant="h2">{name}</Text>
+          <Text variant="h4">{label}</Text>
         </div>
 
         <Button
