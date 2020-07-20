@@ -1,16 +1,19 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
 import classNames from "classnames";
 import React, { createRef, useState } from "react";
+import { Plus } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { Link } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
+import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
-import { Fab } from "../components/Fab";
+import FlatButton from "../components/FlatButton";
+import Page from "../components/Page";
 import Text from "../components/Text";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
-import { findSongWithImage } from "../utils";
 import { Song } from "../types";
+import { findSongWithImage } from "../utils";
 
 export const useStyle = createUseStyles({
   form: {
@@ -60,17 +63,23 @@ export default function Playlists() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = ref.current?.value as string;
-    if (!names.includes(value)) await create(value);
+    if (!names.includes(value)) create(value);
     setOpen(false);
   };
 
   return (
-    <div>
+    <Page>
+      <AppHeader title="Playlists">
+        <FlatButton onClick={() => setOpen(true)}>
+          <Plus />
+        </FlatButton>
+      </AppHeader>
       <ul className={classes.list}>
         {names.map((name) => {
           const songs = getSongs(name) as Song[];
-          const song = findSongWithImage(songs);
-          const count = songs.length;
+
+          const count = songs?.length;
+          const song = songs && findSongWithImage(songs);
 
           const label = `song${count > 1 || count === 0 ? "s" : ""}`;
 
@@ -93,9 +102,6 @@ export default function Playlists() {
           );
         })}
       </ul>
-      {/* <Fab onClick={() => setOpen(true)}>
-        <Overflow width={35} stroke="white" />
-      </Fab> */}
       <BottomSheet open={open} onClose={() => setOpen(false)}>
         <form
           className={classNames(classes.form, classes.column)}
@@ -116,6 +122,6 @@ export default function Playlists() {
           </Button>
         </form>
       </BottomSheet>
-    </div>
+    </Page>
   );
 }

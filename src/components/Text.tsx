@@ -1,12 +1,9 @@
-import { JssStyle } from "jss";
-import { createElement, ReactNode } from "react";
+import classNames from "classnames";
+import { createElement, HTMLAttributes } from "react";
 import { createUseStyles } from "react-jss";
 
-interface Text {
+interface Text extends HTMLAttributes<HTMLElement> {
   variant?: string;
-  className?: string;
-  children: ReactNode;
-  style?: JssStyle | JssStyle[];
 }
 
 const useStyle = createUseStyles({
@@ -20,14 +17,19 @@ const useStyle = createUseStyles({
   },
 });
 
-export default function Text({ style, children, variant = "p" }: Text) {
+export default function Text({
+  children,
+  variant = "p",
+  className,
+  ...props
+}: Text) {
   const classes = useStyle();
 
   return createElement(
     variant,
     {
-      style,
-      className: classes.text,
+      ...props,
+      className: classNames(classes.text, className),
     },
     children
   );
