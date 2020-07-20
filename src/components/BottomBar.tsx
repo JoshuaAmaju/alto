@@ -28,7 +28,7 @@ const useStyle = createUseStyles({
   },
   container: {
     display: "flex",
-    padding: "0.7rem",
+    padding: "1rem",
     alignItems: "center",
     backgroundColor: "white",
     borderTop: "1px solid #ccc",
@@ -47,6 +47,7 @@ export default function BottomBar() {
           return (
             <Route
               exact
+              key={path}
               path={path}
               children={({ match }) => {
                 return <Link to={path}>{icon(match)}</Link>;

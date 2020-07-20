@@ -6,6 +6,7 @@
 
 body {
   margin: 0;
+  height: 100vh;
   background-color: whitesmoke;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -20,6 +21,8 @@ ul {
   list-style: none;
 }
 
-#root {
+#root,
+.Page {
   height: 100%;
+  overflow-y: auto;
 }
