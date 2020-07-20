@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { Color, Frame } from "framer";
+import { motion } from "framer-motion";
 import React from "react";
 import {
   ChevronDown,
@@ -88,7 +89,10 @@ export default function NowPlaying() {
   const color70 = Color.alpha(color, 0.95);
 
   return (
-    <div className={classNames(classes.wrapper, classes.rowSpaced, "Page")}>
+    <motion.div
+      layoutId="nowplaying"
+      className={classNames(classes.wrapper, classes.rowSpaced, "Page")}
+    >
       <header className={classNames(classes.header, classes.rowSpaced)}>
         <FlatButton onClick={goBack}>
           <ChevronDown size={30} color="white" />
@@ -152,6 +156,6 @@ export default function NowPlaying() {
           </FlatButton>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

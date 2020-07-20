@@ -6,6 +6,7 @@ import AllSongs from "./screens/AllSongs";
 import NowPlaying from "./screens/NowPlaying";
 import Playlist from "./screens/Playlist";
 import Playlists from "./screens/Playlists";
+import NowPlayingCarousel from "./components/NowPlayingCarousel";
 
 function App() {
   const location = useLocation();
@@ -17,13 +18,39 @@ function App() {
     <>
       <AnimateSharedLayout type="crossfade">
         <Switch location={nowPlaying ?? location}>
-          <Route exact path="/" render={() => <AllSongs />} />
-          <Route path="/playlists" render={() => <Playlists />} />
-          <Route path="/playlist/:name" render={() => <Playlist />} />
-          {/* <Route path="/nowplaying" render={() => <NowPlaying />} /> */}
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <>
+                <AllSongs />
+                <BottomBar />
+              </>
+            )}
+          />
+          <Route
+            path="/playlists"
+            render={() => (
+              <>
+                <Playlists />
+                <BottomBar />
+              </>
+            )}
+          />
+
+          <Route
+            path="/playlist/:name"
+            render={() => (
+              <>
+                <Playlist />
+                <NowPlayingCarousel />
+              </>
+            )}
+          />
+
+          <Route path="/nowplaying" render={() => <NowPlaying />} />
         </Switch>
-        <BottomBar />
-        {nowPlaying && (
+        {/* {nowPlaying && (
           <Route
             path="/nowplaying"
             children={
@@ -42,7 +69,7 @@ function App() {
               </motion.div>
             }
           />
-        )}
+        )} */}
       </AnimateSharedLayout>
     </>
   );

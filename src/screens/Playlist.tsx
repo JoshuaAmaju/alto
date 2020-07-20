@@ -1,4 +1,5 @@
 import { Frame, useMotionValue, useTransform } from "framer";
+import { AnimatePresence, motion } from "framer-motion";
 import React, {
   createRef,
   memo,
@@ -6,10 +7,9 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, Shuffle, ArrowLeft, ChevronLeft } from "react-feather";
+import { Play, Shuffle } from "react-feather";
 import { createUseStyles } from "react-jss";
-import { useParams, useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
@@ -68,7 +68,7 @@ function Playlist() {
   const { name } = useParams();
   const { goBack } = useHistory();
   const ref = createRef<HTMLDivElement>();
-  const [{ top }, setRect] = useState({} as DOMRect);
+  const [{ top, height }, setRect] = useState({} as DOMRect);
 
   const [queueOpen, setQueueOpen] = useState(false);
 
@@ -109,6 +109,9 @@ function Playlist() {
     setRect(rect as DOMRect);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const topHeight = top + height;
+  const diff = window.innerHeight - topHeight;
 
   return (
     <div className="Page">
@@ -168,7 +171,9 @@ function Playlist() {
 
         <div>
           <Text variant="h2">{name}</Text>
-          <Text variant="h4">{label}</Text>
+          <Text variant="h4">
+            {count} {label}
+          </Text>
         </div>
 
         <Button
@@ -195,7 +200,14 @@ function Playlist() {
         position="relative"
         backgroundColor="none"
         className={classes.main}
-        dragConstraints={{ top: -top, bottom: 0 }}
+        dragConstraints={{
+          bottom: 0,
+          top: diff < 0 ? diff : 0,
+          // top: -(
+          //   Math.max(window.innerHeight, topHeight) -
+          //   Math.min(window.innerHeight, topHeight)
+          // ),
+        }}
       >
         <Frame
           size="100%"

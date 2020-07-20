@@ -18,7 +18,7 @@ const useStyle = createUseStyles({
 
 export default function NowPlayingCard({ song, layoutId }: NowPlayingCard) {
   const classes = useStyle();
-  const { push, location } = useHistory();
+  const { push } = useHistory();
 
   return (
     <SongTile
@@ -26,9 +26,7 @@ export default function NowPlayingCard({ song, layoutId }: NowPlayingCard) {
       layoutId={layoutId}
       className={classes.padding}
       trailing={<PlayPauseButton />}
-      onClick={() => {
-        push("/nowplaying", { nowPlaying: location });
-      }}
+      onClick={() => push("/nowplaying")}
     />
   );
 }

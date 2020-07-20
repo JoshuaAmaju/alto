@@ -10,6 +10,7 @@ import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
+import SongsPicker from "../components/SongsPicker";
 
 const useStyle = createUseStyles({
   lists: {
@@ -28,13 +29,15 @@ const useStyle = createUseStyles({
 
 export default function AllSongs() {
   const classes = useStyle();
-  const { songs, loading } = useSongsManager();
   const { playlists, addSong } = usePlaylists();
   const [queueOpen, setQueueOpen] = useState(false);
   const [target, setTarget] = useState<Song | null>();
   const { openQueue, playSong } = usePlaybackManager();
+  const { songs, loading, deleteSong } = useSongsManager();
   const [showPlaylistMenu, setShowPlaylist] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
+
+  const [selectedSongs, setSelectedSongs] = useState<Song[]>();
 
   const handleOpenQueue = (song: Song) => {
     if (!queueOpen) {
@@ -47,8 +50,9 @@ export default function AllSongs() {
 
   return (
     <div className="Page">
-      <AppHeader title="Songs" />
-      {/* <SongsPicker /> */}
+      <AppHeader title="Songs">
+        <SongsPicker />
+      </AppHeader>
       {/* <IonLoading isOpen={loading} /> */}
       <ul>
         {songs.map((song) => {
@@ -80,7 +84,21 @@ export default function AllSongs() {
             }}
           >
             <span>Add to playlist</span>
-            <IonRippleEffect />
+            {/* <IonRippleEffect /> */}
+          </li>
+          <li key="go-to-artist" className="ion-activatable">
+            <span>Go to artist</span>
+            {/* <IonRippleEffect /> */}
+          </li>
+          <li
+            key="delete"
+            className="ion-activatable"
+            onClick={() => {
+              // deleteSong(target as Song);
+            }}
+          >
+            <span>Delete</span>
+            {/* <IonRippleEffect /> */}
           </li>
         </ul>
       </BottomSheet>

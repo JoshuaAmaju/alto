@@ -1,7 +1,8 @@
 import React, { createRef, ChangeEvent } from "react";
 import { extractSongsData } from "../utils";
 import useSongsManager from "../SongsManager/use-songs-manager";
-import Button from "./Button";
+import { Plus } from "react-feather";
+import FlatButton from "./FlatButton";
 
 export default function SongsPicker() {
   const songsManager = useSongsManager();
@@ -17,13 +18,13 @@ export default function SongsPicker() {
 
   return (
     <div>
-      <Button
+      <FlatButton
         onClick={() => {
           ref.current?.click();
         }}
       >
-        add songs
-      </Button>
+        <Plus />
+      </FlatButton>
       <input
         multiple
         ref={ref}

@@ -1,4 +1,5 @@
-import { AnimatePresence, Frame } from "framer";
+import { AnimatePresence } from "framer";
+import { motion } from "framer-motion";
 import React from "react";
 import { createUseStyles } from "react-jss";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
@@ -7,8 +8,12 @@ import SongProgress from "./SongProgress";
 
 const useStyle = createUseStyles({
   nowPlayingBottom: {
+    bottom: 0,
+    position: "sticky",
+    overflow: "hidden",
     borderTop: "1px solid #ccc",
     backdropFilter: "blur(15px)",
+    backgroundColor: "#ffffffa1",
   },
 });
 
@@ -19,23 +24,16 @@ export default function NowPlayingCarousel() {
   return (
     <AnimatePresence>
       {currentSong && (
-        <Frame
-          // bottom={0}
-          width="100%"
-          height="auto"
-          // position="sticky"
-          overflow="hidden"
+        <motion.div
           exit={{ y: 100 }}
           animate={{ y: 0 }}
-          position="relative"
           initial={{ y: 100 }}
           layoutId="nowplaying"
-          backgroundColor="#ffffffa1"
           className={classes.nowPlayingBottom}
         >
           <SongProgress />
           <NowPlayingCardList />
-        </Frame>
+        </motion.div>
       )}
     </AnimatePresence>
   );

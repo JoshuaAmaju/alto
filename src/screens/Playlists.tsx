@@ -69,7 +69,13 @@ export default function Playlists() {
 
   return (
     <div className="Page">
-      <AppHeader title={<motion.h1 layoutId="playlists">Playlists</motion.h1>}>
+      <AppHeader
+        title={
+          <motion.h1 style={{ margin: 0 }} layoutId="playlists">
+            Playlists
+          </motion.h1>
+        }
+      >
         <FlatButton onClick={() => setOpen(true)}>
           <Plus />
         </FlatButton>
@@ -78,7 +84,7 @@ export default function Playlists() {
         {names.map((name) => {
           const songs = getSongs(name) as Song[];
 
-          const count = songs?.length;
+          const count = songs?.length ?? 0;
           const song = songs && findSongWithImage(songs);
 
           const label = `song${count > 1 || count === 0 ? "s" : ""}`;
