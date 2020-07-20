@@ -11,6 +11,7 @@ import SongsManager from "./SongsManager/SongsManager";
 import PlaybackManager from "./PlaybackManager/PlaybackManager";
 import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
 import { BrowserRouter } from "react-router-dom";
+import SwatchManager from "./SwatchManager/SwatchManager";
 
 // const { Router } = require("react-router");
 
@@ -22,9 +23,11 @@ import { BrowserRouter } from "react-router-dom";
       <SongsManager>
         <PlaylistsManager>
           <PlaybackManager>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <SwatchManager>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </SwatchManager>
           </PlaybackManager>
         </PlaylistsManager>
       </SongsManager>
