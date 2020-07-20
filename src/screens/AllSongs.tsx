@@ -2,9 +2,10 @@ import { IonRippleEffect } from "@ionic/react";
 import { Scroll } from "framer";
 import React, { useState } from "react";
 import { createUseStyles } from "react-jss";
+import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
+import Page from "../components/Page";
 import PlaylistTile from "../components/PlaylistTile";
-import SongsPicker from "../components/SongsPicker";
 import SongTile from "../components/SongTile";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
@@ -46,9 +47,9 @@ export default function AllSongs() {
   };
 
   return (
-    <div>
-      {/* <AppHeader title="Songs" /> */}
-      <SongsPicker />
+    <Page>
+      <AppHeader title="Songs" />
+      {/* <SongsPicker /> */}
       {/* <IonLoading isOpen={loading} /> */}
       <ul>
         {songs.map((song) => {
@@ -157,6 +158,6 @@ export default function AllSongs() {
           })}
         </Scroll>
       </BottomSheet>
-    </div>
+    </Page>
   );
 }
