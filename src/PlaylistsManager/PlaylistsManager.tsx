@@ -1,28 +1,23 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { Playlists } from "../database";
 import {
-  getSongs,
   addToPlaylist,
   createPlaylist,
   deletePlaylist,
   getAllPlaylist,
-  removeFromPlaylist,
   getPlaylistsAndSongs,
+  removeFromPlaylist,
 } from "../services/playlist.service";
-import { Playlist } from "../types";
-import {
-  ExtraPlaylistDetails,
-  PlaylistsManagerProvider,
-} from "./PlaylistsManagerContext";
-import { createSong } from "../utils";
+import { Playlist, Song } from "../types";
+import { PlaylistsManagerProvider } from "./PlaylistsManagerContext";
 
 export default function PlaylistsManager({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [playlists, setList] = useState<Playlist[]>([]);
-  const [details, setDetails] = useState<ExtraPlaylistDetails[]>([]);
+  const [playlists, setPlaylist] = useState<Playlist[]>([]);
+  const [playlistsMap, setMap] = useState<Map<string, Song[]>>();
 
   const create = useCallback(createPlaylist, []);
   const _delete = useCallback(deletePlaylist, []);
@@ -30,26 +25,35 @@ export default function PlaylistsManager({
   const addSong = useCallback(addToPlaylist, []);
   const removeSong = useCallback(removeFromPlaylist, []);
 
+  const getSongs = useCallback(
+    (name: string) => {
+      return playlistsMap?.get(name);
+    },
+    [playlistsMap]
+  );
+
   const getList = useCallback(async () => {
-    const list = await getAllPlaylist();
-    const res = await getPlaylistsAndSongs();
+    const [playlist, playlistMap] = await Promise.all([
+      getAllPlaylist(),
+      getPlaylistsAndSongs(),
+    ]);
 
-    console.log(res);
+    // const details = await Promise.all(
+    //   list.map(async ({ name }) => {
+    //     const songs = await getSongs(name);
 
-    const details = await Promise.all(
-      list.map(async ({ name }) => {
-        const songs = await getSongs(name);
+    //     const songWithImage = songs
+    //       .map(createSong)
+    //       .find(({ image }) => !!image);
 
-        const songWithImage = songs
-          .map(createSong)
-          .find(({ image }) => !!image);
+    //     return { name, song: songWithImage ?? songs[0], count: songs.length };
+    //   })
+    // );
 
-        return { name, song: songWithImage ?? songs[0], count: songs.length };
-      })
-    );
+    setMap(playlistMap);
+    setPlaylist(playlist);
 
-    setList(list);
-    setDetails(details);
+    // setDetails(details);
   }, []);
 
   useEffect(() => {
@@ -64,9 +68,10 @@ export default function PlaylistsManager({
       value={{
         create,
         addSong,
-        details,
+        getSongs,
         playlists,
         removeSong,
+        playlistsMap,
         delete: _delete,
       }}
     >

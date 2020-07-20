@@ -9,6 +9,8 @@ import Button from "../components/Button";
 import { Fab } from "../components/Fab";
 import Text from "../components/Text";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
+import { findSongWithImage } from "../utils";
+import { Song } from "../types";
 
 export const useStyle = createUseStyles({
   form: {
@@ -50,10 +52,10 @@ export const useStyle = createUseStyles({
 export default function Playlists() {
   const classes = useStyle();
   const [open, setOpen] = useState(false);
-  const { create, details } = usePlaylists();
   const ref = createRef<HTMLIonInputElement>();
+  const { create, playlists, getSongs } = usePlaylists();
 
-  const names = details.map(({ name }) => name);
+  const names = playlists.map(({ name }) => name);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +67,11 @@ export default function Playlists() {
   return (
     <div>
       <ul className={classes.list}>
-        {details.map(({ name, song, count }) => {
+        {names.map((name) => {
+          const songs = getSongs(name) as Song[];
+          const song = findSongWithImage(songs);
+          const count = songs.length;
+
           const label = `song${count > 1 || count === 0 ? "s" : ""}`;
 
           return (

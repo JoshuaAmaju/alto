@@ -1,19 +1,24 @@
 import { Frame, useMotionValue, useTransform } from "framer";
-import React, { createRef, memo, useLayoutEffect, useState } from "react";
+import React, {
+  createRef,
+  memo,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
+import { Play, Shuffle } from "react-feather";
 import { createUseStyles } from "react-jss";
-import { Shuffle, Play } from "react-feather";
 import { useParams } from "react-router-dom";
-import { useAsync } from "react-use";
 import AlbumArt from "../components/AlbumArt";
 import Button from "../components/Button";
+import FlatButton from "../components/FlatButton";
 import PlaylistTile from "../components/PlaylistTile";
 import Text from "../components/Text";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
+import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import { ShuffleMode } from "../QueueService/types";
-import { getSongs } from "../services/playlist.service";
 import { Song } from "../types";
-import { createSong } from "../utils";
-import FlatButton from "../components/FlatButton";
+import { findSongWithImage } from "../utils";
 
 const useStyle = createUseStyles({
   frame: {
@@ -53,6 +58,9 @@ function Playlist() {
   const [{ top }, setRect] = useState({} as DOMRect);
 
   const [queueOpen, setQueueOpen] = useState(false);
+
+  const { getSongs } = usePlaylists();
+
   const {
     openQueue,
     playSong,
@@ -66,16 +74,16 @@ function Playlist() {
 
   const radius = useTransform<any>(alpha, (v) => v * 12);
 
-  const { value, loading } = useAsync(async () => {
-    const res = await getSongs(name);
-    return res.map(createSong);
-  }, [name]);
+  const songs = useMemo(() => {
+    return getSongs(name);
+  }, [name, getSongs]);
 
-  const songWithImage = value && value.find(({ image }) => !!image);
+  const songWithImage = useMemo(() => {
+    return findSongWithImage(songs as Song[]);
+  }, [songs]);
 
   const open = () => {
-    const songs = value as Song[];
-    openQueue(songs);
+    openQueue(songs as Song[]);
   };
 
   useLayoutEffect(() => {
@@ -151,8 +159,8 @@ function Playlist() {
           style={{ zIndex: -1 }}
           backgroundColor="white"
         />
-        {value &&
-          value.map((song) => {
+        {songs &&
+          songs.map((song) => {
             return (
               <PlaylistTile
                 song={song}

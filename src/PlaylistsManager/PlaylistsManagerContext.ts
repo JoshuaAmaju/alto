@@ -9,7 +9,8 @@ export interface ExtraPlaylistDetails {
 
 interface Manager {
   playlists: Playlist[];
-  details: ExtraPlaylistDetails[];
+  getSongs(name: string): Song[] | undefined;
+  playlistsMap: Map<string, Song[]> | undefined;
   create(name: Playlist["name"]): Promise<unknown>;
   delete(name: Playlist["name"]): Promise<unknown>;
   addSong(playlist: Playlist, song: Song): Promise<unknown>;

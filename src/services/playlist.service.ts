@@ -1,5 +1,6 @@
 import { q, db, Playlists } from "../database";
 import { Song, Playlist } from "../types";
+import { createSong } from "../utils";
 
 type PlaylistName = Playlist["name"];
 
@@ -7,10 +8,30 @@ export function getAllPlaylist() {
   return Playlists.getAll();
 }
 
-export async function getPlaylistsAndSongs(): Promise<any> {
+export async function getPlaylistsAndSongs() {
   const query = q`MATCH``(p:Playlist)``[:HAS]``(s:Song)`;
-  const res = await db.exec(query, { return: ["p", "s"] });
-  return res;
+  const res = (await db.exec(query, { return: ["p", "s"] })) as any[];
+
+  const group = new Map<PlaylistName, Song[]>();
+
+  for (const item of res) {
+    const { p, s } = item;
+
+    const song = createSong(s);
+
+    const g = group.get(p.name) ?? [];
+
+    group.set(
+      p.name,
+      g.concat({
+        ...song,
+        songUrl: song.getURL(),
+        imageUrl: song.getImage(),
+      })
+    );
+  }
+
+  return group;
 }
 
 export async function getSongs(name: PlaylistName): Promise<Song[]> {

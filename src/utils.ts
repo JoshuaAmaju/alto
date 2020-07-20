@@ -135,3 +135,7 @@ export function loadImage(song: Song): Promise<string> {
     img.src = url ?? "";
   });
 }
+
+export function findSongWithImage(songs: Song[]) {
+  return songs.find(({ image }) => !!image);
+}
