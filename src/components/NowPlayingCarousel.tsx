@@ -3,6 +3,7 @@ import React from "react";
 import { createUseStyles } from "react-jss";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import NowPlayingCardList from "./NowPlayingCardList";
+import SongProgress from "./SongProgress";
 
 const useStyle = createUseStyles({
   nowPlayingBottom: {
@@ -32,6 +33,7 @@ export default function NowPlayingCarousel() {
           backgroundColor="#ffffffa1"
           className={classes.nowPlayingBottom}
         >
+          <SongProgress />
           <NowPlayingCardList />
         </Frame>
       )}
