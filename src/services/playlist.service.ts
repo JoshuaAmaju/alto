@@ -7,6 +7,12 @@ export function getAllPlaylist() {
   return Playlists.getAll();
 }
 
+export async function getPlaylistsAndSongs(): Promise<any> {
+  const query = q`MATCH``(p:Playlist)``[:HAS]``(s:Song)`;
+  const res = await db.exec(query, { return: ["p", "s"] });
+  return res;
+}
+
 export async function getSongs(name: PlaylistName): Promise<Song[]> {
   const query = q`MATCH``(:Playlist ${{ name }})``[:HAS]``(song:Song)`;
   const res = await db.exec(query, { return: "song" });

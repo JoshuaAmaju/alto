@@ -8,7 +8,6 @@ import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
 import { Fab } from "../components/Fab";
 import Text from "../components/Text";
-import { Overflow } from "../icons";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 
 export const useStyle = createUseStyles({
@@ -88,9 +87,9 @@ export default function Playlists() {
           );
         })}
       </ul>
-      <Fab onClick={() => setOpen(true)}>
+      {/* <Fab onClick={() => setOpen(true)}>
         <Overflow width={35} stroke="white" />
-      </Fab>
+      </Fab> */}
       <BottomSheet open={open} onClose={() => setOpen(false)}>
         <form
           className={classNames(classes.form, classes.column)}

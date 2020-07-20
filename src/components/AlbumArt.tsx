@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { Song } from "../types";
 
+import placeholder from "../assets/svg/placeholder.svg";
+
 const useStyle = createUseStyles({
   cover: {
     width: "100%",
@@ -30,33 +32,22 @@ export default function AlbumArt({
   ...props
 }: AlbumArt) {
   const classes = useStyle();
-  let { artist, title } = song;
+  let { artist, title, imageUrl } = song;
   const description = `${artist} - ${title}`;
-  const [image, setImage] = useState<string>();
-
-  console.log(song);
+  const [image, setImage] = useState(placeholder);
 
   useEffect(() => {
     const img = new Image();
-    const url = song.imageUrl;
     img.onload = () => setImage(img.src);
-    img.onerror = () => setImage(undefined);
-    img.src = url ?? "";
-  }, [song]);
+    img.src = imageUrl;
+  }, [imageUrl]);
 
-  return image ? (
+  return (
     <motion.img
       {...props}
       src={image}
       alt={description}
       className={classNames(classes.cover, className)}
     />
-  ) : (
-    <motion.div
-      {...props}
-      className={classNames(classes.cover, classes.placeholder, className)}
-    >
-      <h3>alto</h3>
-    </motion.div>
   );
 }

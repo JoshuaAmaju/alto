@@ -1,12 +1,13 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { Playlists } from "../database";
 import {
+  getSongs,
   addToPlaylist,
   createPlaylist,
   deletePlaylist,
   getAllPlaylist,
-  getSongs,
   removeFromPlaylist,
+  getPlaylistsAndSongs,
 } from "../services/playlist.service";
 import { Playlist } from "../types";
 import {
@@ -31,6 +32,9 @@ export default function PlaylistsManager({
 
   const getList = useCallback(async () => {
     const list = await getAllPlaylist();
+    const res = await getPlaylistsAndSongs();
+
+    console.log(res);
 
     const details = await Promise.all(
       list.map(async ({ name }) => {
