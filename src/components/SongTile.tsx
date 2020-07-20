@@ -8,6 +8,7 @@ import classNames from "classnames";
 interface SongTile {
   song: Song;
   layoutId?: string;
+  className?: string;
   trailing?: ReactNode;
   onClick?: ReactEventHandler;
 }
@@ -46,12 +47,13 @@ export default function SongTile({
   onClick,
   trailing,
   layoutId,
+  className,
 }: SongTile) {
   const classes = useStyle();
   const { title, artist } = song;
 
   return (
-    <div className={classNames(classes.row, classes.container)}>
+    <div className={classNames(classes.row, classes.container, className)}>
       <div
         className={classNames(classes.row, classes.wrapper)}
         onClick={onClick}
