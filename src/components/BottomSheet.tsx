@@ -20,7 +20,7 @@ const useStyle = createUseStyles({
     // margin: { top: 10 },
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    backdropFilter: "blur(20px)",
+    // backdropFilter: "blur(20px)",
   },
   overlay: {
     zIndex: 999,
@@ -82,7 +82,7 @@ export default function BottomSheet({ open, onClose, children }: BottomSheet) {
             }}
             dragMomentum={false}
             className={classes.sheet}
-            backgroundColor="#ffffffc2"
+            backgroundColor="#ffffff"
             onDragEnd={(_e, { offset }) => {
               const {
                 height,
