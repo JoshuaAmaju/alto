@@ -4,6 +4,7 @@ import { getAll, addSongs } from "../services/songs.service";
 import { createSong } from "../utils";
 
 interface Context {
+  error?: Error;
   songs: Song[];
 }
 
@@ -38,7 +39,10 @@ const songsMachine = Machine<Context, Events>(
             target: "idle",
             actions: assign({ songs: (_ctx, { data }) => data }),
           },
-          onError: "error",
+          onError: {
+            target: "error",
+            actions: assign({ error: (_ctx, { data }) => data }),
+          },
         },
       },
       removing: {
