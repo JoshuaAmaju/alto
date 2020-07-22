@@ -18,6 +18,7 @@ interface Manager {
   enqueue(...songs: Song[]): void;
   playNextSong(force: boolean): void;
   playSongAt(position: number): void;
+  enqueueNext(...songs: Song[]): void;
   setSong(song: Song): Promise<void>;
   playPreviousSong(force: boolean): void;
   setRepeatMode(repeat: RepeatMode): void;

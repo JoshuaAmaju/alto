@@ -68,7 +68,13 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   }, []);
 
   const enqueueAt = useCallback((position: number, ...songs: Song[]) => {
+    if (!position) return;
     service.enqueueAt(position, songs);
+  }, []);
+
+  const enqueueNext = useCallback((...songs: Song[]) => {
+    enqueueAt((service.position as any) + 1, ...songs);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleShuffle = () => {
@@ -158,6 +164,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         playSongAt,
         currentSong,
         getDuration,
+        enqueueNext,
         currentTime,
         playNextSong,
         setRepeatMode,
