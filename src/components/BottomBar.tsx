@@ -1,23 +1,30 @@
 import React from "react";
-import { Home } from "react-feather";
+import { Home, Search } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { Link, Route } from "react-router-dom";
 import NowPlayingCarousel from "./NowPlayingCarousel";
+
+const grey = "grey";
 
 export const routeConfig = [
   {
     path: "/",
     name: "Songs",
     icon: (match: any) => (
-      <Home fill={match ? "black" : "none"} stroke={match ? "none" : "black"} />
+      <Home fill={match ? "black" : "none"} stroke={match ? "none" : grey} />
     ),
   },
   {
     path: "/playlists",
     name: "Playlists",
     icon: (match: any) => (
-      <Home fill={match ? "black" : "none"} stroke={match ? "none" : "black"} />
+      <Home fill={match ? "black" : "none"} stroke={match ? "none" : grey} />
     ),
+  },
+  {
+    path: "/search",
+    name: "Search",
+    icon: (match: any) => <Search stroke={match ? "black" : grey} />,
   },
 ];
 
