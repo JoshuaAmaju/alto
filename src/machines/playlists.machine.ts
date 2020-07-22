@@ -7,11 +7,11 @@ import {
   removeFromPlaylist,
   addToPlaylist,
 } from "../services/playlist.service";
-import { Song } from "../types";
+import { Song, Playlist } from "../types";
 import { createSong } from "../utils";
-import { Playlist } from "./../types";
 
 interface Context {
+  names: string[];
   playlists: Playlist[];
   nameAndSongsMap: Map<string, Song[]>;
 }
@@ -27,6 +27,7 @@ const playlistsMachine = Machine<Context, Events>(
   {
     initial: "loading",
     context: {
+      names: [],
       playlists: [],
       nameAndSongsMap: new Map(),
     },
@@ -61,7 +62,11 @@ const playlistsMachine = Machine<Context, Events>(
             target: "idle",
             actions: assign((_ctx, { data }) => {
               const [playlists, nameAndSongsMap] = data;
-              return { playlists, nameAndSongsMap };
+              return {
+                playlists,
+                nameAndSongsMap,
+                names: (playlists as Playlist[]).map(({ name }) => name),
+              };
             }),
           },
         },
@@ -115,9 +120,17 @@ const playlistsMachine = Machine<Context, Events>(
 
         return [playlist, group];
       },
-      createPlaylist: (_ctx, { name }) => createPlaylist(name),
+      createPlaylist: ({ names }, { name }) => {
+        if (names.includes(name)) return Promise.resolve();
+        return createPlaylist(name);
+      },
       deletePlaylist: (_ctx, { name }) => deletePlaylist(name),
-      addToPlaylist: (_ctx, { song, playlist }) => {
+      addToPlaylist: ({ nameAndSongsMap }, { song, playlist }) => {
+        const songs = nameAndSongsMap.get(playlist.name);
+        const has = songs?.find(({ id }) => id === song.id);
+
+        if (has) return Promise.resolve();
+
         return addToPlaylist(playlist, song);
       },
       removeFromPlaylist: (_ctx, { name, songId }) => {
