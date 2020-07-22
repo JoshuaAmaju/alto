@@ -6,7 +6,7 @@ import { SongsProvider } from "./SongsManagerContext";
 
 export default function SongsManager({ children }: { children: ReactNode }) {
   const [state, send] = useMachine(songsMachine);
-  const { songs } = state.context;
+  const { songs, error } = state.context;
 
   const addSongs = useCallback((songs) => {
     send({ type: "ADD_SONGS", songs });
@@ -15,6 +15,8 @@ export default function SongsManager({ children }: { children: ReactNode }) {
   const deleteSong = useCallback((song) => {
     send({ type: "REMOVE_SONG", song });
   }, []);
+
+  console.log(state.value, error);
 
   return (
     <SongsProvider

@@ -83,7 +83,7 @@ export async function extractSongsData(files: FileList): Promise<Song[]> {
       album,
       image,
       genre,
-      artist = "unknown artiste",
+      artist = "unknown artist",
     } = await parser(file);
 
     const { name, type } = file;

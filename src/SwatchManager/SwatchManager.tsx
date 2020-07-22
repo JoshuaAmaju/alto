@@ -10,9 +10,9 @@ export default function SwatchManager({ children }: { children: ReactNode }) {
 
   const { imageUrl } = currentSong ?? ({} as Song);
 
-  const palette = usePalette(imageUrl);
+  // const palette = usePalette(imageUrl);
 
-  console.log(palette);
+  // console.log(palette);
 
   return <Context.Provider value={{}}>{children}</Context.Provider>;
 }
