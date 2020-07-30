@@ -1,18 +1,15 @@
 import { Frame } from "framer";
 import React from "react";
 
-const variants = {
-  x1: {},
-};
-
 export default function Loader() {
   return (
     <Frame
-      size={50}
+      size={30}
       position="relative"
       backgroundColor="blue"
-      transition={{ yoyo: true }}
-      animate={{ scale: 2, transition: { flip: true } }}
+      transition={{ yoyo: Infinity }}
+      animate={{ scale: 2, radius: 10 }}
+      initial={{ scale: 0.7, radius: 100 }}
     />
   );
 }
