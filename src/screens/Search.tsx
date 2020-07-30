@@ -7,6 +7,7 @@ import useSongsManager from "../SongsManager/use-songs-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import { Song } from "../types";
 import PlaylistTile from "../components/PlaylistTile";
+import Loader from "../components/Loader";
 
 const useStyle = createUseStyles({
   form: {
@@ -44,7 +45,9 @@ export default function Search() {
   const [result, setResult] = useState<Song[]>();
 
   const search = (query: string) => {
-    if (query.trim() === "") setResult(undefined);
+    if (query.trim() === "") {
+      return setResult(undefined);
+    }
 
     const regex = new RegExp(query, "gi");
 
@@ -71,11 +74,14 @@ export default function Search() {
             />
           </div>
         </form>
+        <Loader />
         <ul>
           {result &&
             result.map((result) => {
               return <PlaylistTile key={result.id} song={result} />;
             })}
+
+          {result && result.length <= 0 && <p>No match found</p>}
         </ul>
       </main>
     </div>
