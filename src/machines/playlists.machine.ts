@@ -1,19 +1,18 @@
 import { assign, Machine } from "xstate";
 import {
+  addToPlaylist,
   createPlaylist,
   deletePlaylist,
   getAllPlaylist,
   getPlaylistsAndSongs,
   removeFromPlaylist,
-  addToPlaylist,
 } from "../services/playlist.service";
-import { Song, Playlist } from "../types";
-import { createSong } from "../utils";
+import { Playlist, Song } from "../types";
 
 interface Context {
   names: string[];
   playlists: Playlist[];
-  nameAndSongsMap: Map<string, Song[]>;
+  nameAndSongsMap: Map<string, Song["id"][]>;
 }
 
 type Events =
@@ -34,10 +33,16 @@ const playlistsMachine = Machine<Context, Events>(
     states: {
       idle: {
         on: {
-          ADD_SONG: "addSong",
+          ADD_SONG: {
+            target: "addSong",
+            cond: "notAlreadyAdded",
+          },
           REMOVE_SONG: "removeSong",
           DELETE_PLAYLIST: "deleting",
-          CREATE_PLAYLIST: "newPlaylist",
+          CREATE_PLAYLIST: {
+            cond: "notCreated",
+            target: "newPlaylist",
+          },
         },
       },
       newPlaylist: {
@@ -93,6 +98,15 @@ const playlistsMachine = Machine<Context, Events>(
     },
   },
   {
+    guards: {
+      notCreated: ({ names }, { name }: any) => {
+        return !names.includes(name);
+      },
+      notAlreadyAdded: ({ nameAndSongsMap }, { song, playlist }: any) => {
+        const songIds = nameAndSongsMap.get(playlist.name);
+        return !songIds?.includes(song.id);
+      },
+    },
     services: {
       getData: async () => {
         const [playlist, res] = await Promise.all([
@@ -100,37 +114,21 @@ const playlistsMachine = Machine<Context, Events>(
           getPlaylistsAndSongs(),
         ]);
 
-        const group = new Map<string, Song[]>();
+        const group = new Map<string, Song["id"][]>();
 
-        for (const item of res) {
-          const { p, s } = item;
+        for (const { p, songId } of res) {
           const { name } = p as any;
-
-          const _song = createSong(s as Song);
           const songs = group.get(name) ?? [];
-
-          const song = {
-            ..._song,
-            songUrl: _song.getURL(),
-            imageUrl: _song.getImage(),
-          };
-
-          group.set(name, songs.concat(song));
+          group.set(name, songs.concat(songId as string));
         }
 
         return [playlist, group];
       },
       createPlaylist: ({ names }, { name }) => {
-        if (names.includes(name)) return Promise.resolve();
         return createPlaylist(name);
       },
       deletePlaylist: (_ctx, { name }) => deletePlaylist(name),
-      addToPlaylist: ({ nameAndSongsMap }, { song, playlist }) => {
-        const songs = nameAndSongsMap.get(playlist.name);
-        const has = songs?.find(({ id }) => id === song.id);
-
-        if (has) return Promise.resolve();
-
+      addToPlaylist: (_ctx, { song, playlist }) => {
         return addToPlaylist(playlist, song);
       },
       removeFromPlaylist: (_ctx, { name, songId }) => {

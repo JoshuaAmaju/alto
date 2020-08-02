@@ -1,18 +1,32 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMachine } from "@xstate/react";
-import React, { ReactNode, useCallback, useEffect } from "react";
+import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Playlists } from "../database";
 import playlistsMachine from "../machines/playlists.machine";
 import { PlaylistsManagerProvider } from "./PlaylistsManagerContext";
+import useSongsManager from "../SongsManager/use-songs-manager";
+import { Song } from "../types";
 
 export default function PlaylistsManager({
   children,
 }: {
   children: ReactNode;
 }) {
+  const { songs } = useSongsManager();
   const [state, send] = useMachine(playlistsMachine);
 
-  const { playlists, nameAndSongsMap: playlistsMap } = state.context;
+  const { playlists, nameAndSongsMap } = state.context;
+
+  const playlistsMap = useMemo(() => {
+    const map = new Map<string, Song[]>();
+
+    nameAndSongsMap.forEach((ids, key) => {
+      const _songs = songs.filter(({ id }) => ids.includes(id));
+      map.set(key, _songs);
+    });
+
+    return map;
+  }, [songs]);
 
   const createPlaylist = useCallback((name) => {
     send({ type: "CREATE_PLAYLIST", name });

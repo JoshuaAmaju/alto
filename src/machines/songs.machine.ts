@@ -67,23 +67,18 @@ const songsMachine = Machine<Context, Events>(
   {
     services: {
       getSongs: async () => {
-        let songs = await getAll();
+        let res = await getAll();
 
-        songs = songs.map((s) => {
+        let songs: Song[] = [];
+
+        for (const s of res) {
+          let imageUrl: string;
           const song = createSong(s);
-          return {
-            ...song,
-            songUrl: song.getURL(),
-            imageUrl: song.getImage(),
-          };
-        });
+          const rawUrl = song.getImage();
 
-        for (const song of songs) {
-          let { imageUrl } = song;
-
-          if (imageUrl) {
+          if (rawUrl) {
             try {
-              imageUrl = await loadImage(imageUrl);
+              imageUrl = await loadImage(rawUrl);
             } catch (error) {
               imageUrl = placeholder;
             }
@@ -91,7 +86,11 @@ const songsMachine = Machine<Context, Events>(
             imageUrl = placeholder;
           }
 
-          song.imageUrl = imageUrl;
+          songs.push({
+            ...song,
+            imageUrl,
+            songUrl: song.getURL(),
+          });
         }
 
         return songs;

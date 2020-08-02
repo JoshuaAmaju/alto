@@ -9,8 +9,8 @@ export function getAllPlaylist() {
 
 export async function getPlaylistsAndSongs() {
   const query = q`MATCH``(p:Playlist)``[:HAS]``(s:Song)`;
-  const res = await db.exec(query, { return: ["p", "s"] });
-  return res as Record<string, Record<string, unknown>>[];
+  const res = await db.exec(query, { return: ["p", "s.id AS songId"] });
+  return res as Record<string, unknown>[];
 }
 
 export async function getSongs(name: PlaylistName): Promise<Song[]> {
