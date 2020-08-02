@@ -22,6 +22,7 @@ import { ShuffleMode } from "../QueueService/types";
 import { Song } from "../types";
 import { findSongWithImage } from "../utils";
 import SongsList from "../components/SongsList";
+import Loader from "../components/Loader";
 
 const useStyle = createUseStyles({
   frame: {
@@ -207,6 +208,7 @@ function Playlist() {
           <Shuffle size={20} />
         </Button>
       </div>
+      <Loader />
       <Frame
         y={y}
         drag="y"
