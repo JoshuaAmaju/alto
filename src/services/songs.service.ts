@@ -7,22 +7,13 @@ export async function getAll(): Promise<Song[]> {
   return (res as Record<string, unknown>[]).map(({ song }) => song) as Song[];
 }
 
-export function addSong(song: Song) {
-  const addQuery = q`CREATE``(song:Song ${song})``[]``()`;
-  return db.exec(addQuery);
-}
-
 export function addSongs(songs: Song[]) {
-  return Promise.all(songs.map(addSong));
+  return db.batch(songs.map((song) => q`CREATE``(song:Song ${song})``[]``()`));
 }
 
-export function deleteSong(songId: Song["id"]) {
-  const query = q`MATCH``(song:Song)``[]``()`;
-  return db.exec(query, {
-    delete: ["song"],
-    where: (song: any) => {
-      console.log(song);
-      return song.id === songId;
-    },
-  });
+export function deleteSong(...songIds: Song["id"][]) {
+  return db.batch(
+    songIds.map((id) => q`MATCH``(song:Song ${{ id }})``[]``()`),
+    { delete: ["song"] }
+  );
 }
