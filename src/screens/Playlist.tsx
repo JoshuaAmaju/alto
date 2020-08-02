@@ -6,6 +6,7 @@ import React, {
   useLayoutEffect,
   useMemo,
   useState,
+  RefObject,
 } from "react";
 import { Play, Shuffle } from "react-feather";
 import { createUseStyles } from "react-jss";
@@ -20,6 +21,7 @@ import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import { ShuffleMode } from "../QueueService/types";
 import { Song } from "../types";
 import { findSongWithImage } from "../utils";
+import SongsList from "../components/SongsList";
 
 const useStyle = createUseStyles({
   frame: {
@@ -63,12 +65,27 @@ const useStyle = createUseStyles({
   },
 });
 
+function useDOMRect<T extends HTMLElement>(ref: RefObject<T>) {
+  const [rect, setRect] = useState({} as DOMRect);
+
+  useLayoutEffect(() => {
+    const rect = ref.current?.getBoundingClientRect();
+    setRect(rect as DOMRect);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return rect;
+}
+
 function Playlist() {
   const classes = useStyle();
   const { name } = useParams();
   const { goBack } = useHistory();
   const ref = createRef<HTMLDivElement>();
-  const [{ top, height }, setRect] = useState({} as DOMRect);
+  const ref2 = createRef<HTMLDivElement>();
+  const { top, height } = useDOMRect(ref);
+
+  const rect = useDOMRect(ref2);
 
   const [queueOpen, setQueueOpen] = useState(false);
 
@@ -81,8 +98,18 @@ function Playlist() {
     setShuffleMode,
   } = usePlaybackManager();
 
+  const ratio = useMemo(() => {
+    const { bottom, height } = rect;
+    return Math.max(bottom, height) - Math.min(bottom, height);
+  }, [rect]);
+
+  const diff = useMemo(() => {
+    const topHeight = top + height;
+    return window.innerHeight - topHeight;
+  }, [top, height]);
+
   const y = useMotionValue<any>(0);
-  const alpha = useTransform<any>(y, [0, -(top / 2)], [0, 1]);
+  const alpha = useTransform<any>(y, [0, -ratio], [0, 1]);
   const scale = useTransform<any>(y, [0, top, top + 100], [1, 1.5, 2]);
 
   const radius = useTransform<any>(alpha, (v) => v * 12);
@@ -103,15 +130,6 @@ function Playlist() {
   const open = () => {
     openQueue(songs as Song[]);
   };
-
-  useLayoutEffect(() => {
-    const rect = ref.current?.getBoundingClientRect();
-    setRect(rect as DOMRect);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const topHeight = top + height;
-  const diff = window.innerHeight - topHeight;
 
   return (
     <div className="Page">
@@ -139,7 +157,7 @@ function Playlist() {
           <motion.h2 layoutId="playlists">Playlists</motion.h2>
         </FlatButton>
       </div>
-      <div className={classes.frame}>
+      <div ref={ref2} className={classes.frame}>
         <div style={{ position: "relative" }}>
           <AlbumArt
             layoutId={name}
@@ -160,7 +178,7 @@ function Playlist() {
               backgroundColor: "#ffffffc2",
             }}
             onClick={() => {
-              open();
+              if (!queueOpen) open();
               playSongAt(0);
               setQueueOpen(true);
             }}
@@ -216,23 +234,7 @@ function Playlist() {
           style={{ zIndex: -1 }}
           backgroundColor="white"
         />
-        {songs &&
-          songs.map((song) => {
-            return (
-              <PlaylistTile
-                song={song}
-                key={song.id}
-                onClick={() => {
-                  if (!queueOpen) {
-                    open();
-                    setQueueOpen(true);
-                  }
-
-                  playSong(song);
-                }}
-              />
-            );
-          })}
+        {songs && <SongsList songs={songs} />}
       </Frame>
     </div>
   );

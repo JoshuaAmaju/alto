@@ -11,42 +11,43 @@ import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
 import SongsPicker from "../components/SongsPicker";
+import SongsList from "../components/SongsList";
 
-const useStyle = createUseStyles({
-  lists: {
-    "& li": {
-      padding: "1.5rem",
-      listStyle: "none",
-      fontWeight: "bold",
-      position: "relative",
-      textTransform: "capitalize",
-    },
-    "& *:not(:first-child)": {
-      borderTop: "1px solid #ccc",
-    },
-  },
-});
+// const useStyle = createUseStyles({
+//   lists: {
+//     "& li": {
+//       padding: "1.5rem",
+//       listStyle: "none",
+//       fontWeight: "bold",
+//       position: "relative",
+//       textTransform: "capitalize",
+//     },
+//     "& *:not(:first-child)": {
+//       borderTop: "1px solid #ccc",
+//     },
+//   },
+// });
 
 export default function AllSongs() {
-  const classes = useStyle();
-  const { playlists, addSong } = usePlaylists();
-  const [queueOpen, setQueueOpen] = useState(false);
-  const [target, setTarget] = useState<Song | null>();
-  const { openQueue, playSong } = usePlaybackManager();
+  // const classes = useStyle();
+  // const { playlists, addSong } = usePlaylists();
+  // const [queueOpen, setQueueOpen] = useState(false);
+  // const [target, setTarget] = useState<Song | null>();
   const { songs, loading, deleteSong } = useSongsManager();
-  const [showPlaylistMenu, setShowPlaylist] = useState(false);
-  const [showActionSheet, setShowActionSheet] = useState(false);
+  // const [showPlaylistMenu, setShowPlaylist] = useState(false);
+  // const [showActionSheet, setShowActionSheet] = useState(false);
+  // const { openQueue, playSong, enqueueNext } = usePlaybackManager();
 
-  const [selectedSongs, setSelectedSongs] = useState<Song[]>();
+  // const [selectedSongs, setSelectedSongs] = useState<Song[]>();
 
-  const handleOpenQueue = (song: Song) => {
-    if (!queueOpen) {
-      openQueue(songs);
-      setQueueOpen(true);
-    }
+  // const handleOpenQueue = (song: Song) => {
+  //   if (!queueOpen) {
+  //     openQueue(songs);
+  //     setQueueOpen(true);
+  //   }
 
-    playSong(song);
-  };
+  //   playSong(song);
+  // };
 
   return (
     <div className="Page">
@@ -54,7 +55,8 @@ export default function AllSongs() {
         <SongsPicker />
       </AppHeader>
       {/* <IonLoading isOpen={loading} /> */}
-      <ul>
+      <SongsList songs={songs} />
+      {/* <ul>
         {songs.map((song) => {
           return (
             <PlaylistTile
@@ -76,6 +78,15 @@ export default function AllSongs() {
       >
         <ul className={classes.lists}>
           <li
+            key="play-next"
+            onClick={() => {
+              enqueueNext(target as Song);
+              setShowActionSheet(false);
+            }}
+          >
+            <span>Play next</span>
+          </li>
+          <li
             key="add-to-playlist"
             className="ion-activatable"
             onClick={() => {
@@ -84,24 +95,21 @@ export default function AllSongs() {
             }}
           >
             <span>Add to playlist</span>
-            {/* <IonRippleEffect /> */}
           </li>
           <li key="go-to-artist" className="ion-activatable">
             <span>Go to artist</span>
-            {/* <IonRippleEffect /> */}
           </li>
           <li
             key="delete"
-            className="ion-activatable"
             onClick={() => {
-              // deleteSong(target as Song);
+              deleteSong((target as any).id);
+              setShowActionSheet(false);
             }}
           >
             <span>Delete</span>
-            {/* <IonRippleEffect /> */}
           </li>
         </ul>
-      </BottomSheet>
+      </BottomSheet> */}
 
       {/* <IonActionSheet
         isOpen={showActionSheet}
@@ -145,7 +153,7 @@ export default function AllSongs() {
           },
         ]}
       /> */}
-      <BottomSheet
+      {/* <BottomSheet
         open={showPlaylistMenu}
         onClose={() => setShowPlaylist(false)}
       >
@@ -174,7 +182,7 @@ export default function AllSongs() {
             );
           })}
         </Scroll>
-      </BottomSheet>
+      </BottomSheet> */}
     </div>
   );
 }
