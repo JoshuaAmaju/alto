@@ -7,13 +7,18 @@ interface PlaylistTile extends SongTile {
   onMenuClick?: ReactEventHandler;
 }
 
-export default function PlaylistTile({ onMenuClick, ...props }: PlaylistTile) {
+export default function PlaylistTile({
+  selected,
+  onMenuClick,
+  ...props
+}: PlaylistTile) {
   return (
     <SongTile
       {...props}
+      selected={selected}
       trailing={
         <FlatButton onClick={onMenuClick}>
-          <MoreVertical size={25} />
+          <MoreVertical size={25} color={selected ? "white" : "initial"} />
         </FlatButton>
       }
     />
