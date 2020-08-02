@@ -2,6 +2,8 @@ import React, { ReactNode, ReactEventHandler } from "react";
 import { Song } from "../types";
 import AlbumArt from "./AlbumArt";
 import Text from "./Text";
+import { Color } from "framer";
+import { motion } from "framer-motion";
 import { createUseStyles } from "react-jss";
 import classNames from "classnames";
 
@@ -9,6 +11,7 @@ interface SongTile {
   song: Song;
   layoutId?: string;
   className?: string;
+  selected?: boolean;
   trailing?: ReactNode;
   onClick?: ReactEventHandler;
 }
@@ -31,6 +34,7 @@ const useStyle = createUseStyles({
   },
   container: {
     padding: "1rem",
+    transition: "background 0.5s",
     justifyContent: "space-between",
     "& h4": {
       color: "#6d6d6d",
@@ -42,29 +46,42 @@ const useStyle = createUseStyles({
   },
 });
 
-export default function SongTile({
+function SongTile({
   song,
   onClick,
   trailing,
   layoutId,
+  selected,
   className,
 }: SongTile) {
   const classes = useStyle();
   const { title, artist } = song;
 
   return (
-    <div className={classNames(classes.row, classes.container, className)}>
+    <div
+      style={{ background: selected ? "blue" : "none" }}
+      className={classNames(classes.row, classes.container, className)}
+    >
       <div
-        className={classNames(classes.row, classes.wrapper)}
         onClick={onClick}
+        className={classNames(classes.row, classes.wrapper)}
       >
         <AlbumArt song={song} layoutId={layoutId} className={classes.cover} />
         <div>
-          <Text variant="h3">{title}</Text>
-          <Text variant="h4">{artist}</Text>
+          <Text variant="h3" style={{ color: selected ? "white" : "initial" }}>
+            {title}
+          </Text>
+          <Text
+            variant="h4"
+            style={{ color: selected ? "#d6d6d6" : "initial" }}
+          >
+            {artist}
+          </Text>
         </div>
       </div>
       {trailing}
     </div>
   );
 }
+
+export default SongTile;
