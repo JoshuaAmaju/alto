@@ -20,7 +20,6 @@ import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import { ShuffleMode } from "../QueueService/types";
 import { Song } from "../types";
-import { findSongWithImage } from "../utils";
 
 const useStyle = createUseStyles({
   frame: {
@@ -108,16 +107,9 @@ function Playlist() {
 
   const radius = useTransform<any>(alpha, (v) => v * 12);
 
-  const songs = useMemo(() => {
-    return playlistsMap[name];
+  const { label, songs, coverUrl } = useMemo(() => {
+    return playlistsMap[name] ?? {};
   }, [name, playlistsMap]);
-
-  const count = songs?.length ?? 0;
-  const label = `song${count > 1 || count === 0 ? "s" : ""}`;
-
-  const coverUrl = useMemo(() => {
-    return findSongWithImage(songs);
-  }, [songs]);
 
   const open = () => {
     openQueue(songs as Song[]);
@@ -181,9 +173,7 @@ function Playlist() {
 
         <div>
           <Text variant="h2">{name}</Text>
-          <Text variant="h4">
-            {count} {label}
-          </Text>
+          <Text variant="h4">{label}</Text>
         </div>
 
         <Button

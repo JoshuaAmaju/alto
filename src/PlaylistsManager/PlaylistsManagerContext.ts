@@ -1,15 +1,15 @@
 import React from "react";
 import { Playlist, Song } from "../types";
 
-export interface ExtraPlaylistDetails {
-  song: Song;
-  name: string;
-  count: number;
+export interface PlaylistDetails {
+  songs: Song[];
+  label: string;
+  coverUrl: string;
 }
 
 interface Manager {
   playlists: Playlist[];
-  playlistsMap: Record<string, Song[]>;
+  playlistsMap: Record<string, PlaylistDetails>;
 
   create(name: Playlist["name"]): void;
   delete(name: Playlist["name"]): void;

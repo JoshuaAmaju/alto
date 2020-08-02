@@ -3,9 +3,12 @@ import { useMachine } from "@xstate/react";
 import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Playlists } from "../database";
 import playlistsMachine from "../machines/playlists.machine";
-import { PlaylistsManagerProvider } from "./PlaylistsManagerContext";
 import useSongsManager from "../SongsManager/use-songs-manager";
-import { Song } from "../types";
+import { findSongWithImage } from "../utils";
+import {
+  PlaylistDetails,
+  PlaylistsManagerProvider,
+} from "./PlaylistsManagerContext";
 
 export default function PlaylistsManager({
   children,
@@ -18,11 +21,20 @@ export default function PlaylistsManager({
   const { playlists, nameAndSongsMap } = state.context;
 
   const playlistsMap = useMemo(() => {
-    const map = {} as Record<string, Song[]>;
+    const map = {} as Record<string, PlaylistDetails>;
 
     nameAndSongsMap.forEach((ids, key) => {
       const _songs = songs.filter(({ id }) => ids.includes(id));
-      map[key] = _songs;
+
+      const count = _songs?.length ?? 0;
+      const coverUrl = findSongWithImage(_songs);
+      const label = `${count} song${count > 1 || count === 0 ? "s" : ""}`;
+
+      map[key] = {
+        label,
+        coverUrl,
+        songs: _songs,
+      };
     });
 
     return map;

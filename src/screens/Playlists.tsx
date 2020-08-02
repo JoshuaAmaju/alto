@@ -12,8 +12,6 @@ import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
 import Text from "../components/Text";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
-import { Song } from "../types";
-import { findSongWithImage } from "../utils";
 
 export const useStyle = createUseStyles({
   form: {
@@ -82,12 +80,7 @@ export default function Playlists() {
       </AppHeader>
       <ul className={classes.list}>
         {names.map((name) => {
-          const songs = playlistsMap[name] as Song[];
-
-          const count = songs?.length ?? 0;
-          const coverUrl = findSongWithImage(songs);
-
-          const label = `song${count > 1 || count === 0 ? "s" : ""}`;
+          const { label, coverUrl } = playlistsMap[name] ?? {};
 
           return (
             <li key={name} className={classes.frame}>
@@ -99,9 +92,7 @@ export default function Playlists() {
                 />
                 <div className={classNames(classes.texts, classes.column)}>
                   <Text variant="h3">{name}</Text>
-                  <Text variant="h4">
-                    {count} {label}
-                  </Text>
+                  <Text variant="h4">{label}</Text>
                 </div>
               </Link>
             </li>
