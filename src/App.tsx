@@ -1,12 +1,13 @@
-import { AnimateSharedLayout, motion } from "framer-motion";
+import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
 import BottomBar from "./components/BottomBar";
+import NowPlayingCarousel from "./components/NowPlayingCarousel";
 import AllSongs from "./screens/AllSongs";
 import NowPlaying from "./screens/NowPlaying";
 import Playlist from "./screens/Playlist";
 import Playlists from "./screens/Playlists";
-import NowPlayingCarousel from "./components/NowPlayingCarousel";
+import Search from "./screens/Search";
 
 function App() {
   const location = useLocation();
@@ -44,6 +45,16 @@ function App() {
               <>
                 <Playlist />
                 <NowPlayingCarousel />
+              </>
+            )}
+          />
+
+          <Route
+            path="/search"
+            render={() => (
+              <>
+                <Search />
+                <BottomBar />
               </>
             )}
           />

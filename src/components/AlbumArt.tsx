@@ -17,18 +17,10 @@ const useStyle = createUseStyles({
     backgroundRepeat: "no-repeat",
     backgroundImage: ({ url }) => `url(${url})`,
   },
-  placeholder: {
-    display: "flex",
-    color: "#656565",
-    alignItems: "center",
-    backgroundColor: "#333",
-    justifyContent: "center",
-  },
 });
 
-export default function AlbumArt({ url = "", className, ...props }: AlbumArt) {
+export default function AlbumArt({ url, className, ...props }: AlbumArt) {
   const classes = useStyle({ url });
-
   return (
     <motion.div {...props} className={classNames(classes.cover, className)} />
   );

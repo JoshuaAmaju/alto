@@ -22,8 +22,6 @@ import { ShuffleMode } from "../QueueService/types";
 import { Song } from "../types";
 import { findSongWithImage } from "../utils";
 
-import placeholder from "../assets/svg/placeholder.svg";
-
 const useStyle = createUseStyles({
   frame: {
     display: "flex",
