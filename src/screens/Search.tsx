@@ -1,15 +1,24 @@
-import React, { useState } from "react";
-import AppHeader from "../components/AppHeader";
-import { createUseStyles } from "react-jss";
+import { useMachine } from "@xstate/react";
 import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router";
 import { Search as SearchIcon } from "react-feather";
-import useSongsManager from "../SongsManager/use-songs-manager";
-import usePlaylists from "../PlaylistsManager/use-playlist-manager";
-import { Song } from "../types";
+import { createUseStyles } from "react-jss";
+import AppHeader from "../components/AppHeader";
 import PlaylistTile from "../components/PlaylistTile";
-import Loader from "../components/Loader";
+import searchMachine from "../machines/search.machine";
+import usePlaylists from "../PlaylistsManager/use-playlist-manager";
+import useSongsManager from "../SongsManager/use-songs-manager";
+import SongTile from "../components/SongTile";
+import { Song } from "../types";
+import Text from "../components/Text";
 
 const useStyle = createUseStyles({
+  formWrapper: {
+    top: 0,
+    position: "sticky",
+    backgroundColor: "whitesmoke",
+  },
   form: {
     width: "85%",
     margin: "auto",
@@ -36,32 +45,35 @@ const useStyle = createUseStyles({
       margin: { left: "0.5rem" },
     },
   },
+  sectionTitle: {
+    padding: "1rem",
+    backgroundColor: "#eaeaea",
+  },
 });
 
 export default function Search() {
   const classes = useStyle();
+  const { push } = useHistory();
   const { songs } = useSongsManager();
-  const { playlistsMap } = usePlaylists();
-  const [result, setResult] = useState<Song[]>();
+  const { playlistsMap: playlists } = usePlaylists();
 
-  const search = (query: string) => {
-    if (query.trim() === "") {
-      return setResult(undefined);
-    }
+  const [state, send] = useMachine(
+    searchMachine.withContext({
+      songs,
+      playlists,
+    })
+  );
 
-    const regex = new RegExp(query, "gi");
+  const { foundSongs, foundPlaylists } = state.context;
 
-    const finds = songs.filter(({ title, artist, album }) => {
-      return regex.test(title as any);
-    });
-
-    setResult(finds);
-  };
+  useEffect(() => {
+    send({ type: "SET_CONTEXT", songs, playlists });
+  }, [send, songs, playlists]);
 
   return (
     <div className="Page">
       <AppHeader title="Search" />
-      <main>
+      <div className={classes.formWrapper}>
         <form className={classes.form}>
           <div className={classes.search}>
             <SearchIcon color="grey" />
@@ -69,21 +81,44 @@ export default function Search() {
               type="search"
               placeholder="Search here"
               onChange={({ target }) => {
-                search(target.value);
+                send({ type: "SEARCH", query: target.value });
               }}
             />
           </div>
         </form>
-        <Loader />
-        <ul>
-          {result &&
-            result.map((result) => {
-              return <PlaylistTile key={result.id} song={result} />;
-            })}
+      </div>
+      <ul>
+        {foundSongs &&
+          foundSongs.map((result) => {
+            return <PlaylistTile key={result.id} song={result} />;
+          })}
 
-          {result && result.length <= 0 && <p>No match found</p>}
-        </ul>
-      </main>
+        {/* Just re-purposing SongTile component since it has similar layout
+            for the playlist ui */}
+        {foundPlaylists && (
+          <section>
+            <Text variant="h3" className={classes.sectionTitle}>
+              Playlists
+            </Text>
+            {foundPlaylists.map(({ name, label, coverUrl }) => {
+              const song = {
+                title: name,
+                artist: label,
+                imageUrl: coverUrl,
+              } as Song;
+
+              return (
+                <SongTile
+                  song={song}
+                  onClick={() => push(`/playlist/${name}`)}
+                />
+              );
+            })}
+          </section>
+        )}
+
+        {state.matches("no_result") && <p>No match found</p>}
+      </ul>
     </div>
   );
 }

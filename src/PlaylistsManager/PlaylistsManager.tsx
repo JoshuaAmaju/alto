@@ -33,6 +33,7 @@ export default function PlaylistsManager({
       map[key] = {
         label,
         coverUrl,
+        name: key,
         songs: _songs,
       };
     });

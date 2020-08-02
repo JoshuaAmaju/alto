@@ -2,6 +2,7 @@ import React from "react";
 import { Playlist, Song } from "../types";
 
 export interface PlaylistDetails {
+  name: string;
   songs: Song[];
   label: string;
   coverUrl: string;
