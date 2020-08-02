@@ -56,7 +56,7 @@ export default function Playlists() {
   const classes = useStyle();
   const [open, setOpen] = useState(false);
   const ref = createRef<HTMLIonInputElement>();
-  const { create, playlists, getSongs } = usePlaylists();
+  const { create, playlists, playlistsMap } = usePlaylists();
 
   const names = playlists.map(({ name }) => name);
 
@@ -82,7 +82,7 @@ export default function Playlists() {
       </AppHeader>
       <ul className={classes.list}>
         {names.map((name) => {
-          const songs = getSongs(name) as Song[];
+          const songs = playlistsMap[name] as Song[];
 
           const count = songs?.length ?? 0;
           const coverUrl = findSongWithImage(songs);

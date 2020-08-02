@@ -88,7 +88,7 @@ function Playlist() {
 
   const [queueOpen, setQueueOpen] = useState(false);
 
-  const { getSongs } = usePlaylists();
+  const { playlistsMap } = usePlaylists();
 
   const { openQueue, playSongAt, setShuffleMode } = usePlaybackManager();
 
@@ -109,9 +109,8 @@ function Playlist() {
   const radius = useTransform<any>(alpha, (v) => v * 12);
 
   const songs = useMemo(() => {
-    return getSongs(name);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
+    return playlistsMap[name];
+  }, [name, playlistsMap]);
 
   const count = songs?.length ?? 0;
   const label = `song${count > 1 || count === 0 ? "s" : ""}`;

@@ -18,11 +18,11 @@ export default function PlaylistsManager({
   const { playlists, nameAndSongsMap } = state.context;
 
   const playlistsMap = useMemo(() => {
-    const map = new Map<string, Song[]>();
+    const map = {} as Record<string, Song[]>;
 
     nameAndSongsMap.forEach((ids, key) => {
       const _songs = songs.filter(({ id }) => ids.includes(id));
-      map.set(key, _songs);
+      map[key] = _songs;
     });
 
     return map;
@@ -44,13 +44,6 @@ export default function PlaylistsManager({
     send({ type: "REMOVE_SONG", name, songId });
   }, []);
 
-  const getSongs = useCallback(
-    (name: string) => {
-      return playlistsMap?.get(name);
-    },
-    [playlistsMap]
-  );
-
   useEffect(() => {
     const unsubscribe = Playlists.subscribe("WRITE", () => {
       send("LOAD");
@@ -63,12 +56,11 @@ export default function PlaylistsManager({
   return (
     <PlaylistsManagerProvider
       value={{
-        create: createPlaylist,
         addSong,
-        getSongs,
         playlists,
         removeSong,
         playlistsMap,
+        create: createPlaylist,
         delete: deletePlaylist,
       }}
     >
