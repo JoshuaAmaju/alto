@@ -12,8 +12,8 @@ export default function SongsManager({ children }: { children: ReactNode }) {
     send({ type: "ADD_SONGS", songs });
   }, []);
 
-  const deleteSong = useCallback((song) => {
-    send({ type: "REMOVE_SONG", song });
+  const deleteSong = useCallback((songId) => {
+    send({ type: "DELETE_SONG", songId });
   }, []);
 
   console.log(state.value, error);

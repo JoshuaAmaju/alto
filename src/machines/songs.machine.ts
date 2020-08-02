@@ -1,7 +1,8 @@
 import { assign, Machine } from "xstate";
 import { Song } from "../types";
-import { getAll, addSongs } from "../services/songs.service";
+import { getAll, addSongs, deleteSong } from "../services/songs.service";
 import { createSong } from "../utils";
+import { log } from "xstate/lib/actions";
 
 interface Context {
   error?: Error;
@@ -10,7 +11,7 @@ interface Context {
 
 type Events =
   | { type: "ADD_SONGS"; songs: Song[] }
-  | { type: "REMOVE_SONG"; song: Song };
+  | { type: "DELETE_SONG"; songId: Song["id"] };
 
 const songsMachine = Machine<Context, Events>(
   {
@@ -22,7 +23,7 @@ const songsMachine = Machine<Context, Events>(
       idle: {
         on: {
           ADD_SONGS: "inserting",
-          REMOVE_SONG: "removing",
+          DELETE_SONG: "deleting",
         },
       },
       inserting: {
@@ -45,11 +46,14 @@ const songsMachine = Machine<Context, Events>(
           },
         },
       },
-      removing: {
+      deleting: {
         invoke: {
           src: "removeSong",
           onDone: "loading",
-          onError: "error",
+          onError: {
+            target: "error",
+            actions: log((_ctx, { data }) => data),
+          },
         },
       },
       error: {
@@ -74,9 +78,7 @@ const songsMachine = Machine<Context, Events>(
         });
       },
       addSongs: (_ctx, { songs }) => addSongs(songs),
-      removeSong(ctx, { song }) {
-        return Promise.resolve();
-      },
+      removeSong: (_ctx, { songId }) => deleteSong(songId),
     },
   }
 );

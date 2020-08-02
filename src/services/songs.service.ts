@@ -15,3 +15,14 @@ export function addSong(song: Song) {
 export function addSongs(songs: Song[]) {
   return Promise.all(songs.map(addSong));
 }
+
+export function deleteSong(songId: Song["id"]) {
+  const query = q`MATCH``(song:Song)``[]``()`;
+  return db.exec(query, {
+    delete: ["song"],
+    where: (song: any) => {
+      console.log(song);
+      return song.id === songId;
+    },
+  });
+}
