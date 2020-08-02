@@ -37,9 +37,7 @@ export function shuffle<T>(array: T[]) {
 
 export function insertAt<T>(array: T[], insertion: T[], position: number) {
   const arr = [...array];
-  const top = arr.slice(0, position);
-  const bottom = arr.slice(position);
-  arr.splice(0, arr.length, ...([] as T[]).concat(top, insertion, bottom));
+  arr.splice(position, 0, ...insertion);
   return arr;
 }
 
