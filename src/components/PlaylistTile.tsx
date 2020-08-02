@@ -18,7 +18,7 @@ export default function PlaylistTile({
       selected={selected}
       trailing={
         <FlatButton onClick={onMenuClick}>
-          <MoreVertical size={25} color={selected ? "white" : "initial"} />
+          <MoreVertical size={25} stroke={selected ? "white" : "black"} />
         </FlatButton>
       }
     />

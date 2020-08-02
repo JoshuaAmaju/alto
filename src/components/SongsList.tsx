@@ -1,15 +1,19 @@
 import { IonRippleEffect } from "@ionic/react";
-import { Scroll } from "framer";
+import { AnimatePresence, Scroll } from "framer";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Trash2, X, MoreVertical } from "react-feather";
 import { createUseStyles } from "react-jss";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
 import BottomSheet from "./BottomSheet";
+import FlatButton from "./FlatButton";
 import PlaylistTile from "./PlaylistTile";
 import SongTile from "./SongTile";
+import Text from "./Text";
+import { insertAt } from "../utils";
 
 interface SongsList {
   songs: Song[];
@@ -28,6 +32,37 @@ const useStyle = createUseStyles({
       borderTop: "1px solid #ccc",
     },
   },
+  bulkAction: {
+    left: 0,
+    bottom: 0,
+    width: "100%",
+    padding: "1rem",
+    display: "flex",
+    position: "fixed",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderTopLeftRadius: "12px",
+    borderTopRightRadius: "12px",
+    justifyContent: "space-between",
+    boxShadow: "0px 4px 11px #00000030",
+  },
+  actions: {
+    display: "flex",
+    alignItems: "center",
+    "& * + *": {
+      margin: { left: "0.5rem" },
+    },
+  },
+  // action: {
+  //   color: "black",
+  //   display: "flex",
+  //   padding: "0.3rem",
+  //   background: "none",
+  //   alignItems: "center",
+  //   "& * + *": {
+  //     margin: { left: "0.5rem" },
+  //   },
+  // },
 });
 
 export default function SongsList({ songs }: SongsList) {
@@ -36,11 +71,10 @@ export default function SongsList({ songs }: SongsList) {
   const { playlists, addSong } = usePlaylists();
   const [queueOpen, setQueueOpen] = useState(false);
   const [showActions, setShowActions] = useState(false);
-  const { openQueue, playSong, enqueue, enqueueNext } = usePlaybackManager();
+  const [showBulkAction, setShowBulkAction] = useState(false);
   const [showPlaylistsAction, setShowPlaylistsAction] = useState(false);
-  const [selectedSongsIndexes, setSelectedSongsIndexes] = useState<number[]>(
-    []
-  );
+  const { openQueue, playSong, enqueue, enqueueNext } = usePlaybackManager();
+  const [selectedSongs, setSelectedSongs] = useState<Record<string, Song>>({});
 
   const handleOpenQueue = (song: Song) => {
     if (!queueOpen) {
@@ -51,36 +85,100 @@ export default function SongsList({ songs }: SongsList) {
     playSong(song);
   };
 
-  const getSelectedSongs = () => {
-    return selectedSongsIndexes.map((i) => songs[i]);
+  const getSelectedSongs = useCallback(() => {
+    return Object.values(selectedSongs);
+  }, [selectedSongs]);
+
+  const length = useCallback(() => {
+    return Object.keys(selectedSongs).length;
+  }, [selectedSongs]);
+
+  const has = (id: string) => {
+    return Object.keys(selectedSongs).includes(id);
   };
+
+  const addSelected = (song: Song) => {
+    setSelectedSongs({ ...selectedSongs, [song.id]: song });
+  };
+
+  const removeSelected = (id: string) => {
+    const songs = { ...selectedSongs };
+    delete songs[id];
+    setSelectedSongs(songs);
+  };
+
+  const clearAllSelected = () => {
+    setSelectedSongs({});
+  };
+
+  useEffect(() => {
+    if (length() <= 0) setShowBulkAction(false);
+  }, [length, selectedSongs]);
 
   return (
     <>
       <ul>
         {songs.map((song, i) => {
           const { id } = song;
+          const selected = has(id);
 
           return (
             <PlaylistTile
               key={id}
               song={song}
-              onClick={() => handleOpenQueue(song)}
-              selected={selectedSongsIndexes.includes(i)}
+              onLongPress={(e) => {
+                addSelected(song);
+                setShowBulkAction(true);
+              }}
+              onClick={() => {
+                if (showBulkAction) {
+                  if (selected) {
+                    removeSelected(id);
+                  } else {
+                    addSelected(song);
+                  }
+                } else {
+                  handleOpenQueue(song);
+                }
+              }}
+              selected={selected}
               onMenuClick={() => {
+                addSelected(song);
                 setShowPlaylistsAction(true);
-                setSelectedSongsIndexes([...selectedSongsIndexes, i]);
               }}
             />
           );
         })}
       </ul>
 
+      {/* <AnimatePresence> */}
+      {showBulkAction && (
+        <div
+          // initial={{ scale: 0.9 }}
+          // animate={{ scale: 1 }}
+          className={classes.bulkAction}
+        >
+          <Text>{length()} selected</Text>
+          <div className={classes.actions}>
+            <FlatButton>
+              <Trash2 />
+            </FlatButton>
+            <FlatButton onClick={() => setShowActions(true)}>
+              <MoreVertical size={25} />
+            </FlatButton>
+            <FlatButton onClick={clearAllSelected}>
+              <X />
+            </FlatButton>
+          </div>
+        </div>
+      )}
+      {/* </AnimatePresence> */}
+
       <BottomSheet
         open={showActions}
         onClose={() => {
           setShowActions(false);
-          setSelectedSongsIndexes([]);
+          clearAllSelected();
         }}
       >
         <ul className={classes.lists}>
@@ -88,7 +186,7 @@ export default function SongsList({ songs }: SongsList) {
             key="play-next"
             onClick={() => {
               enqueueNext(...getSelectedSongs());
-              setSelectedSongsIndexes([]);
+              clearAllSelected();
               setShowActions(false);
             }}
           >
@@ -98,7 +196,7 @@ export default function SongsList({ songs }: SongsList) {
             key="play-next"
             onClick={() => {
               enqueue(...getSelectedSongs());
-              setSelectedSongsIndexes([]);
+              clearAllSelected();
               setShowActions(false);
             }}
           >
@@ -121,7 +219,7 @@ export default function SongsList({ songs }: SongsList) {
             key="delete"
             onClick={() => {
               getSelectedSongs().forEach((song) => deleteSong(song.id));
-              setSelectedSongsIndexes([]);
+              clearAllSelected();
               setShowActions(false);
             }}
           >
@@ -133,13 +231,11 @@ export default function SongsList({ songs }: SongsList) {
       <BottomSheet
         open={showPlaylistsAction}
         onClose={() => {
-          setSelectedSongsIndexes([]);
+          clearAllSelected();
           setShowPlaylistsAction(false);
         }}
       >
-        {selectedSongsIndexes.length === 1 && (
-          <SongTile song={songs[selectedSongsIndexes[0]]} />
-        )}
+        {length() === 1 && <SongTile song={getSelectedSongs()[0]} />}
         <Scroll
           width="100%"
           height="40vh"
@@ -158,7 +254,7 @@ export default function SongsList({ songs }: SongsList) {
                     addSong(playlist, song);
                   });
 
-                  setSelectedSongsIndexes([]);
+                  clearAllSelected();
                   setShowPlaylistsAction(false);
                 }}
               >

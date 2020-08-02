@@ -1,11 +1,10 @@
-import React, { ReactNode, ReactEventHandler } from "react";
+import classNames from "classnames";
+import React, { ReactEventHandler, ReactNode } from "react";
+import { createUseStyles } from "react-jss";
+import { useLongPress } from "react-use";
 import { Song } from "../types";
 import AlbumArt from "./AlbumArt";
 import Text from "./Text";
-import { Color } from "framer";
-import { motion } from "framer-motion";
-import { createUseStyles } from "react-jss";
-import classNames from "classnames";
 
 interface SongTile {
   song: Song;
@@ -14,6 +13,7 @@ interface SongTile {
   selected?: boolean;
   trailing?: ReactNode;
   onClick?: ReactEventHandler;
+  onLongPress?: (event: MouseEvent | TouchEvent) => void;
 }
 
 const useStyle = createUseStyles({
@@ -53,9 +53,12 @@ function SongTile({
   layoutId,
   selected,
   className,
+  onLongPress = () => {},
 }: SongTile) {
   const classes = useStyle();
   const { title, artist, imageUrl } = song;
+
+  const props = useLongPress(onLongPress, { isPreventDefault: false });
 
   return (
     <div
@@ -63,6 +66,7 @@ function SongTile({
       className={classNames(classes.row, classes.container, className)}
     >
       <div
+        {...props}
         onClick={onClick}
         className={classNames(classes.row, classes.wrapper)}
       >
