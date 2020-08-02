@@ -1,8 +1,9 @@
 import { assign, Machine } from "xstate";
 import { Song } from "../types";
 import { getAll, addSongs, deleteSong } from "../services/songs.service";
-import { createSong } from "../utils";
+import { createSong, loadImage } from "../utils";
 import { log } from "xstate/lib/actions";
+import placeholder from "../assets/svg/placeholder.svg";
 
 interface Context {
   error?: Error;
@@ -66,16 +67,34 @@ const songsMachine = Machine<Context, Events>(
   {
     services: {
       getSongs: async () => {
-        const songs = await getAll();
-        return songs.map((s) => {
-          const song = createSong(s);
+        let songs = await getAll();
 
+        songs = songs.map((s) => {
+          const song = createSong(s);
           return {
             ...song,
             songUrl: song.getURL(),
             imageUrl: song.getImage(),
           };
         });
+
+        for (const song of songs) {
+          let { imageUrl } = song;
+
+          if (imageUrl) {
+            try {
+              imageUrl = await loadImage(imageUrl);
+            } catch (error) {
+              imageUrl = placeholder;
+            }
+          } else {
+            imageUrl = placeholder;
+          }
+
+          song.imageUrl = imageUrl;
+        }
+
+        return songs;
       },
       addSongs: (_ctx, { songs }) => addSongs(songs),
       removeSong: (_ctx, { songId }) => deleteSong(songId),
