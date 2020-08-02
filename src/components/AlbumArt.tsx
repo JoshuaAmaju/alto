@@ -11,7 +11,10 @@ const useStyle = createUseStyles({
     width: "100%",
     height: "100%",
     display: "block",
-    objectFit: "cover",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundImage: ({ image }) => `url(${image})`,
   },
   placeholder: {
     display: "flex",
@@ -31,10 +34,10 @@ export default function AlbumArt({
   className,
   ...props
 }: AlbumArt) {
-  const classes = useStyle();
-  let { artist, title, imageUrl } = song;
-  const description = `${artist} - ${title}`;
+  let { imageUrl } = song;
   const [image, setImage] = useState(placeholder);
+
+  const classes = useStyle({ image });
 
   useEffect(() => {
     const img = new Image();
@@ -43,11 +46,6 @@ export default function AlbumArt({
   }, [imageUrl]);
 
   return (
-    <motion.img
-      {...props}
-      src={image}
-      alt={description}
-      className={classNames(classes.cover, className)}
-    />
+    <motion.div {...props} className={classNames(classes.cover, className)} />
   );
 }
