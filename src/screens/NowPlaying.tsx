@@ -98,7 +98,11 @@ export default function NowPlaying() {
           <ChevronDown size={30} color="white" />
         </FlatButton>
       </header>
-      <AlbumArt layoutId={id} song={currentSong} className={classes.cover} />
+      <AlbumArt
+        layoutId={id}
+        className={classes.cover}
+        url={currentSong?.imageUrl}
+      />
       <Frame
         size="100%"
         style={{ zIndex: -1 }}

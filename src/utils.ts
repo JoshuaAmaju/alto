@@ -1,4 +1,5 @@
 import parser from "id3-parser/lib/universal";
+import placeholder from "./assets/svg/placeholder.svg";
 import { Song } from "./types";
 
 export const routeConfig = [
@@ -125,17 +126,18 @@ export function formatTime(value: number) {
     .join(":");
 }
 
-export function loadImage(song: Song): Promise<string> {
+export function loadImage(url = ""): Promise<string> {
   const img = new Image();
-  const url = song.getImage();
 
   return new Promise((resolve, reject) => {
     img.onload = () => resolve(img.src);
     img.onerror = (e) => reject(e);
-    img.src = url ?? "";
+    img.src = url;
   });
 }
 
-export function findSongWithImage(songs: Song[]) {
-  return songs.find(({ image }) => !!image);
+export function findSongWithImage(songs: Song[] | undefined) {
+  if (!songs) return placeholder;
+  const song = songs.find(({ image }) => !!image);
+  return song?.imageUrl ?? placeholder;
 }

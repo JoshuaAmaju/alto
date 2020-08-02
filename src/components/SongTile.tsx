@@ -55,7 +55,7 @@ function SongTile({
   className,
 }: SongTile) {
   const classes = useStyle();
-  const { title, artist } = song;
+  const { title, artist, imageUrl } = song;
 
   return (
     <div
@@ -66,7 +66,11 @@ function SongTile({
         onClick={onClick}
         className={classNames(classes.row, classes.wrapper)}
       >
-        <AlbumArt song={song} layoutId={layoutId} className={classes.cover} />
+        <AlbumArt
+          url={imageUrl}
+          layoutId={layoutId}
+          className={classes.cover}
+        />
         <div>
           <Text variant="h3" style={{ color: selected ? "white" : "initial" }}>
             {title}

@@ -85,7 +85,7 @@ export default function Playlists() {
           const songs = getSongs(name) as Song[];
 
           const count = songs?.length ?? 0;
-          const song = songs && findSongWithImage(songs);
+          const coverUrl = findSongWithImage(songs);
 
           const label = `song${count > 1 || count === 0 ? "s" : ""}`;
 
@@ -93,7 +93,7 @@ export default function Playlists() {
             <li key={name} className={classes.frame}>
               <Link to={`/playlist/${name}`}>
                 <AlbumArt
-                  song={song}
+                  url={coverUrl}
                   layoutId={name}
                   className={classes.cover}
                 />

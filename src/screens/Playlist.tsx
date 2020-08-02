@@ -3,10 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, {
   createRef,
   memo,
+  RefObject,
   useLayoutEffect,
   useMemo,
   useState,
-  RefObject,
 } from "react";
 import { Play, Shuffle } from "react-feather";
 import { createUseStyles } from "react-jss";
@@ -14,15 +14,15 @@ import { useHistory, useParams } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
-import PlaylistTile from "../components/PlaylistTile";
+import SongsList from "../components/SongsList";
 import Text from "../components/Text";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import { ShuffleMode } from "../QueueService/types";
 import { Song } from "../types";
 import { findSongWithImage } from "../utils";
-import SongsList from "../components/SongsList";
-import Loader from "../components/Loader";
+
+import placeholder from "../assets/svg/placeholder.svg";
 
 const useStyle = createUseStyles({
   frame: {
@@ -92,12 +92,7 @@ function Playlist() {
 
   const { getSongs } = usePlaylists();
 
-  const {
-    openQueue,
-    playSong,
-    playSongAt,
-    setShuffleMode,
-  } = usePlaybackManager();
+  const { openQueue, playSongAt, setShuffleMode } = usePlaybackManager();
 
   const ratio = useMemo(() => {
     const { bottom, height } = rect;
@@ -123,9 +118,8 @@ function Playlist() {
   const count = songs?.length ?? 0;
   const label = `song${count > 1 || count === 0 ? "s" : ""}`;
 
-  const songWithImage = useMemo(() => {
-    if (!songs) return;
-    return findSongWithImage(songs as Song[]);
+  const coverUrl = useMemo(() => {
+    return findSongWithImage(songs);
   }, [songs]);
 
   const open = () => {
@@ -161,9 +155,9 @@ function Playlist() {
       <div ref={ref2} className={classes.frame}>
         <div style={{ position: "relative" }}>
           <AlbumArt
+            url={coverUrl}
             layoutId={name}
             style={{ scale }}
-            song={songWithImage}
             className={classes.cover}
           />
           <FlatButton
@@ -208,7 +202,6 @@ function Playlist() {
           <Shuffle size={20} />
         </Button>
       </div>
-      <Loader />
       <Frame
         y={y}
         drag="y"

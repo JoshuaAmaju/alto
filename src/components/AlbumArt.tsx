@@ -1,10 +1,11 @@
 import classNames from "classnames";
 import { HTMLMotionProps, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createUseStyles } from "react-jss";
-import { Song } from "../types";
 
-import placeholder from "../assets/svg/placeholder.svg";
+interface AlbumArt extends HTMLMotionProps<"div"> {
+  url?: string;
+}
 
 const useStyle = createUseStyles({
   cover: {
@@ -14,7 +15,7 @@ const useStyle = createUseStyles({
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
-    backgroundImage: ({ image }) => `url(${image})`,
+    backgroundImage: ({ url }) => `url(${url})`,
   },
   placeholder: {
     display: "flex",
@@ -25,25 +26,8 @@ const useStyle = createUseStyles({
   },
 });
 
-interface AlbumArt extends HTMLMotionProps<"div"> {
-  song?: Song;
-}
-
-export default function AlbumArt({
-  song = {} as Song,
-  className,
-  ...props
-}: AlbumArt) {
-  let { imageUrl } = song;
-  const [image, setImage] = useState(placeholder);
-
-  const classes = useStyle({ image });
-
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => setImage(img.src);
-    img.src = imageUrl;
-  }, [imageUrl]);
+export default function AlbumArt({ url = "", className, ...props }: AlbumArt) {
+  const classes = useStyle({ url });
 
   return (
     <motion.div {...props} className={classNames(classes.cover, className)} />

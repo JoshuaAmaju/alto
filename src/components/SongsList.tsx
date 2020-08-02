@@ -61,8 +61,6 @@ export default function SongsList({ songs }: SongsList) {
         {songs.map((song, i) => {
           const { id } = song;
 
-          console.log(selectedSongsIndexes.includes(i));
-
           return (
             <PlaylistTile
               key={id}
