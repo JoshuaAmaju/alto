@@ -1,18 +1,22 @@
-import React, { ReactNode, createContext } from "react";
+import React, { useContext, createContext, ReactNode } from "react";
+import { PaletteColors, usePalette } from "react-palette";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import { Song } from "../types";
-import { usePalette } from "react-palette";
 
-const Context = createContext({});
+const Context = createContext<PaletteColors>({});
 
-export default function SwatchManager({ children }: { children: ReactNode }) {
+export function useSwatch() {
+  return useContext(Context);
+}
+
+function SwatchManager({ children }: { children: ReactNode }) {
   const { currentSong } = usePlaybackManager();
 
   const { imageUrl } = currentSong ?? ({} as Song);
 
-  // const palette = usePalette(imageUrl);
+  const { data } = usePalette(imageUrl);
 
-  // console.log(palette);
-
-  return <Context.Provider value={{}}>{children}</Context.Provider>;
+  return <Context.Provider value={data}>{children}</Context.Provider>;
 }
+
+export default SwatchManager;

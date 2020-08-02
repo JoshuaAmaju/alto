@@ -1,4 +1,4 @@
-import { Frame, useMotionValue, useTransform } from "framer";
+import { Color, Frame, useMotionValue, useTransform } from "framer";
 import { AnimatePresence, motion } from "framer-motion";
 import React, {
   createRef,
@@ -11,6 +11,7 @@ import React, {
 import { Play, Shuffle } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { useHistory, useParams } from "react-router-dom";
+import { usePalette } from "react-palette";
 import AlbumArt from "../components/AlbumArt";
 import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
@@ -36,7 +37,7 @@ const useStyle = createUseStyles({
     borderRadius: 20,
     alignSelf: "center",
     filter: "contrast(0.9)",
-    boxShadow: "rgba(0, 0, 0, 0.2) 0px 50px 20px -40px",
+    boxShadow: ({ color }) => `0px 50px 20px -40px ${color}`,
   },
   main: {
     borderTopLeftRadius: 20,
@@ -46,6 +47,7 @@ const useStyle = createUseStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: ({ muted }) => muted,
     "& > * + *": {
       margin: { left: "1rem" },
     },
@@ -76,7 +78,6 @@ function useDOMRect<T extends HTMLElement>(ref: RefObject<T>) {
 }
 
 function Playlist() {
-  const classes = useStyle();
   const { name } = useParams();
   const { goBack } = useHistory();
   const ref = createRef<HTMLDivElement>();
@@ -110,6 +111,18 @@ function Playlist() {
   const { label, songs, coverUrl } = useMemo(() => {
     return playlistsMap[name] ?? {};
   }, [name, playlistsMap]);
+
+  const { image } = useMemo(() => {
+    return (songs?.find(({ image }) => !!image) ?? {}) as Song;
+  }, [songs]);
+
+  const {
+    data: { muted = "blue", vibrant = "#000" },
+  } = usePalette(image ? coverUrl : "");
+
+  let color = Color.alpha(Color(vibrant), 0.4);
+
+  const classes = useStyle({ muted, color: color.toValue() });
 
   const open = () => {
     openQueue(songs as Song[]);

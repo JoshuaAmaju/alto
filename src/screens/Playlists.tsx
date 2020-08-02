@@ -80,22 +80,24 @@ export default function Playlists() {
       </AppHeader>
       <ul className={classes.list}>
         {names.map((name) => {
-          const { label, coverUrl } = playlistsMap[name] ?? {};
+          const { songs, label, coverUrl } = playlistsMap[name] ?? {};
 
           return (
-            <li key={name} className={classes.frame}>
-              <Link to={`/playlist/${name}`}>
-                <AlbumArt
-                  url={coverUrl}
-                  layoutId={name}
-                  className={classes.cover}
-                />
-                <div className={classNames(classes.texts, classes.column)}>
-                  <Text variant="h3">{name}</Text>
-                  <Text variant="h4">{label}</Text>
-                </div>
-              </Link>
-            </li>
+            songs?.length > 0 && (
+              <li key={name} className={classes.frame}>
+                <Link to={`/playlist/${name}`}>
+                  <AlbumArt
+                    url={coverUrl}
+                    layoutId={name}
+                    className={classes.cover}
+                  />
+                  <div className={classNames(classes.texts, classes.column)}>
+                    <Text variant="h3">{name}</Text>
+                    <Text variant="h4">{label}</Text>
+                  </div>
+                </Link>
+              </li>
+            )
           );
         })}
       </ul>

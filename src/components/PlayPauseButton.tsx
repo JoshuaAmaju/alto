@@ -30,13 +30,13 @@ export default function PlayPauseButton({
         <Pause
           size={size}
           stroke={fill ? "none" : color}
-          fill={fill ? color : "initial"}
+          fill={fill ? color : "none"}
         />
       ) : (
         <Play
           size={size}
+          fill={fill ? color : "none"}
           stroke={fill ? "none" : color}
-          fill={fill ? color : "initial"}
         />
       )}
     </FlatButton>

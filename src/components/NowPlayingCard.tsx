@@ -25,7 +25,7 @@ export default function NowPlayingCard({ song, layoutId }: NowPlayingCard) {
       song={song}
       layoutId={layoutId}
       className={classes.padding}
-      trailing={<PlayPauseButton />}
+      trailing={<PlayPauseButton fill />}
       onClick={() => push("/nowplaying")}
     />
   );
