@@ -1,8 +1,8 @@
 import { IonRippleEffect } from "@ionic/react";
-import { AnimatePresence, Scroll } from "framer";
-import { motion } from "framer-motion";
-import React, { useState, useEffect, useCallback } from "react";
-import { Trash2, X, MoreVertical } from "react-feather";
+import { Scroll } from "framer";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useCallback, useEffect, useState } from "react";
+import { MoreVertical, Trash2, X } from "react-feather";
 import { createUseStyles } from "react-jss";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
@@ -13,7 +13,6 @@ import FlatButton from "./FlatButton";
 import PlaylistTile from "./PlaylistTile";
 import SongTile from "./SongTile";
 import Text from "./Text";
-import { insertAt } from "../utils";
 
 interface SongsList {
   songs: Song[];
@@ -35,11 +34,12 @@ const useStyle = createUseStyles({
   bulkAction: {
     left: 0,
     bottom: 0,
+    zIndex: 10,
     width: "100%",
-    padding: "1rem",
     display: "flex",
     position: "fixed",
     alignItems: "center",
+    padding: "1.2rem 1rem",
     backgroundColor: "white",
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
@@ -50,7 +50,7 @@ const useStyle = createUseStyles({
     display: "flex",
     alignItems: "center",
     "& * + *": {
-      margin: { left: "0.5rem" },
+      margin: { left: "1rem" },
     },
   },
   // action: {
@@ -151,28 +151,29 @@ export default function SongsList({ songs }: SongsList) {
         })}
       </ul>
 
-      {/* <AnimatePresence> */}
-      {showBulkAction && (
-        <div
-          // initial={{ scale: 0.9 }}
-          // animate={{ scale: 1 }}
-          className={classes.bulkAction}
-        >
-          <Text>{length()} selected</Text>
-          <div className={classes.actions}>
-            <FlatButton>
-              <Trash2 />
-            </FlatButton>
-            <FlatButton onClick={() => setShowActions(true)}>
-              <MoreVertical size={25} />
-            </FlatButton>
-            <FlatButton onClick={clearAllSelected}>
-              <X />
-            </FlatButton>
-          </div>
-        </div>
-      )}
-      {/* </AnimatePresence> */}
+      <AnimatePresence>
+        {showBulkAction && (
+          <motion.div
+            animate={{ scale: 1 }}
+            initial={{ scale: 0.9 }}
+            className={classes.bulkAction}
+            exit={{ scale: 0.95, opacity: 0 }}
+          >
+            <Text>{length()} selected</Text>
+            <div className={classes.actions}>
+              <FlatButton>
+                <Trash2 />
+              </FlatButton>
+              <FlatButton onClick={() => setShowActions(true)}>
+                <MoreVertical size={25} />
+              </FlatButton>
+              <FlatButton onClick={clearAllSelected}>
+                <X />
+              </FlatButton>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <BottomSheet
         open={showActions}
@@ -218,7 +219,7 @@ export default function SongsList({ songs }: SongsList) {
           <li
             key="delete"
             onClick={() => {
-              getSelectedSongs().forEach((song) => deleteSong(song.id));
+              deleteSong(...Object.keys(selectedSongs));
               clearAllSelected();
               setShowActions(false);
             }}

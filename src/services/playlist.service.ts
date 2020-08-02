@@ -24,9 +24,12 @@ export async function getSongCount(name: PlaylistName) {
   return res.length;
 }
 
-export function addToPlaylist(playlist: Playlist, song: Song) {
-  const query = q`RELATE``(:Playlist ${playlist})``[:HAS]``(:Song ${song})`;
-  return db.exec(query);
+export function addToPlaylist(playlist: Playlist, ...songs: Song[]) {
+  return db.batch(
+    songs.map(
+      (song) => q`RELATE``(:Playlist ${playlist})``[:HAS]``(:Song ${song})`
+    )
+  );
 }
 
 export function createPlaylist(name: PlaylistName) {
@@ -34,12 +37,18 @@ export function createPlaylist(name: PlaylistName) {
   return db.exec(query);
 }
 
-export function deletePlaylist(name: PlaylistName) {
-  const query = q`MATCH``(p:Playlist ${{ name }})``[]``()`;
-  return db.exec(query, { delete: ["p"] });
+export function deletePlaylist(names: PlaylistName[]) {
+  return db.batch(
+    names.map((name) => q`MATCH``(p:Playlist ${{ name }})``[]``()`),
+    { delete: ["p"] }
+  );
 }
 
-export function removeFromPlaylist(name: PlaylistName, id: Song["id"]) {
-  const query = q`MATCH``(:Playlist ${{ name }})``[h:HAS]``(:Song ${{ id }})`;
-  return db.exec(query, { delete: ["h"] });
+export function removeFromPlaylist(name: PlaylistName, ...ids: Song["id"][]) {
+  return db.batch(
+    ids.map(
+      (id) => q`MATCH``(:Playlist ${{ name }})``[h:HAS]``(:Song ${{ id }})`
+    ),
+    { delete: ["h"] }
+  );
 }
