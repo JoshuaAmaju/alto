@@ -1,25 +1,16 @@
 import React, { ReactEventHandler } from "react";
-import { Song } from "../types";
-import SongTile from "./SongTile";
-import FlatButton from "./FlatButton";
 import { MoreVertical } from "react-feather";
+import FlatButton from "./FlatButton";
+import SongTile from "./SongTile";
 
-interface PlaylistTile {
-  song: Song;
-  onClick?: ReactEventHandler;
+interface PlaylistTile extends SongTile {
   onMenuClick?: ReactEventHandler;
 }
 
-export default function PlaylistTile({
-  song,
-  onClick,
-  onMenuClick,
-}: PlaylistTile) {
+export default function PlaylistTile({ onMenuClick, ...props }: PlaylistTile) {
   return (
     <SongTile
-      song={song}
-      key={song.id}
-      onClick={onClick}
+      {...props}
       trailing={
         <FlatButton onClick={onMenuClick}>
           <MoreVertical size={25} />
