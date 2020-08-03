@@ -1,5 +1,4 @@
-import { IonRange } from "@ionic/react";
-import React, { useMemo } from "react";
+import React from "react";
 import { createUseStyles } from "react-jss";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import { formatTime } from "../utils";
@@ -28,19 +27,9 @@ const Time = ({ time }: { time: number }) => {
 };
 
 export default function SongSlider() {
-  const {
-    seekTo,
-    currentTime,
-    currentSong,
-    getDuration,
-  } = usePlaybackManager();
+  const { seekTo, duration, currentTime } = usePlaybackManager();
 
   const classes = useStyle();
-
-  const duration = useMemo(() => {
-    return getDuration();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSong]);
 
   return (
     <div className={classes.container}>

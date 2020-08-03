@@ -1,11 +1,12 @@
 export default class AudioPlayer {
   private gain?: GainNode;
   private audio = new Audio();
-  private context = new AudioContext();
+  private context?: AudioContext;
   private source?: MediaElementAudioSourceNode;
 
   init() {
-    const { audio, context } = this;
+    const { audio } = this;
+    const context = new AudioContext();
 
     this.gain = context.createGain();
     this.source = context.createMediaElementSource(audio);
@@ -13,6 +14,8 @@ export default class AudioPlayer {
     this.gain.gain.value = 0.5;
     this.gain.connect(context.destination);
     this.source.connect(this.gain);
+
+    this.context = context;
   }
 
   getCurrentTime() {
@@ -28,6 +31,7 @@ export default class AudioPlayer {
   }
 
   play() {
+    if (!this.context) this.init();
     setTimeout(() => this.audio.play(), 0);
   }
 

@@ -1,37 +1,28 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import AudioPlayer from "../AudioPlayer";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import useAudioPlayer from "../AudioPlayer/use-audio-player";
 import { service } from "../QueueService/QueueService";
+import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
 import { PlaybackManagerProvider } from "./PlaybackManagerContext";
 import { RepeatMode, ShuffleMode } from "./types";
-import { useAudioState } from "./use-audio-state";
-import { useTimeUpdate } from "./use-time-update";
-import useSongsManager from "../SongsManager/use-songs-manager";
 
 const { Helmet } = require("react-helmet");
 
 export default function PlaybackManager({ children }: { children: ReactNode }) {
   const { songs } = useSongsManager();
-  const player = useRef(new AudioPlayer());
-  const state = useAudioState(player.current);
-  const currentTime = useTimeUpdate(player.current);
   const [currentSong, setCurrentSong] = useState<Song>();
 
   const { title, album } = (currentSong ?? {}) as Song;
 
-  const play = useCallback(() => {
-    player.current.play();
-  }, []);
-
-  const pause = useCallback(() => {
-    player.current.pause();
-  }, []);
+  const {
+    play,
+    pause,
+    player,
+    duration,
+    audioState: state,
+    currentTime,
+    onEvent,
+  } = useAudioPlayer();
 
   const getQueue = useCallback(() => service.queue, []);
 
@@ -39,13 +30,19 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
 
   const getShuffleMode = useCallback(() => service.shuffleMode, []);
 
-  const seekTo = useCallback((time: number) => {
-    player.current.seekTo(time);
-  }, []);
+  const seekTo = useCallback(
+    (time: number) => {
+      player.seekTo(time);
+    },
+    [player]
+  );
 
-  const setSong = useCallback((song: Song) => {
-    return player.current.setMediaSource(song.songUrl);
-  }, []);
+  const setSong = useCallback(
+    (song: Song) => {
+      return player.setMediaSource(song.songUrl);
+    },
+    [player]
+  );
 
   const setRepeatMode = useCallback((mode: RepeatMode) => {
     service.setRepeatMode(mode);
@@ -54,11 +51,6 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   const setShuffleMode = useCallback((mode: ShuffleMode) => {
     service.setShuffleMode(mode);
   }, []);
-
-  const getDuration = () => {
-    const duration = player.current.getDuration();
-    return isNaN(duration) ? 0 : duration;
-  };
 
   const openQueue = useCallback(
     (songs: Song[], shuffleMode?: ShuffleMode) => {
@@ -148,78 +140,58 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     [playSongAt]
   );
 
-  useEffect(() => {
-    const _player = player.current;
-    _player.init();
-
-    const onEnded = () => playNextSong();
-    _player.addListener("ended", onEnded);
-
-    return () => {
-      _player.removeListener("ended", onEnded);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  onEvent("ended", () => playNextSong());
 
   useEffect(() => {
     window.addEventListener("beforeunload", () => {
       const { queue, position, shuffleMode, repeatMode } = service;
 
-      localStorage.setItem("currentTime", currentTime.toString());
-      localStorage.setItem("currentSong", (currentSong as Song).id);
+      const state = {
+        position,
+        repeatMode,
+        currentTime,
+        shuffleMode,
+        queue: queue.map(({ id }) => id),
+        currentSong: (currentSong as Song).id,
+      };
 
-      localStorage.setItem("shuffle", shuffleMode);
-      localStorage.setItem("repeat", repeatMode.toString());
-      localStorage.setItem("position", (position as any).toString());
-      localStorage.setItem("queue", JSON.stringify(queue.map(({ id }) => id)));
+      localStorage.setItem("state", JSON.stringify(state));
     });
   }, [currentSong, currentTime]);
 
   useEffect(() => {
-    const repeat = localStorage.getItem("repeat");
-    const shuffle = localStorage.getItem("shuffle");
-    const position = localStorage.getItem("position");
+    const state = localStorage.getItem("state");
 
-    if (position) service.position = parseFloat(position);
-    if (repeat) service.setRepeatMode(parseFloat(repeat));
-    if (shuffle) service.setShuffleMode(shuffle as ShuffleMode);
-  }, []);
+    if (state) {
+      const {
+        queue,
+        position,
+        repeatMode,
+        currentTime,
+        currentSong,
+        shuffleMode,
+      } = JSON.parse(state);
 
-  useEffect(() => {
-    const currSong = localStorage.getItem("currentSong");
+      if (position) service.position = parseFloat(position);
+      if (repeatMode) service.setRepeatMode(parseFloat(repeatMode));
+      if (shuffleMode) service.setShuffleMode(shuffleMode as ShuffleMode);
 
-    if (currSong) {
-      const song = songs?.find(({ id }) => id === currSong);
-
-      if (song) {
-        setSong(song);
-        setCurrentSong(song);
-      }
-    }
-  }, [songs, openQueue, setSong]);
-
-  useEffect(() => {
-    const json = localStorage.getItem("queue");
-    const currTime = localStorage.getItem("currentTime");
-    const currSong = localStorage.getItem("currentSong");
-
-    if (currSong) {
-      const song = songs?.find(({ id }) => id === currSong);
+      const song = songs?.find(({ id }) => id === currentSong);
 
       if (song) {
         setSong(song);
         setCurrentSong(song);
       }
-    }
 
-    if (json) {
-      const _songs = JSON.parse(json) as string[];
-      const queue = songs?.filter(({ id }) => _songs.includes(id));
-      openQueue(queue);
-    }
+      if (queue) {
+        const _songs = queue as string[];
+        const _queue = songs?.filter(({ id }) => _songs.includes(id));
+        openQueue(_queue);
+      }
 
-    if (currTime) seekTo(parseFloat(currTime));
-  }, [songs, openQueue, seekTo, setSong]);
+      if (currentTime) seekTo(parseFloat(currentTime));
+    }
+  }, [openQueue, seekTo, setSong, songs]);
 
   const helmetTitle = [title, album].filter((title) => !!title);
 
@@ -233,12 +205,12 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         enqueue,
         setSong,
         getQueue,
+        duration,
         playSong,
         enqueueAt,
         openQueue,
         playSongAt,
         currentSong,
-        getDuration,
         enqueueNext,
         currentTime,
         playNextSong,

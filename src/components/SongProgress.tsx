@@ -1,14 +1,9 @@
 import { IonProgressBar } from "@ionic/react";
-import React, { useMemo } from "react";
+import React from "react";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 
 export default function SongProgress() {
-  const { getDuration, currentSong, currentTime } = usePlaybackManager();
-
-  const duration = useMemo(() => {
-    return getDuration();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSong]);
+  const { duration, currentTime } = usePlaybackManager();
 
   console.log(duration, currentTime);
 

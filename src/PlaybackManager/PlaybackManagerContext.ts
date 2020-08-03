@@ -6,11 +6,11 @@ import { Song } from "../types";
 interface Manager {
   play(): void;
   pause(): void;
+  duration: number;
   state: PlayStates;
   getQueue(): Song[];
   currentTime: number;
   toggleShuffle(): void;
-  getDuration(): number;
   cycleRepeatMode(): void;
   seekTo(time: number): void;
   playSong(song: Song): void;
