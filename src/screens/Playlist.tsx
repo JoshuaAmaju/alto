@@ -80,23 +80,28 @@ function useDOMRect<T extends HTMLElement>(ref: RefObject<T>) {
 function Playlist() {
   const { name } = useParams();
   const { goBack } = useHistory();
+
   const ref = createRef<HTMLDivElement>();
   const ref2 = createRef<HTMLDivElement>();
   const { top, height } = useDOMRect(ref);
 
   const rect = useDOMRect(ref2);
 
-  const [queueOpen, setQueueOpen] = useState(false);
-
   const { playlistsMap } = usePlaylists();
+  const [queueOpen, setQueueOpen] = useState(false);
+  const { openQueue, playSongAt } = usePlaybackManager();
 
-  const { openQueue, playSongAt, setShuffleMode } = usePlaybackManager();
-
+  // This calculates the available scrollable space of
+  // the songs list for animating its background opacity
+  // during drag.
   const ratio = useMemo(() => {
     const { bottom, height } = rect;
     return Math.max(bottom, height) - Math.min(bottom, height);
   }, [rect]);
 
+  // This calculates the available scrollable space of
+  // the songs list for adding constraint on y axis during
+  // a drag in the upward direction.
   const diff = useMemo(() => {
     const topHeight = top + height;
     return window.innerHeight - topHeight;
@@ -122,10 +127,13 @@ function Playlist() {
 
   let color = Color.alpha(Color(vibrant), 0.4);
 
-  const classes = useStyle({ muted, color: color.toValue() });
+  const classes = useStyle({
+    muted,
+    color: color.toValue(),
+  });
 
-  const open = () => {
-    openQueue(songs as Song[]);
+  const open = (shuffle?: ShuffleMode) => {
+    openQueue(songs as Song[], shuffle);
   };
 
   return (
@@ -192,10 +200,9 @@ function Playlist() {
         <Button
           className={classes.button}
           onClick={() => {
-            open();
+            open(ShuffleMode.SHUFFLE);
             playSongAt(0);
             setQueueOpen(true);
-            setShuffleMode(ShuffleMode.SHUFFLE);
           }}
         >
           <span>Shuffle Play</span>
