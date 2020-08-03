@@ -3,28 +3,29 @@ import { Home, Search } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { Link, Route } from "react-router-dom";
 import NowPlayingCarousel from "./NowPlayingCarousel";
-
-const grey = "grey";
+import { useSwatch } from "../SwatchManager/SwatchManager";
 
 export const routeConfig = [
   {
     path: "/",
     name: "Songs",
-    icon: (match: any) => (
-      <Home fill={match ? "black" : "none"} stroke={match ? "none" : grey} />
+    icon: (match: any, fill: string, stroke: string) => (
+      <Home fill={match ? fill : "none"} stroke={match ? "none" : stroke} />
     ),
   },
   {
     path: "/playlists",
     name: "Playlists",
-    icon: (match: any) => (
-      <Home fill={match ? "black" : "none"} stroke={match ? "none" : grey} />
+    icon: (match: any, fill: string, stroke: string) => (
+      <Home fill={match ? fill : "none"} stroke={match ? "none" : stroke} />
     ),
   },
   {
     path: "/search",
     name: "Search",
-    icon: (match: any) => <Search stroke={match ? "black" : grey} />,
+    icon: (match: any, fill: string, stroke: string) => (
+      <Search stroke={match ? fill : stroke} />
+    ),
   },
 ];
 
@@ -45,6 +46,7 @@ const useStyle = createUseStyles({
 
 export default function BottomBar() {
   const classes = useStyle();
+  const { muted = "black", lightMuted = "grey" } = useSwatch();
 
   return (
     <div className={classes.wrapper}>
@@ -57,7 +59,7 @@ export default function BottomBar() {
               key={path}
               path={path}
               children={({ match }) => {
-                return <Link to={path}>{icon(match)}</Link>;
+                return <Link to={path}>{icon(match, muted, lightMuted)}</Link>;
               }}
             />
           );

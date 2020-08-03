@@ -12,9 +12,9 @@ export function useSwatch() {
 function SwatchManager({ children }: { children: ReactNode }) {
   const { currentSong } = usePlaybackManager();
 
-  const { imageUrl } = currentSong ?? ({} as Song);
+  const { image, imageUrl } = currentSong ?? ({} as Song);
 
-  const { data } = usePalette(imageUrl);
+  const { data } = usePalette(image ? imageUrl : "");
 
   return <Context.Provider value={data}>{children}</Context.Provider>;
 }

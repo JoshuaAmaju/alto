@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import { Song } from "../types";
 import PlayPauseButton from "./PlayPauseButton";
 import SongTile from "./SongTile";
+import { useSwatch } from "../SwatchManager/SwatchManager";
 
 interface NowPlayingCard {
   song: Song;
@@ -19,14 +20,15 @@ const useStyle = createUseStyles({
 export default function NowPlayingCard({ song, layoutId }: NowPlayingCard) {
   const classes = useStyle();
   const { push } = useHistory();
+  const { muted = "black" } = useSwatch();
 
   return (
     <SongTile
       song={song}
       layoutId={layoutId}
       className={classes.padding}
-      trailing={<PlayPauseButton fill />}
       onClick={() => push("/nowplaying")}
+      trailing={<PlayPauseButton fill color={muted} />}
     />
   );
 }

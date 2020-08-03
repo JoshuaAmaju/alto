@@ -41,7 +41,7 @@
     "swiper": "^6.0.2",
     "typescript": "^3.9.6",
     "uuid": "^8.2.0",
-    "webase": "0.0.1",
+    "webase": "0.0.5",
     "xstate": "^4.11.0"
   },
   "scripts": {
