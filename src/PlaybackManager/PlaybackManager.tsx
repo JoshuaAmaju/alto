@@ -12,12 +12,14 @@ import { PlaybackManagerProvider } from "./PlaybackManagerContext";
 import { RepeatMode, ShuffleMode } from "./types";
 import { useAudioState } from "./use-audio-state";
 import { useTimeUpdate } from "./use-time-update";
+import useSongsManager from "../SongsManager/use-songs-manager";
 
 const { Helmet } = require("react-helmet");
 
 export default function PlaybackManager({ children }: { children: ReactNode }) {
   const player = useRef(new AudioPlayer());
   const state = useAudioState(player.current);
+  const { songs } = useSongsManager();
   const currentTime = useTimeUpdate(player.current);
   const [currentSong, setCurrentSong] = useState<Song>();
 
@@ -132,11 +134,9 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    player.current.init();
-  }, []);
-
-  useEffect(() => {
     const _player = player.current;
+    _player.init();
+
     const onEnded = () => playNextSong();
     _player.addListener("ended", onEnded);
 
@@ -145,6 +145,66 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", () => {
+      const { queue, position, shuffleMode, repeatMode } = service;
+
+      localStorage.setItem("currentTime", currentTime.toString());
+      localStorage.setItem("currentSong", (currentSong as Song).id);
+
+      localStorage.setItem("shuffle", shuffleMode);
+      localStorage.setItem("repeat", repeatMode.toString());
+      localStorage.setItem("position", (position as any).toString());
+      localStorage.setItem("queue", JSON.stringify(queue.map(({ id }) => id)));
+    });
+  }, [currentSong, currentTime]);
+
+  useEffect(() => {
+    const repeat = localStorage.getItem("repeat");
+    const shuffle = localStorage.getItem("shuffle");
+    const position = localStorage.getItem("position");
+
+    if (position) service.position = parseFloat(position);
+    if (repeat) service.setRepeatMode(parseFloat(repeat));
+    if (shuffle) service.setShuffleMode(shuffle as ShuffleMode);
+  }, []);
+
+  useEffect(() => {
+    const currSong = localStorage.getItem("currentSong");
+
+    if (currSong) {
+      const song = songs?.find(({ id }) => id === currSong);
+
+      if (song) {
+        setSong(song);
+        setCurrentSong(song);
+      }
+    }
+  }, [songs, openQueue]);
+
+  useEffect(() => {
+    const json = localStorage.getItem("queue");
+    const currTime = localStorage.getItem("currentTime");
+    const currSong = localStorage.getItem("currentSong");
+
+    if (currSong) {
+      const song = songs?.find(({ id }) => id === currSong);
+
+      if (song) {
+        setSong(song);
+        setCurrentSong(song);
+      }
+    }
+
+    if (json) {
+      const _songs = JSON.parse(json) as string[];
+      const queue = songs?.filter(({ id }) => _songs.includes(id));
+      openQueue(queue);
+    }
+
+    if (currTime) seekTo(parseFloat(currTime));
+  }, [songs, openQueue]);
 
   const helmetTitle = [title, album].filter((title) => !!title);
 

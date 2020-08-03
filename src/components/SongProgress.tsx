@@ -10,5 +10,7 @@ export default function SongProgress() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSong]);
 
+  console.log(duration, currentTime);
+
   return <IonProgressBar mode="ios" value={currentTime / duration} />;
 }
