@@ -17,11 +17,12 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
   const {
     play,
     pause,
-    player,
-    duration,
-    audioState: state,
-    currentTime,
+    seekTo,
     onEvent,
+    duration,
+    currentTime,
+    setMediaSource,
+    audioState: state,
   } = useAudioPlayer();
 
   const getQueue = useCallback(() => service.queue, []);
@@ -30,18 +31,11 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
 
   const getShuffleMode = useCallback(() => service.shuffleMode, []);
 
-  const seekTo = useCallback(
-    (time: number) => {
-      player.seekTo(time);
-    },
-    [player]
-  );
-
   const setSong = useCallback(
     (song: Song) => {
-      return player.setMediaSource(song.songUrl);
+      return setMediaSource(song.songUrl);
     },
-    [player]
+    [setMediaSource]
   );
 
   const setRepeatMode = useCallback((mode: RepeatMode) => {
@@ -140,8 +134,6 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     [playSongAt]
   );
 
-  onEvent("ended", () => playNextSong());
-
   useEffect(() => {
     window.addEventListener("beforeunload", () => {
       const { queue, position, shuffleMode, repeatMode } = service;
@@ -193,7 +185,9 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     }
   }, [openQueue, seekTo, setSong, songs]);
 
-  const helmetTitle = [title, album].filter((title) => !!title);
+  onEvent("ended", () => playNextSong());
+
+  const pageTitle = [title, album].filter((title) => !!title);
 
   return (
     <PlaybackManagerProvider
@@ -222,7 +216,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
       }}
     >
       <Helmet>
-        <title>{helmetTitle.join(" - ")}</title>
+        <title>{pageTitle.join(" - ")}</title>
       </Helmet>
       {children}
     </PlaybackManagerProvider>

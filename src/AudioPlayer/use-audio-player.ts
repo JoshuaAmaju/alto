@@ -19,6 +19,13 @@ export default function useAudioPlayer() {
     current.pause();
   }, [current]);
 
+  const seekTo = useCallback((time: number) => current.seekTo(time), [current]);
+
+  const setMediaSource = useCallback(
+    (src: string) => current.setMediaSource(src),
+    [current]
+  );
+
   const onEvent = useCallback(
     (event: EventMap, fn: EventListener) => {
       const listeners = eventListeners.current.get(event) ?? [];
@@ -52,10 +59,12 @@ export default function useAudioPlayer() {
   return {
     play,
     pause,
+    seekTo,
     onEvent,
     duration,
     audioState,
     currentTime,
+    setMediaSource,
     player: current,
   };
 }
