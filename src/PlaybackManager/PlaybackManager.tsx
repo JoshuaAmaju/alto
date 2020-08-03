@@ -17,53 +17,56 @@ import useSongsManager from "../SongsManager/use-songs-manager";
 const { Helmet } = require("react-helmet");
 
 export default function PlaybackManager({ children }: { children: ReactNode }) {
+  const { songs } = useSongsManager();
   const player = useRef(new AudioPlayer());
   const state = useAudioState(player.current);
-  const { songs } = useSongsManager();
   const currentTime = useTimeUpdate(player.current);
   const [currentSong, setCurrentSong] = useState<Song>();
 
   const { title, album } = (currentSong ?? {}) as Song;
 
-  const play = () => {
+  const play = useCallback(() => {
     player.current.play();
-  };
+  }, []);
 
-  const pause = () => {
+  const pause = useCallback(() => {
     player.current.pause();
-  };
+  }, []);
 
-  const getQueue = () => service.queue;
+  const getQueue = useCallback(() => service.queue, []);
 
-  const getRepeatMode = () => service.repeatMode;
+  const getRepeatMode = useCallback(() => service.repeatMode, []);
 
-  const getShuffleMode = () => service.shuffleMode;
+  const getShuffleMode = useCallback(() => service.shuffleMode, []);
 
-  const seekTo = (time: number) => {
+  const seekTo = useCallback((time: number) => {
     player.current.seekTo(time);
-  };
+  }, []);
 
-  const setSong = (song: Song) => {
+  const setSong = useCallback((song: Song) => {
     return player.current.setMediaSource(song.songUrl);
-  };
+  }, []);
 
-  const setRepeatMode = (mode: RepeatMode) => {
+  const setRepeatMode = useCallback((mode: RepeatMode) => {
     service.setRepeatMode(mode);
-  };
+  }, []);
 
-  const setShuffleMode = (mode: ShuffleMode) => {
+  const setShuffleMode = useCallback((mode: ShuffleMode) => {
     service.setShuffleMode(mode);
-  };
+  }, []);
 
   const getDuration = () => {
     const duration = player.current.getDuration();
     return isNaN(duration) ? 0 : duration;
   };
 
-  const openQueue = useCallback((songs: Song[], shuffleMode?: ShuffleMode) => {
-    service.openQueue(songs);
-    if (shuffleMode) setShuffleMode(shuffleMode);
-  }, []);
+  const openQueue = useCallback(
+    (songs: Song[], shuffleMode?: ShuffleMode) => {
+      service.openQueue(songs);
+      if (shuffleMode) setShuffleMode(shuffleMode);
+    },
+    [setShuffleMode]
+  );
 
   const enqueue = useCallback((...songs: Song[]) => {
     service.enqueue(songs);
@@ -79,15 +82,15 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const toggleShuffle = () => {
+  const toggleShuffle = useCallback(() => {
     setShuffleMode(
       getShuffleMode() === ShuffleMode.NONE
         ? ShuffleMode.SHUFFLE
         : ShuffleMode.NONE
     );
-  };
+  }, [getShuffleMode, setShuffleMode]);
 
-  const cycleRepeatMode = () => {
+  const cycleRepeatMode = useCallback(() => {
     const get = () => {
       switch (getRepeatMode()) {
         case RepeatMode.ALL:
@@ -100,38 +103,50 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     };
 
     setRepeatMode(get());
-  };
+  }, [getRepeatMode, setRepeatMode]);
 
-  const playSongAt = async (pos: number | undefined | null) => {
-    const song = getQueue()[pos as number];
+  const playSongAt = useCallback(
+    async (pos: number | undefined | null) => {
+      const song = getQueue()[pos as number];
 
-    if (!song) return;
+      if (!song) return;
 
-    service.position = pos;
+      service.position = pos;
 
-    await setSong(song);
-    play();
+      await setSong(song);
+      play();
 
-    setCurrentSong(song);
-  };
+      setCurrentSong(song);
+    },
+    [getQueue, play, setSong]
+  );
 
-  const playSong = async (song: Song) => {
-    const position = getQueue().findIndex((s) => {
-      return s.id === song.id;
-    });
+  const playSong = useCallback(
+    async (song: Song) => {
+      const position = getQueue().findIndex((s) => {
+        return s.id === song.id;
+      });
 
-    playSongAt(position);
-  };
+      playSongAt(position);
+    },
+    [getQueue, playSongAt]
+  );
 
-  const playNextSong = (force = false) => {
-    const newPos = service.getNextPosition(force);
-    playSongAt(newPos);
-  };
+  const playNextSong = useCallback(
+    (force = false) => {
+      const newPos = service.getNextPosition(force);
+      playSongAt(newPos);
+    },
+    [playSongAt]
+  );
 
-  const playPreviousSong = (force = false) => {
-    const newPos = service.getPreviousPosition(force);
-    playSongAt(newPos);
-  };
+  const playPreviousSong = useCallback(
+    (force = false) => {
+      const newPos = service.getPreviousPosition(force);
+      playSongAt(newPos);
+    },
+    [playSongAt]
+  );
 
   useEffect(() => {
     const _player = player.current;
@@ -181,7 +196,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
         setCurrentSong(song);
       }
     }
-  }, [songs, openQueue]);
+  }, [songs, openQueue, setSong]);
 
   useEffect(() => {
     const json = localStorage.getItem("queue");
@@ -204,7 +219,7 @@ export default function PlaybackManager({ children }: { children: ReactNode }) {
     }
 
     if (currTime) seekTo(parseFloat(currTime));
-  }, [songs, openQueue]);
+  }, [songs, openQueue, seekTo, setSong]);
 
   const helmetTitle = [title, album].filter((title) => !!title);
 
