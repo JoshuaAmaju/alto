@@ -37,7 +37,10 @@ const searchMachine = Machine<Context, Events>(
       searching: {
         invoke: {
           src: "search",
-          onError: "no_result",
+          onError: {
+            target: "no_result",
+            actions: assign({ foundSongs: (_ctx, { data }) => data }),
+          },
           onDone: {
             target: "idle",
             actions: assign(
@@ -76,7 +79,7 @@ const searchMachine = Machine<Context, Events>(
             return regex.test(title as any);
           });
 
-          if (foundSongs.length <= 0) reject();
+          if (foundSongs.length <= 0) reject(foundSongs);
 
           const songIds = foundSongs.map(({ id }) => id);
 

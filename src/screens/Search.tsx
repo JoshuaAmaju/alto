@@ -12,8 +12,15 @@ import useSongsManager from "../SongsManager/use-songs-manager";
 import SongTile from "../components/SongTile";
 import { Song } from "../types";
 import Text from "../components/Text";
+import classNames from "classnames";
+
+import List_Is_Empty from "../assets/png/List_Is_Empty_-_Light.png";
 
 const useStyle = createUseStyles({
+  page: {
+    display: "flex",
+    flexDirection: "column",
+  },
   formWrapper: {
     top: 0,
     position: "sticky",
@@ -49,6 +56,13 @@ const useStyle = createUseStyles({
     padding: "1rem",
     backgroundColor: "#eaeaea",
   },
+  empty: {
+    flex: 1,
+    backgroundSize: "contain",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundImage: `url(${List_Is_Empty})`,
+  },
 });
 
 export default function Search() {
@@ -71,7 +85,7 @@ export default function Search() {
   }, [send, songs, playlists]);
 
   return (
-    <div className="Page">
+    <div className={classNames("Page", classes.page)}>
       <AppHeader title="Search" />
       <div className={classes.formWrapper}>
         <form className={classes.form}>
@@ -87,38 +101,38 @@ export default function Search() {
           </div>
         </form>
       </div>
-      <ul>
-        {foundSongs &&
-          foundSongs.map((result) => {
+      {state.matches("idle") && foundSongs && (
+        <ul>
+          {foundSongs.map((result) => {
             return <PlaylistTile key={result.id} song={result} />;
           })}
 
-        {/* Just re-purposing SongTile component since it has similar layout
+          {/* Just re-purposing SongTile component since it has similar layout
             for the playlist ui */}
-        {foundPlaylists && (
-          <section>
-            <Text variant="h3" className={classes.sectionTitle}>
-              Playlists
-            </Text>
-            {foundPlaylists.map(({ name, label, coverUrl }) => {
-              const song = {
-                title: name,
-                artist: label,
-                imageUrl: coverUrl,
-              } as Song;
+          {foundPlaylists && foundPlaylists.length > 0 && (
+            <section>
+              <Text variant="h3" className={classes.sectionTitle}>
+                Found in playlists
+              </Text>
+              {foundPlaylists.map(({ name, label, coverUrl }) => {
+                const song = {
+                  title: name,
+                  artist: label,
+                  imageUrl: coverUrl,
+                } as Song;
 
-              return (
-                <SongTile
-                  song={song}
-                  onClick={() => push(`/playlist/${name}`)}
-                />
-              );
-            })}
-          </section>
-        )}
-
-        {state.matches("no_result") && <p>No match found</p>}
-      </ul>
+                return (
+                  <SongTile
+                    song={song}
+                    onClick={() => push(`/playlist/${name}`)}
+                  />
+                );
+              })}
+            </section>
+          )}
+        </ul>
+      )}
+      {state.matches("no_result") && <div className={classes.empty} />}
     </div>
   );
 }
