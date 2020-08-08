@@ -12,8 +12,9 @@ interface SongTile {
   className?: string;
   selected?: boolean;
   trailing?: ReactNode;
+  selectedColor?: string;
   onClick?: ReactEventHandler;
-  onLongPress?: (event: MouseEvent | TouchEvent) => void;
+  onActivate?: ReactEventHandler;
 }
 
 const useStyle = createUseStyles({
@@ -53,21 +54,20 @@ function SongTile({
   layoutId,
   selected,
   className,
-  onLongPress = () => {},
+  onActivate,
+  selectedColor = "blue",
 }: SongTile) {
   const classes = useStyle();
   const { title, artist, imageUrl } = song;
 
-  const props = useLongPress(onLongPress, { isPreventDefault: false });
-
   return (
     <div
-      style={{ background: selected ? "blue" : "none" }}
+      style={{ background: selected ? selectedColor : "none" }}
       className={classNames(classes.row, classes.container, className)}
     >
       <div
-        {...props}
         onClick={onClick}
+        onDoubleClick={onActivate}
         className={classNames(classes.row, classes.wrapper)}
       >
         <AlbumArt
