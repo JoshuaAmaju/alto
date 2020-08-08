@@ -1,10 +1,10 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import React, { createRef, useState } from "react";
+import React, { createRef, useState, useEffect } from "react";
 import { Plus } from "react-feather";
 import { createUseStyles } from "react-jss";
-import { Link } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
@@ -52,18 +52,26 @@ export const useStyle = createUseStyles({
 
 export default function Playlists() {
   const classes = useStyle();
+  const { state } = useLocation();
+  const { goBack } = useHistory();
   const [open, setOpen] = useState(false);
   const ref = createRef<HTMLIonInputElement>();
   const { create, playlists, playlistsMap } = usePlaylists();
 
+  const createNew = (state as any)?.new;
   const names = playlists.map(({ name }) => name);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = ref.current?.value as string;
     if (!names.includes(value)) create(value);
+    if (createNew) goBack();
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (createNew) setOpen(true);
+  }, [createNew]);
 
   return (
     <div className="Page">

@@ -1,5 +1,6 @@
 import { IonRippleEffect } from "@ionic/react";
-import { Scroll } from "framer";
+import { Scroll, Frame } from "framer";
+import { useHistory } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useCallback, useEffect, useState } from "react";
 import { MoreVertical, Trash2, X } from "react-feather";
@@ -13,6 +14,7 @@ import FlatButton from "./FlatButton";
 import PlaylistTile from "./PlaylistTile";
 import SongTile from "./SongTile";
 import Text from "./Text";
+import Button from "./Button";
 
 interface SongsList {
   songs: Song[];
@@ -54,6 +56,12 @@ const useStyle = createUseStyles({
       margin: { left: "1rem" },
     },
   },
+  createPlaylist: {
+    padding: "1rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   // action: {
   //   color: "black",
   //   display: "flex",
@@ -68,8 +76,9 @@ const useStyle = createUseStyles({
 
 export default function SongsList({ songs, color }: SongsList) {
   const classes = useStyle();
+  const { push } = useHistory();
   const { deleteSong } = useSongsManager();
-  const { playlists, addSong } = usePlaylists();
+  const { addSong, playlists } = usePlaylists();
   const [queueOpen, setQueueOpen] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showBulkAction, setShowBulkAction] = useState(false);
@@ -252,34 +261,42 @@ export default function SongsList({ songs, color }: SongsList) {
         }}
       >
         {length() === 1 && <SongTile song={getSelectedSongs()[0]} />}
-        <Scroll
-          width="100%"
-          height="40vh"
-          position="relative"
-          className={classes.lists}
-        >
-          {playlists.map((playlist) => {
-            const { name } = playlist;
+        {!playlists || playlists.length <= 0 ? (
+          <div className={classes.createPlaylist}>
+            <Button onClick={() => push("/playlists", { new: true })}>
+              create playlist
+            </Button>
+          </div>
+        ) : (
+          <Scroll
+            width="100%"
+            height="40vh"
+            position="relative"
+            className={classes.lists}
+          >
+            {playlists.map((playlist: any) => {
+              const { name } = playlist;
 
-            return (
-              <li
-                key={name}
-                className="ion-activatable"
-                onClick={() => {
-                  getSelectedSongs().forEach((song) => {
-                    addSong(playlist, song);
-                  });
+              return (
+                <li
+                  key={name}
+                  className="ion-activatable"
+                  onClick={() => {
+                    getSelectedSongs().forEach((song) => {
+                      addSong(playlist, song);
+                    });
 
-                  clearAllSelected();
-                  setShowPlaylistsAction(false);
-                }}
-              >
-                <span>{name}</span>
-                <IonRippleEffect />
-              </li>
-            );
-          })}
-        </Scroll>
+                    clearAllSelected();
+                    setShowPlaylistsAction(false);
+                  }}
+                >
+                  <span>{name}</span>
+                  <IonRippleEffect />
+                </li>
+              );
+            })}
+          </Scroll>
+        )}
       </BottomSheet>
     </>
   );
