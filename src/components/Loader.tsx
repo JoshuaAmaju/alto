@@ -1,49 +1,59 @@
-import { Frame, useAnimation, Variants } from "framer";
-import React from "react";
-import { useRafLoop } from "react-use";
-
-const variants: Variants = {
-  out: {
-    scaleX: 1,
-    x: "-100%",
-    originX: "left",
-  },
-  intro: {
-    x: 0,
-  },
-  outro: {
-    scaleX: 0,
-    originX: "right",
-  },
-};
+import { Frame, Color } from "framer";
+import React, { useMemo, createRef, useLayoutEffect } from "react";
 
 export default function Loader({
   width = "100%",
+  color = "blue",
 }: {
+  color?: string;
   width?: number | string;
 }) {
-  const control = useAnimation();
+  const ref = createRef<HTMLDivElement>();
 
-  useRafLoop(async () => {
-    await control.start("intro");
-    await control.start("outro");
-    control.set("out");
-  }, true);
+  const mColor = useMemo(() => {
+    return Color.alpha(Color(color), 0.2);
+  }, [color]);
+
+  useLayoutEffect(() => {
+    const { current } = ref;
+
+    current?.animate(
+      [
+        {
+          transformOrigin: "left",
+          transform: "translate3d(-100%, 0, 0) scaleX(1)",
+        },
+        {
+          transformOrigin: "right",
+          transform: "translate3d(0, 0, 0) scaleX(1)",
+        },
+        {
+          transformOrigin: "right",
+          transform: "translate3d(0, 0, 0) scaleX(0)",
+        },
+      ],
+      {
+        duration: 1000,
+        iterations: Infinity,
+        easing: "ease-in-out",
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <Frame height={3} width={width} position="relative">
+    <Frame
+      height={3}
+      width={width}
+      position="relative"
+      backgroundColor={mColor.toValue()}
+    >
       <Frame
+        ref={ref}
         size="100%"
         initial="out"
-        animate={control}
-        variants={variants}
         position="relative"
-        backgroundColor="blue"
-        // transition={{
-        //   damping: 15,
-        //   stiffness: 50,
-        //   type: "spring",
-        // }}
+        backgroundColor={color}
       />
     </Frame>
   );

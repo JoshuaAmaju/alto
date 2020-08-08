@@ -3,46 +3,20 @@ import AppHeader from "../components/AppHeader";
 import SongsList from "../components/SongsList";
 import SongsPicker from "../components/SongsPicker";
 import useSongsManager from "../SongsManager/use-songs-manager";
-import Snackbar from "../components/Snackbar";
-
-// const useStyle = createUseStyles({
-//   lists: {
-//     "& li": {
-//       padding: "1.5rem",
-//       listStyle: "none",
-//       fontWeight: "bold",
-//       position: "relative",
-//       textTransform: "capitalize",
-//     },
-//     "& *:not(:first-child)": {
-//       borderTop: "1px solid #ccc",
-//     },
-//   },
-// });
+import { useSwatch } from "../SwatchManager/SwatchManager";
+import Loader from "../components/Loader";
 
 export default function AllSongs() {
-  const [show, setShow] = React.useState(true);
+  const { muted } = useSwatch();
   const { songs, loading } = useSongsManager();
-
-  React.useEffect(() => {
-    if (!show) {
-      setTimeout(() => setShow(true), 2000);
-    }
-  }, [show]);
 
   return (
     <div className="Page">
+      {loading && <Loader color={muted} />}
       <AppHeader title="Songs">
         <SongsPicker />
       </AppHeader>
-      <SongsList songs={songs} />
-      <Snackbar
-        visible={show}
-        onDismiss={() => setShow(false)}
-        action={{ label: "retry", onPress: () => setShow(false) }}
-      >
-        Hello
-      </Snackbar>
+      <SongsList songs={songs} color={muted} />
     </div>
   );
 }
