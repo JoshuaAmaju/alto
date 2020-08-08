@@ -35,10 +35,17 @@ export function shuffle<T>(array: T[]) {
   return arr;
 }
 
-export function insertAt<T>(array: T[], insertion: T[], position: number) {
-  const arr = [...array];
-  arr.splice(position, 0, ...insertion);
-  return arr;
+export function insertAt<T extends Song>(
+  array: T[],
+  insertion: T[],
+  position: number
+) {
+  const ids = insertion.map(({ id }) => id);
+
+  const top = array.slice(0, position).filter(({ id }) => !ids.includes(id));
+  const bottom = array.slice(position).filter(({ id }) => !ids.includes(id));
+
+  return ([] as T[]).concat(top, insertion, bottom);
 }
 
 export function createURL(object: any): string {
