@@ -44,14 +44,13 @@ export default class QueueService {
     this.sendEvent(Events.QUEUE_CHANGED, this.queue);
   }
 
-  enqueue(songs: Song[]) {
-    this.queue.concat(songs);
-    this.sendEvent(Events.QUEUE_CHANGED, this.queue);
-  }
-
   enqueueAt(position: number, songs: Song[]) {
     this.queue = insertAt(this.queue, songs, position);
     this.sendEvent(Events.QUEUE_CHANGED, this.queue);
+  }
+
+  enqueue(songs: Song[]) {
+    this.enqueueAt(this.queue.length, songs);
   }
 
   // removeSong(position: number) {

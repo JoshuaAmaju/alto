@@ -13,7 +13,7 @@ export function addSongs(songs: Song[]) {
 
 export function deleteSong(...songIds: Song["id"][]) {
   return db.batch(
-    songIds.map((id) => q`MATCH``(song:Song ${{ id }})``[]``()`),
-    { delete: ["song"] }
+    songIds.map((id) => q`MATCH``(s:Song ${{ id }})``[]``()`),
+    { delete: ["s"] }
   );
 }
