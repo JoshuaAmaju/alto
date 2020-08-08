@@ -236,7 +236,7 @@ function Playlist() {
           style={{ zIndex: -1 }}
           backgroundColor="white"
         />
-        {songs && <SongsList songs={songs} />}
+        {songs && <SongsList songs={songs} color={muted} />}
       </Frame>
     </div>
   );
