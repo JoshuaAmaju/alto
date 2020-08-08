@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMachine } from "@xstate/react";
-import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import Snackbar from "../components/Snackbar";
 import { Playlists } from "../database";
 import playlistsMachine from "../machines/playlists.machine";
 import useSongsManager from "../SongsManager/use-songs-manager";
@@ -19,6 +26,8 @@ export default function PlaylistsManager({
   const [state, send] = useMachine(playlistsMachine);
 
   const { playlists, nameAndSongsMap } = state.context;
+
+  const [message, setMessage] = useState<string>();
 
   const playlistsMap = useMemo(() => {
     const map = {} as Record<string, PlaylistDetails>;
@@ -42,10 +51,12 @@ export default function PlaylistsManager({
   }, [songs]);
 
   const createPlaylist = useCallback((name) => {
+    setMessage(`${name} playlist created`);
     send({ type: "CREATE_PLAYLIST", name });
   }, []);
 
   const deletePlaylist = useCallback((name) => {
+    setMessage(`${name} playlist deleted`);
     send({ type: "DELETE_PLAYLIST", name });
   }, []);
 
@@ -78,6 +89,12 @@ export default function PlaylistsManager({
       }}
     >
       {children}
+      <Snackbar
+        visible={message ? true : false}
+        onDismiss={() => setMessage(undefined)}
+      >
+        {message}
+      </Snackbar>
     </PlaylistsManagerProvider>
   );
 }
