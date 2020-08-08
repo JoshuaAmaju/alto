@@ -16,6 +16,7 @@ import Text from "./Text";
 
 interface SongsList {
   songs: Song[];
+  color?: string;
 }
 
 const useStyle = createUseStyles({
@@ -65,7 +66,7 @@ const useStyle = createUseStyles({
   // },
 });
 
-export default function SongsList({ songs }: SongsList) {
+export default function SongsList({ songs, color }: SongsList) {
   const classes = useStyle();
   const { deleteSong } = useSongsManager();
   const { playlists, addSong } = usePlaylists();
@@ -93,23 +94,36 @@ export default function SongsList({ songs }: SongsList) {
     return Object.keys(selectedSongs).length;
   }, [selectedSongs]);
 
-  const has = (id: string) => {
-    return Object.keys(selectedSongs).includes(id);
-  };
+  const has = useCallback(
+    (id: string) => {
+      return Object.keys(selectedSongs).includes(id);
+    },
+    [selectedSongs]
+  );
 
-  const addSelected = (song: Song) => {
-    setSelectedSongs({ ...selectedSongs, [song.id]: song });
-  };
+  const addSelected = useCallback(
+    (song: Song) => {
+      setSelectedSongs({ ...selectedSongs, [song.id]: song });
+    },
+    [selectedSongs]
+  );
 
-  const removeSelected = (id: string) => {
-    const songs = { ...selectedSongs };
-    delete songs[id];
-    setSelectedSongs(songs);
-  };
+  const removeSelected = useCallback(
+    (id: string) => {
+      const songs = { ...selectedSongs };
+      delete songs[id];
+      setSelectedSongs(songs);
+    },
+    [selectedSongs]
+  );
 
-  const clearAllSelected = () => {
+  const clearAllSelected = useCallback(() => {
     setSelectedSongs({});
-  };
+  }, []);
+
+  useEffect(() => {
+    if (queueOpen) openQueue(songs);
+  }, [songs, queueOpen, openQueue]);
 
   useEffect(() => {
     if (length() <= 0) setShowBulkAction(false);
@@ -126,7 +140,8 @@ export default function SongsList({ songs }: SongsList) {
             <PlaylistTile
               key={id}
               song={song}
-              onLongPress={(e) => {
+              selectedColor={color}
+              onActivate={() => {
                 addSelected(song);
                 setShowBulkAction(true);
               }}
@@ -144,7 +159,7 @@ export default function SongsList({ songs }: SongsList) {
               selected={selected}
               onMenuClick={() => {
                 addSelected(song);
-                setShowPlaylistsAction(true);
+                setShowActions(true);
               }}
             />
           );
