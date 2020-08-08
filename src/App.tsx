@@ -8,6 +8,7 @@ import NowPlaying from "./screens/NowPlaying";
 import Playlist from "./screens/Playlist";
 import Playlists from "./screens/Playlists";
 import Search from "./screens/Search";
+import BottomBarWrapper from "./components/BottomBarWrapper";
 
 function App() {
   const location = useLocation();
@@ -25,7 +26,7 @@ function App() {
             render={() => (
               <>
                 <AllSongs />
-                <BottomBar />
+                <BottomBarWrapper />
               </>
             )}
           />
@@ -34,7 +35,7 @@ function App() {
             render={() => (
               <>
                 <Playlists />
-                <BottomBar />
+                <BottomBarWrapper />
               </>
             )}
           />

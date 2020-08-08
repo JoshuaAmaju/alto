@@ -21,8 +21,13 @@ ul {
   list-style: none;
 }
 
-#root,
-.Page {
+#root {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.Page {
+  flex: 1;
   overflow-y: auto;
 }

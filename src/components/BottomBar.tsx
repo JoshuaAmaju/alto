@@ -2,7 +2,6 @@ import React from "react";
 import { Home, Search } from "react-feather";
 import { createUseStyles } from "react-jss";
 import { Link, Route } from "react-router-dom";
-import NowPlayingCarousel from "./NowPlayingCarousel";
 import { useSwatch } from "../SwatchManager/SwatchManager";
 
 export const routeConfig = [
@@ -30,10 +29,6 @@ export const routeConfig = [
 ];
 
 const useStyle = createUseStyles({
-  wrapper: {
-    bottom: 0,
-    position: "sticky",
-  },
   container: {
     display: "flex",
     padding: "1rem",
@@ -49,22 +44,19 @@ export default function BottomBar() {
   const { muted = "black", lightMuted = "grey" } = useSwatch();
 
   return (
-    <div className={classes.wrapper}>
-      <NowPlayingCarousel />
-      <div className={classes.container}>
-        {routeConfig.map(({ icon, path }) => {
-          return (
-            <Route
-              exact
-              key={path}
-              path={path}
-              children={({ match }) => {
-                return <Link to={path}>{icon(match, muted, lightMuted)}</Link>;
-              }}
-            />
-          );
-        })}
-      </div>
+    <div className={classes.container}>
+      {routeConfig.map(({ icon, path }) => {
+        return (
+          <Route
+            exact
+            key={path}
+            path={path}
+            children={({ match }) => {
+              return <Link to={path}>{icon(match, muted, lightMuted)}</Link>;
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
