@@ -19,8 +19,8 @@ type Events =
   | { type: "LOAD" }
   | { type: "CREATE_PLAYLIST"; name: string }
   | { type: "DELETE_PLAYLIST"; name: string }
-  | { type: "ADD_SONG"; playlist: Playlist; song: Song }
-  | { type: "REMOVE_SONG"; name: string; songId: string };
+  | { type: "ADD_SONG"; playlist: Playlist; songs: Song[] }
+  | { type: "REMOVE_SONG"; name: string; songIds: string[] };
 
 const playlistsMachine = Machine<Context, Events>(
   {
@@ -102,9 +102,10 @@ const playlistsMachine = Machine<Context, Events>(
       notCreated: ({ names }, { name }: any) => {
         return !names.includes(name);
       },
-      notAlreadyAdded: ({ nameAndSongsMap }, { song, playlist }: any) => {
+      notAlreadyAdded: ({ nameAndSongsMap }, { songs, playlist }: any) => {
         const songIds = nameAndSongsMap.get(playlist.name);
-        return !songIds?.includes(song.id);
+
+        return (songs as any[]).every(({ id }) => !songIds?.includes(id));
       },
     },
     services: {
@@ -124,15 +125,13 @@ const playlistsMachine = Machine<Context, Events>(
 
         return [playlist, group];
       },
-      createPlaylist: ({ names }, { name }) => {
-        return createPlaylist(name);
-      },
+      createPlaylist: (_ctx, { name }) => createPlaylist(name),
       deletePlaylist: (_ctx, { name }) => deletePlaylist(name),
-      addToPlaylist: (_ctx, { song, playlist }) => {
-        return addToPlaylist(playlist, song);
+      addToPlaylist: (_ctx, { songs, playlist }) => {
+        return addToPlaylist(playlist, ...songs);
       },
-      removeFromPlaylist: (_ctx, { name, songId }) => {
-        return removeFromPlaylist(name, songId);
+      removeFromPlaylist: (_ctx, { name, songIds }) => {
+        return removeFromPlaylist(name, ...songIds);
       },
     },
   }

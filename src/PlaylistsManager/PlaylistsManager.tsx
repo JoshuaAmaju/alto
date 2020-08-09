@@ -60,12 +60,16 @@ export default function PlaylistsManager({
     send({ type: "DELETE_PLAYLIST", name });
   }, []);
 
-  const addSong = useCallback((playlist, song) => {
-    send({ type: "ADD_SONG", playlist, song });
+  const addSong = useCallback((playlist, _songs) => {
+    const songs = [].concat(_songs);
+    setMessage(`${songs.length} song(s) added to ${playlist.name} playlist`);
+    send({ type: "ADD_SONG", playlist, songs });
   }, []);
 
-  const removeSong = useCallback((name, songId) => {
-    send({ type: "REMOVE_SONG", name, songId });
+  const removeSong = useCallback((name, ids) => {
+    const songIds = [].concat(ids);
+    setMessage(`${songIds.length} song(s) removed from ${name} playlist`);
+    send({ type: "REMOVE_SONG", name, songIds });
   }, []);
 
   useEffect(() => {
