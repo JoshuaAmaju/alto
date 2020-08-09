@@ -12,6 +12,7 @@ import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
 import Text from "../components/Text";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
+import TextInput from "../components/TextInput";
 
 export const useStyle = createUseStyles({
   form: {
@@ -55,7 +56,7 @@ export default function Playlists() {
   const { state } = useLocation();
   const { goBack } = useHistory();
   const [open, setOpen] = useState(false);
-  const ref = createRef<HTMLIonInputElement>();
+  const ref = createRef<HTMLInputElement>();
   const { create, playlists, playlistsMap } = usePlaylists();
 
   const createNew = (state as any)?.new;
@@ -111,19 +112,10 @@ export default function Playlists() {
       </ul>
       <BottomSheet open={open} onClose={() => setOpen(false)}>
         <form
-          className={classNames(classes.form, classes.column)}
           onSubmit={submit}
+          className={classNames(classes.form, classes.column)}
         >
-          <IonItem>
-            <IonLabel position="stacked">Playlist name</IonLabel>
-            <IonInput
-              required
-              ref={ref}
-              type="text"
-              name="playlist"
-              maxlength={10}
-            />
-          </IonItem>
+          <TextInput ref={ref} required label="Playlist name" />
           <Button type="submit" className={classes.button}>
             create
           </Button>
