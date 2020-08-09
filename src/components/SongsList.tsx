@@ -1,20 +1,20 @@
 import { IonRippleEffect } from "@ionic/react";
-import { Scroll, Frame } from "framer";
-import { useHistory } from "react-router-dom";
+import { Scroll } from "framer";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useCallback, useEffect, useState } from "react";
 import { MoreVertical, Trash2, X } from "react-feather";
 import { createUseStyles } from "react-jss";
+import { useHistory } from "react-router-dom";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import useSongsManager from "../SongsManager/use-songs-manager";
 import { Song } from "../types";
 import BottomSheet from "./BottomSheet";
+import Button from "./Button";
 import FlatButton from "./FlatButton";
 import PlaylistTile from "./PlaylistTile";
 import SongTile from "./SongTile";
 import Text from "./Text";
-import Button from "./Button";
 
 interface SongsList {
   songs: Song[];
@@ -62,16 +62,6 @@ const useStyle = createUseStyles({
     alignItems: "center",
     justifyContent: "center",
   },
-  // action: {
-  //   color: "black",
-  //   display: "flex",
-  //   padding: "0.3rem",
-  //   background: "none",
-  //   alignItems: "center",
-  //   "& * + *": {
-  //     margin: { left: "0.5rem" },
-  //   },
-  // },
 });
 
 export default function SongsList({ songs, color }: SongsList) {
@@ -282,9 +272,7 @@ export default function SongsList({ songs, color }: SongsList) {
                   key={name}
                   className="ion-activatable"
                   onClick={() => {
-                    getSelectedSongs().forEach((song) => {
-                      addSong(playlist, song);
-                    });
+                    addSong(playlist, ...getSelectedSongs());
 
                     clearAllSelected();
                     setShowPlaylistsAction(false);

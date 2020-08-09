@@ -1,6 +1,4 @@
 import React, { createRef, useCallback, useEffect, useMemo } from "react";
-import { usePrevious } from "react-use";
-import { motion } from "framer-motion";
 import Slick from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";

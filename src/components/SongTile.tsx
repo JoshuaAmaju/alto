@@ -1,7 +1,6 @@
 import classNames from "classnames";
-import React, { ReactEventHandler, ReactNode } from "react";
+import React, { DOMAttributes, ReactEventHandler, ReactNode } from "react";
 import { createUseStyles } from "react-jss";
-import { useLongPress } from "react-use";
 import { Song } from "../types";
 import AlbumArt from "./AlbumArt";
 import Text from "./Text";
@@ -14,7 +13,7 @@ interface SongTile {
   trailing?: ReactNode;
   selectedColor?: string;
   onClick?: ReactEventHandler;
-  onActivate?: ReactEventHandler;
+  onActivate?: DOMAttributes<HTMLDivElement>["onDoubleClick"];
 }
 
 const useStyle = createUseStyles({

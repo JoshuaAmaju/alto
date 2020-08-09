@@ -1,19 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-// import {} from 'react-router'
-
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { db } from "./database";
 import "./index.css";
-import * as serviceWorker from "./serviceWorker";
-import SongsManager from "./SongsManager/SongsManager";
 import PlaybackManager from "./PlaybackManager/PlaybackManager";
 import PlaylistsManager from "./PlaylistsManager/PlaylistsManager";
-import { BrowserRouter } from "react-router-dom";
+import * as serviceWorker from "./serviceWorker";
+import SongsManager from "./SongsManager/SongsManager";
 import SwatchManager from "./SwatchManager/SwatchManager";
-
-// const { Router } = require("react-router");
 
 (async () => {
   await db.connect();
