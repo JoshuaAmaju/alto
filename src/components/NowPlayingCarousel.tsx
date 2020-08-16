@@ -28,7 +28,7 @@ export default function NowPlayingCarousel() {
           exit={{ y: 100 }}
           animate={{ y: 0 }}
           initial={{ y: 100 }}
-          layoutId="nowplaying"
+          layoutId="now-playing"
           className={classes.nowPlayingBottom}
         >
           <SongProgress />

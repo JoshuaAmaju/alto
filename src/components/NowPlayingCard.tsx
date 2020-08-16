@@ -25,7 +25,7 @@ export default function NowPlayingCard({ song, layoutId }: NowPlayingCard) {
   return (
     <SongTile
       song={song}
-      layoutId={layoutId}
+      layoutId={song.title}
       className={classes.padding}
       onClick={() => push("/nowplaying")}
       trailing={<PlayPauseButton fill color={muted} />}

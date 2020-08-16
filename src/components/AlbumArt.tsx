@@ -22,6 +22,10 @@ const useStyle = createUseStyles({
 export default function AlbumArt({ url, className, ...props }: AlbumArt) {
   const classes = useStyle({ url });
   return (
-    <motion.div {...props} className={classNames(classes.cover, className)} />
+    <motion.div
+      layout
+      {...props}
+      className={classNames(classes.cover, className)}
+    />
   );
 }

@@ -1,4 +1,4 @@
-import { AnimateSharedLayout } from "framer-motion";
+import { AnimateSharedLayout, AnimatePresence } from "framer-motion";
 import React from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
 import BottomBar from "./components/BottomBar";
@@ -17,7 +17,7 @@ function App() {
 
   return (
     <>
-      <AnimateSharedLayout type="switch">
+      <AnimateSharedLayout type="crossfade">
         <Switch location={nowPlaying ?? location}>
           <Route
             exact
@@ -59,7 +59,14 @@ function App() {
             )}
           />
 
-          <Route path="/nowplaying" render={() => <NowPlaying />} />
+          <Route
+            path={["/nowplaying", "/queue"]}
+            render={() => (
+              <AnimatePresence>
+                <NowPlaying />
+              </AnimatePresence>
+            )}
+          />
         </Switch>
       </AnimateSharedLayout>
     </>
