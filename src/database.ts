@@ -1,9 +1,11 @@
 import { Song, Playlist } from "./types";
-import { WeBase, q } from "webase";
+
+// @ts-ignore
+import { openDB, q } from "mercurydb";
 
 const { v4: uuidv4 } = require("uuid");
 
-const db = new WeBase("alto", 1);
+const db = openDB("alto", 1);
 
 const Playlists = db.model<Playlist>("Playlist", {
   name: {

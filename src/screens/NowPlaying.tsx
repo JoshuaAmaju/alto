@@ -26,6 +26,8 @@ import useEventValue from "../QueueService/use-event-value";
 import { Song } from "../types";
 import { useSwatch } from "../SwatchManager/SwatchManager";
 
+import { Flipper, Flipped } from "react-flip-toolkit";
+
 const useStyle = createUseStyles({
   wrapper: {
     color: "white",
@@ -95,77 +97,79 @@ export default function NowPlaying() {
   const backgroundGradient = `linear-gradient(transparent, ${color50.toValue()} 50%, ${color60.toValue()} 60%, ${color70.toValue()} 70%, ${color.toValue()} 80%)`;
 
   return (
-    <motion.div
-      layoutId="nowplaying"
-      className={classNames(classes.wrapper, classes.rowSpaced, "Page")}
-    >
-      <header className={classNames(classes.header, classes.rowSpaced)}>
-        <FlatButton onClick={goBack}>
-          <ChevronDown size={30} color="white" />
-        </FlatButton>
-      </header>
-      <AlbumArt
-        layoutId={id}
-        className={classes.cover}
-        url={currentSong?.imageUrl}
-      />
-      <Frame
-        size="100%"
-        style={{ zIndex: -1 }}
-        background={backgroundGradient}
-      />
-      <div className={classes.container}>
-        <div className={classes.rowSpaced}>
-          <div style={{ marginRight: "1rem" }}>
-            <Text variant="h2">{title}</Text>
-            <Text variant="h3" style={{ marginTop: "0.5rem" }}>
-              {artist}
-            </Text>
+    <Flipped flipId="now-playing">
+      <motion.div
+        // layoutId="nowplaying"
+        className={classNames(classes.wrapper, classes.rowSpaced, "Page")}
+      >
+        <header className={classNames(classes.header, classes.rowSpaced)}>
+          <FlatButton onClick={goBack}>
+            <ChevronDown size={30} color="white" />
+          </FlatButton>
+        </header>
+        <AlbumArt
+          layoutId={id}
+          className={classes.cover}
+          url={currentSong?.imageUrl}
+        />
+        <Frame
+          size="100%"
+          style={{ zIndex: -1 }}
+          background={backgroundGradient}
+        />
+        <div className={classes.container}>
+          <div className={classes.rowSpaced}>
+            <div style={{ marginRight: "1rem" }}>
+              <Text variant="h2">{title}</Text>
+              <Text variant="h3" style={{ marginTop: "0.5rem" }}>
+                {artist}
+              </Text>
+            </div>
+            <PlayPauseButton size={35} color="white" />
           </div>
-          <PlayPauseButton size={35} color="white" />
+          <SongSlider />
+          <div className={classes.buttons}>
+            <Volume2 />
+            <Heart />
+            <FlatButton
+              onClick={cycleRepeatMode}
+              style={{ position: "relative" }}
+            >
+              <Repeat
+                color={
+                  repeatMode === RepeatMode.ALL ||
+                  repeatMode === RepeatMode.CURRENT
+                    ? "white"
+                    : "grey"
+                }
+              />
+              {repeatMode === RepeatMode.CURRENT && (
+                <Frame
+                  radius={100}
+                  size="0.7rem"
+                  top="-0.2rem"
+                  right="-0.3rem"
+                  backgroundColor="white"
+                  style={{ padding: "0.6rem" }}
+                >
+                  1
+                </Frame>
+              )}
+            </FlatButton>
+            <FlatButton onClick={toggleShuffle}>
+              <Shuffle
+                color={shuffleMode === ShuffleMode.SHUFFLE ? "white" : "grey"}
+              />
+            </FlatButton>
+            <FlatButton onClick={() => playPreviousSong(true)}>
+              <SkipBack color="white" />
+            </FlatButton>
+            <FlatButton onClick={() => playNextSong(true)}>
+              <SkipForward color="white" />
+            </FlatButton>
+          </div>
         </div>
-        <SongSlider />
-        <div className={classes.buttons}>
-          <Volume2 />
-          <Heart />
-          <FlatButton
-            onClick={cycleRepeatMode}
-            style={{ position: "relative" }}
-          >
-            <Repeat
-              color={
-                repeatMode === RepeatMode.ALL ||
-                repeatMode === RepeatMode.CURRENT
-                  ? "white"
-                  : "grey"
-              }
-            />
-            {repeatMode === RepeatMode.CURRENT && (
-              <Frame
-                radius={100}
-                size="0.7rem"
-                top="-0.2rem"
-                right="-0.3rem"
-                backgroundColor="white"
-                style={{ padding: "0.6rem" }}
-              >
-                1
-              </Frame>
-            )}
-          </FlatButton>
-          <FlatButton onClick={toggleShuffle}>
-            <Shuffle
-              color={shuffleMode === ShuffleMode.SHUFFLE ? "white" : "grey"}
-            />
-          </FlatButton>
-          <FlatButton onClick={() => playPreviousSong(true)}>
-            <SkipBack color="white" />
-          </FlatButton>
-          <FlatButton onClick={() => playNextSong(true)}>
-            <SkipForward color="white" />
-          </FlatButton>
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </Flipped>
   );
 }

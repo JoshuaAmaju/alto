@@ -61,7 +61,7 @@ export function createSong(song: Song): Song {
   return {
     ...song,
     getURL() {
-      return bufferToURL(this.buffer, this.type);
+      return createURL(this.file);
     },
     getImage() {
       const mime = this.image?.mime;
@@ -81,7 +81,6 @@ export async function extractSongsData(files: FileList): Promise<Song[]> {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i] as any;
-    const buffer = await file.arrayBuffer();
 
     let {
       year,
@@ -97,6 +96,7 @@ export async function extractSongsData(files: FileList): Promise<Song[]> {
     if (!title) title = formatFileName(name);
 
     const song = {
+      file,
       type,
       year,
       title,
@@ -104,7 +104,6 @@ export async function extractSongsData(files: FileList): Promise<Song[]> {
       genre,
       image,
       artist,
-      buffer,
     } as Song;
 
     songs.push(song);

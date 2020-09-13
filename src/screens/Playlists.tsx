@@ -1,18 +1,18 @@
-import { IonInput, IonItem, IonLabel } from "@ionic/react";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import React, { createRef, useState, useEffect } from "react";
-import { Plus } from "react-feather";
+import React, { createRef, useEffect, useState } from "react";
+import { MoreVertical, Plus, Trash2 } from "react-feather";
 import { createUseStyles } from "react-jss";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import AlbumArt from "../components/AlbumArt";
 import AppHeader from "../components/AppHeader";
 import BottomSheet from "../components/BottomSheet";
 import Button from "../components/Button";
 import FlatButton from "../components/FlatButton";
 import Text from "../components/Text";
-import usePlaylists from "../PlaylistsManager/use-playlist-manager";
 import TextInput from "../components/TextInput";
+import usePlaylists from "../PlaylistsManager/use-playlist-manager";
+import SelectionManager from "../SelectionManager/SelectionManager";
 
 export const useStyle = createUseStyles({
   form: {
@@ -32,9 +32,14 @@ export const useStyle = createUseStyles({
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
   },
-  texts: {
+  details: {
+    display: "flex",
     alignItems: "center",
     margin: { top: "1rem" },
+  },
+  texts: {
+    flex: 1,
+    alignItems: "center",
   },
   frame: {
     padding: "1rem",
@@ -54,10 +59,15 @@ export const useStyle = createUseStyles({
 export default function Playlists() {
   const classes = useStyle();
   const { state } = useLocation();
-  const { goBack } = useHistory();
+  const { push, goBack } = useHistory();
   const [open, setOpen] = useState(false);
   const ref = createRef<HTMLInputElement>();
-  const { create, playlists, playlistsMap } = usePlaylists();
+  const {
+    create,
+    playlists,
+    playlistsMap,
+    delete: deletePlaylist,
+  } = usePlaylists();
 
   const createNew = (state as any)?.new;
   const names = playlists.map(({ name }) => name);
@@ -87,29 +97,76 @@ export default function Playlists() {
           <Plus />
         </FlatButton>
       </AppHeader>
-      <ul className={classes.list}>
-        {names.map((name) => {
-          const { songs, label, coverUrl } = playlistsMap[name] ?? {};
-
+      <SelectionManager
+        action={({ selection }) => {
           return (
-            songs?.length > 0 && (
-              <li key={name} className={classes.frame}>
-                <Link to={`/playlist/${name}`}>
-                  <AlbumArt
-                    url={coverUrl}
-                    layoutId={name}
-                    className={classes.cover}
-                  />
-                  <div className={classNames(classes.texts, classes.column)}>
-                    <Text variant="h3">{name}</Text>
-                    <Text variant="h4">{label}</Text>
-                  </div>
-                </Link>
-              </li>
-            )
+            <>
+              <FlatButton
+                onClick={() => {
+                  deletePlaylist(...(Object.values(selection) as string[]));
+                }}
+              >
+                <Trash2 />
+              </FlatButton>
+              <FlatButton onClick={() => {}}>
+                <MoreVertical size={25} />
+              </FlatButton>
+            </>
           );
-        })}
-      </ul>
+        }}
+      >
+        {({ add, has, show, remove, isShowing }) => {
+          return (
+            <ul className={classes.list}>
+              {names.map((name) => {
+                const { songs, label, coverUrl } = playlistsMap[name] ?? {};
+
+                return (
+                  songs?.length > 0 && (
+                    <li
+                      key={name}
+                      className={classes.frame}
+                      style={{ background: has(name) ? "#ccc" : "white" }}
+                      onClick={() => {
+                        if (isShowing) {
+                          if (has(name)) {
+                            remove(name);
+                          } else {
+                            add(name, name);
+                          }
+                        } else {
+                          // push(`/playlist/${name}`);
+                        }
+                      }}
+                      onDoubleClick={() => {
+                        add(name, name);
+                        show(true);
+                      }}
+                    >
+                      <AlbumArt
+                        url={coverUrl}
+                        layoutId={name}
+                        className={classes.cover}
+                      />
+                      <div className={classes.details}>
+                        <div
+                          className={classNames(classes.texts, classes.column)}
+                        >
+                          <Text variant="h3">{name}</Text>
+                          <Text variant="h4">{label}</Text>
+                        </div>
+                        <FlatButton>
+                          <MoreVertical size={25} />
+                        </FlatButton>
+                      </div>
+                    </li>
+                  )
+                );
+              })}
+            </ul>
+          );
+        }}
+      </SelectionManager>
       <BottomSheet open={open} onClose={() => setOpen(false)}>
         <form
           onSubmit={submit}

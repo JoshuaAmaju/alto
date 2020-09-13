@@ -9,6 +9,7 @@ export default function SongsPicker() {
   const ref = createRef<HTMLInputElement>();
 
   const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    e.persist();
     const files = e.target.files;
     if (!files) return;
 

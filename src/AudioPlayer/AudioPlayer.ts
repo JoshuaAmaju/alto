@@ -11,7 +11,7 @@ export default class AudioPlayer {
     this.gain = context.createGain();
     this.source = context.createMediaElementSource(audio);
 
-    this.gain.gain.value = 0.5;
+    // this.gain.gain.value = 0.5;
     this.gain.connect(context.destination);
     this.source.connect(this.gain);
 

@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer";
 import { motion } from "framer-motion";
 import React from "react";
+import { Flipped } from "react-flip-toolkit";
 import { createUseStyles } from "react-jss";
 import usePlaybackManager from "../PlaybackManager/use-playback-manager";
 import NowPlayingCardList from "./NowPlayingCardList";
@@ -22,19 +23,21 @@ export default function NowPlayingCarousel() {
   const { currentSong } = usePlaybackManager();
 
   return (
-    <AnimatePresence>
+    // <AnimatePresence>
+    <Flipped flipId="now-playing">
       {currentSong && (
         <motion.div
-          exit={{ y: 100 }}
-          animate={{ y: 0 }}
-          initial={{ y: 100 }}
-          layoutId="now-playing"
+          // exit={{ y: 100 }}
+          // animate={{ y: 0 }}
+          // initial={{ y: 100 }}
+          // layoutId="now-playing"
           className={classes.nowPlayingBottom}
         >
           <SongProgress />
           <NowPlayingCardList />
         </motion.div>
       )}
-    </AnimatePresence>
+    </Flipped>
+    // </AnimatePresence>
   );
 }

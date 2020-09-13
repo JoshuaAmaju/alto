@@ -23,7 +23,7 @@ export default function AlbumArt({ url, className, ...props }: AlbumArt) {
   const classes = useStyle({ url });
   return (
     <motion.div
-      layout
+      // layout
       {...props}
       className={classNames(classes.cover, className)}
     />
